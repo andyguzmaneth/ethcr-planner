@@ -1,0 +1,92 @@
+[
+  {
+    "id": "track-coordinacion",
+    "eventId": "1",
+    "name": "Coordinación General",
+    "description": "Coordinación general del evento ETH Pura Vida",
+    "leadId": "user-alfredo",
+    "participantIds": ["user-lidia", "user-jose-pablo"],
+    "createdAt": "2025-01-01T00:00:00Z",
+    "updatedAt": "2025-01-15T10:00:00Z"
+  },
+  {
+    "id": "track-marketing",
+    "eventId": "1",
+    "name": "Marketing",
+    "description": "Marketing y difusión del evento",
+    "leadId": "user-beja",
+    "participantIds": ["user-daniel"],
+    "createdAt": "2025-01-01T00:00:00Z",
+    "updatedAt": "2025-01-15T10:00:00Z"
+  },
+  {
+    "id": "track-diseno",
+    "eventId": "1",
+    "name": "Diseño y Producción",
+    "description": "Diseño gráfico y producción de material audiovisual",
+    "leadId": "user-angie",
+    "participantIds": ["user-mari"],
+    "createdAt": "2025-01-01T00:00:00Z",
+    "updatedAt": "2025-01-15T10:00:00Z"
+  },
+  {
+    "id": "track-hackathon",
+    "eventId": "1",
+    "name": "Hackathon Circuit",
+    "description": "Organización y ejecución del Hackathon Circuit",
+    "leadId": "user-alberto",
+    "participantIds": [],
+    "createdAt": "2025-01-01T00:00:00Z",
+    "updatedAt": "2025-01-15T10:00:00Z"
+  },
+  {
+    "id": "track-lugar",
+    "eventId": "1",
+    "name": "Lugar y Logística",
+    "description": "Gestión del lugar del evento y logística",
+    "leadId": "user-maria",
+    "participantIds": [],
+    "createdAt": "2025-01-01T00:00:00Z",
+    "updatedAt": "2025-01-15T10:00:00Z"
+  },
+  {
+    "id": "track-sponsors",
+    "eventId": "1",
+    "name": "Sponsors y Finanzas",
+    "description": "Gestión de sponsors y control financiero",
+    "leadId": "user-andy",
+    "participantIds": [],
+    "createdAt": "2025-01-01T00:00:00Z",
+    "updatedAt": "2025-01-15T10:00:00Z"
+  },
+  {
+    "id": "track-agenda",
+    "eventId": "1",
+    "name": "Agenda y Charlistas",
+    "description": "Coordinación de agenda y speakers",
+    "leadId": "user-jose-pablo",
+    "participantIds": [],
+    "createdAt": "2025-01-01T00:00:00Z",
+    "updatedAt": "2025-01-15T10:00:00Z"
+  },
+  {
+    "id": "track-website",
+    "eventId": "1",
+    "name": "Website",
+    "description": "Desarrollo y mantenimiento del sitio web",
+    "leadId": "user-robert",
+    "participantIds": ["user-justin"],
+    "createdAt": "2025-01-01T00:00:00Z",
+    "updatedAt": "2025-01-15T10:00:00Z"
+  },
+  {
+    "id": "track-universidades",
+    "eventId": "1",
+    "name": "Universidades",
+    "description": "Coordinación con universidades",
+    "leadId": "user-robert",
+    "participantIds": [],
+    "createdAt": "2025-01-01T00:00:00Z",
+    "updatedAt": "2025-01-15T10:00:00Z"
+  }
+]

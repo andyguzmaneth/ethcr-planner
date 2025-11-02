@@ -1,0 +1,75 @@
+[
+  {
+    "id": "task-1",
+    "responsibilityId": "resp-3",
+    "trackId": "track-2",
+    "eventId": "1",
+    "title": "Reservar venue para meetup",
+    "description": "Contactar y reservar el venue para el evento principal",
+    "assigneeId": "user-2",
+    "deadline": "2025-01-15",
+    "status": "completed",
+    "supportResources": [],
+    "createdAt": "2025-01-05T00:00:00Z",
+    "updatedAt": "2025-01-14T15:30:00Z",
+    "completedAt": "2025-01-14T15:30:00Z"
+  },
+  {
+    "id": "task-2",
+    "responsibilityId": "resp-5",
+    "trackId": "track-3",
+    "eventId": "1",
+    "title": "Contactar speakers",
+    "description": "Revisar lista de posibles speakers y hacer invitaciones iniciales",
+    "assigneeId": "user-3",
+    "deadline": "2025-01-20",
+    "status": "in_progress",
+    "supportResources": ["https://docs.google.com/spreadsheets/speakers"],
+    "createdAt": "2025-01-06T00:00:00Z",
+    "updatedAt": "2025-01-18T10:00:00Z"
+  },
+  {
+    "id": "task-3",
+    "responsibilityId": "resp-2",
+    "trackId": "track-1",
+    "eventId": "1",
+    "title": "Diseñar materiales de marketing",
+    "description": "Crear banners, flyers y material gráfico para promoción",
+    "assigneeId": null,
+    "deadline": "2025-01-25",
+    "status": "pending",
+    "supportResources": [],
+    "createdAt": "2025-01-08T00:00:00Z",
+    "updatedAt": "2025-01-08T00:00:00Z"
+  },
+  {
+    "id": "task-4",
+    "responsibilityId": "resp-4",
+    "trackId": "track-2",
+    "eventId": "1",
+    "title": "Configurar sistema de tickets",
+    "description": "Integrar plataforma de ticketing con el sitio web",
+    "assigneeId": "user-4",
+    "deadline": "2025-01-18",
+    "status": "blocked",
+    "supportResources": ["https://ticketing-platform.com/docs"],
+    "createdAt": "2025-01-07T00:00:00Z",
+    "updatedAt": "2025-01-16T14:00:00Z"
+  },
+  {
+    "id": "task-5",
+    "responsibilityId": "resp-1",
+    "trackId": "track-1",
+    "eventId": "1",
+    "title": "Crear contenido para Instagram",
+    "description": "Preparar posts semanales sobre el evento",
+    "assigneeId": "user-1",
+    "deadline": "2025-01-30",
+    "status": "pending",
+    "supportResources": [],
+    "createdAt": "2025-01-10T00:00:00Z",
+    "updatedAt": "2025-01-10T00:00:00Z"
+  }
+]
+
+
