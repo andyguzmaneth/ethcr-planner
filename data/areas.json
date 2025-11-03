@@ -117,5 +117,15 @@
     "id": "area-1762133135900",
     "createdAt": "2025-11-03T01:25:35.900Z",
     "updatedAt": "2025-11-03T01:25:35.900Z"
+  },
+  {
+    "eventId": "1",
+    "name": "🚨 Pending",
+    "description": "Tareas pendientes para cerrar el evento 2025",
+    "leadId": "user-andy",
+    "participantIds": [],
+    "id": "area-1762133593744",
+    "createdAt": "2025-11-03T01:33:13.744Z",
+    "updatedAt": "2025-11-03T01:33:13.744Z"
   }
 ]

@@ -227,7 +227,6 @@ export function initializeEventFromTemplate(
           : templateTask.notes || undefined;
 
         const task = createTask({
-          responsibilityId: responsibility.id,
           areaId: area.id,
           eventId: event.id,
           title: templateTask.title,

@@ -1,8 +1,7 @@
 [
   {
     "id": "task-1",
-    "responsibilityId": "resp-3",
-    "trackId": "track-2",
+    "areaId": "area-lugar",
     "eventId": "1",
     "title": "Reservar venue para meetup",
     "description": "Contactar y reservar el venue para el evento principal",
@@ -16,22 +15,22 @@
   },
   {
     "id": "task-2",
-    "responsibilityId": "resp-5",
-    "trackId": "track-3",
+    "areaId": "area-agenda",
     "eventId": "1",
     "title": "Contactar speakers",
     "description": "Revisar lista de posibles speakers y hacer invitaciones iniciales",
     "assigneeId": "user-3",
     "deadline": "2025-01-20",
     "status": "in_progress",
-    "supportResources": ["https://docs.google.com/spreadsheets/speakers"],
+    "supportResources": [
+      "https://docs.google.com/spreadsheets/speakers"
+    ],
     "createdAt": "2025-01-06T00:00:00Z",
     "updatedAt": "2025-01-18T10:00:00Z"
   },
   {
     "id": "task-3",
-    "responsibilityId": "resp-2",
-    "trackId": "track-1",
+    "areaId": "area-marketing",
     "eventId": "1",
     "title": "Diseñar materiales de marketing",
     "description": "Crear banners, flyers y material gráfico para promoción",
@@ -44,22 +43,22 @@
   },
   {
     "id": "task-4",
-    "responsibilityId": "resp-4",
-    "trackId": "track-2",
+    "areaId": "area-lugar",
     "eventId": "1",
     "title": "Configurar sistema de tickets",
     "description": "Integrar plataforma de ticketing con el sitio web",
     "assigneeId": "user-4",
     "deadline": "2025-01-18",
     "status": "blocked",
-    "supportResources": ["https://ticketing-platform.com/docs"],
+    "supportResources": [
+      "https://ticketing-platform.com/docs"
+    ],
     "createdAt": "2025-01-07T00:00:00Z",
     "updatedAt": "2025-01-16T14:00:00Z"
   },
   {
     "id": "task-5",
-    "responsibilityId": "resp-1",
-    "trackId": "track-1",
+    "areaId": "area-marketing",
     "eventId": "1",
     "title": "Crear contenido para Instagram",
     "description": "Preparar posts semanales sobre el evento",
@@ -69,7 +68,73 @@
     "supportResources": [],
     "createdAt": "2025-01-10T00:00:00Z",
     "updatedAt": "2025-01-10T00:00:00Z"
+  },
+  {
+    "eventId": "1",
+    "areaId": "area-coordinacion",
+    "title": "Testing Task",
+    "assigneeId": "user-alfredo",
+    "deadline": "2025-11-14",
+    "status": "blocked",
+    "supportResources": [
+      "asdasdasdasdasdasdasd"
+    ],
+    "id": "task-1762134299976",
+    "createdAt": "2025-11-03T01:44:59.976Z",
+    "updatedAt": "2025-11-03T01:44:59.976Z"
+  },
+  {
+    "eventId": "1",
+    "areaId": "area-1762133593744",
+    "title": "Crear video final",
+    "assigneeId": "user-alberto",
+    "deadline": "2025-11-09",
+    "status": "pending",
+    "id": "task-1762134340015",
+    "createdAt": "2025-11-03T01:45:40.015Z",
+    "updatedAt": "2025-11-03T01:45:40.015Z"
+  },
+  {
+    "eventId": "1",
+    "areaId": "area-1762133593744",
+    "title": "Publicar por correos y whatsapp video y agradecimientos",
+    "description": "Diego",
+    "assigneeId": "user-andy",
+    "deadline": "2025-11-12",
+    "status": "pending",
+    "id": "task-1762134363740",
+    "createdAt": "2025-11-03T01:46:03.740Z",
+    "updatedAt": "2025-11-03T01:46:03.740Z"
+  },
+  {
+    "eventId": "1",
+    "areaId": "area-1762133593744",
+    "title": "Retrospective del Evento",
+    "assigneeId": "user-andy",
+    "deadline": "2025-11-06",
+    "status": "pending",
+    "id": "task-1762134388378",
+    "createdAt": "2025-11-03T01:46:28.378Z",
+    "updatedAt": "2025-11-03T01:46:28.378Z"
+  },
+  {
+    "eventId": "1",
+    "areaId": "area-1762133593744",
+    "title": "Ir a cenar!",
+    "assigneeId": "user-jose-pablo",
+    "deadline": "2025-11-15",
+    "status": "in_progress",
+    "id": "task-1762134405266",
+    "createdAt": "2025-11-03T01:46:45.266Z",
+    "updatedAt": "2025-11-03T01:46:45.266Z"
+  },
+  {
+    "eventId": "1",
+    "areaId": "area-1762133593744",
+    "title": "TestingCompletada",
+    "status": "completed",
+    "id": "task-1762134434946",
+    "createdAt": "2025-11-03T01:47:14.946Z",
+    "updatedAt": "2025-11-03T01:47:14.946Z"
   }
 ]
-
-

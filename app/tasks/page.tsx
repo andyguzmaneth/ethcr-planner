@@ -4,9 +4,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, List, LayoutGrid, Calendar as CalendarIcon } from "lucide-react";
-import { getTasks, getUserById, getEventById, getAreaById } from "@/lib/data";
+import { getTasks, getUserById, getEventById, getAreaById, getEvents, getUsers, getAreas } from "@/lib/data";
 import { createServerTranslationFunction, getLocaleFromCookies } from "@/lib/i18n";
 import { cookies } from "next/headers";
+import { TasksPageClient } from "./tasks-page-client";
 
 export default async function TasksPage() {
   const cookieStore = await cookies();
@@ -15,6 +16,9 @@ export default async function TasksPage() {
   const t = createServerTranslationFunction(locale);
 
   const tasks = getTasks();
+  const events = getEvents();
+  const users = getUsers();
+  const allAreas = getAreas();
 
   const statusColors = {
     pending: "bg-gray-500",
@@ -34,7 +38,7 @@ export default async function TasksPage() {
   const tasksWithDetails = tasks.map((task) => {
     const assignee = task.assigneeId ? getUserById(task.assigneeId) : null;
     const event = getEventById(task.eventId);
-    const area = getAreaById(task.areaId);
+    const area = task.areaId ? getAreaById(task.areaId) : null;
 
     return {
       ...task,
@@ -55,10 +59,11 @@ export default async function TasksPage() {
               Gestiona y rastrea todas las tareas entre eventos
             </p>
           </div>
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            {t("eventDetail.newTask")}
-          </Button>
+          <TasksPageClient
+            events={events.map(e => ({ id: e.id, name: e.name }))}
+            areas={allAreas.map(a => ({ id: a.id, name: a.name, eventId: a.eventId }))}
+            users={users.map(u => ({ id: u.id, name: u.name, initials: u.initials, email: u.email }))}
+          />
         </div>
 
         {/* View Toggle and Filters */}

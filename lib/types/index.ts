@@ -52,8 +52,7 @@ export interface Responsibility {
 
 export interface Task {
   id: string;
-  responsibilityId: string;
-  areaId: string;
+  areaId?: string; // Optional - can be empty temporarily
   eventId: string;
   title: string;
   description?: string;

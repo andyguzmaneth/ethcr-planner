@@ -4,9 +4,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, List, LayoutGrid, Calendar as CalendarIcon } from "lucide-react";
-import { getEventBySlug, getTasksByEventId, getUserById, getAreaById } from "@/lib/data";
+import { getEventBySlug, getTasksByEventId, getUserById, getAreaById, getAreasByEventId, getUsers } from "@/lib/data";
 import { createServerTranslationFunction, getLocaleFromCookies } from "@/lib/i18n";
 import { cookies } from "next/headers";
+import { EventTasksClient } from "./event-tasks-client";
 
 interface EventTasksPageProps {
   params: Promise<{ slug: string }>;
@@ -32,6 +33,8 @@ export default async function EventTasksPage({ params }: EventTasksPageProps) {
   }
 
   const tasks = getTasksByEventId(event.id);
+  const areas = getAreasByEventId(event.id);
+  const users = getUsers();
 
   const statusColors = {
     pending: "bg-gray-500",
@@ -50,7 +53,7 @@ export default async function EventTasksPage({ params }: EventTasksPageProps) {
   // Enrich tasks with user and area info
   const tasksWithDetails = tasks.map((task) => {
     const assignee = task.assigneeId ? getUserById(task.assigneeId) : null;
-    const area = getAreaById(task.areaId);
+    const area = task.areaId ? getAreaById(task.areaId) : null;
 
     return {
       ...task,
@@ -72,10 +75,12 @@ export default async function EventTasksPage({ params }: EventTasksPageProps) {
               Gestiona y rastrea todas las tareas de este evento
             </p>
           </div>
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            {t("eventDetail.newTask")}
-          </Button>
+          <EventTasksClient
+            eventId={event.id}
+            eventName={event.name}
+            areas={areas.map(a => ({ id: a.id, name: a.name }))}
+            users={users.map(u => ({ id: u.id, name: u.name, initials: u.initials, email: u.email }))}
+          />
         </div>
 
         {/* View Toggle */}
@@ -103,10 +108,12 @@ export default async function EventTasksPage({ params }: EventTasksPageProps) {
               {tasksWithDetails.length === 0 ? (
                 <div className="text-center py-12">
                   <p className="text-muted-foreground mb-4">No se encontraron tareas</p>
-                  <Button>
-                    <Plus className="mr-2 h-4 w-4" />
-                    {t("eventDetail.createFirstTask")}
-                  </Button>
+                  <EventTasksClient
+                    eventId={event.id}
+                    eventName={event.name}
+                    areas={areas.map(a => ({ id: a.id, name: a.name }))}
+                    users={users.map(u => ({ id: u.id, name: u.name, initials: u.initials, email: u.email }))}
+                  />
                 </div>
               ) : (
                 <div className="space-y-2">

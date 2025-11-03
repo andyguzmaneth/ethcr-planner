@@ -66,6 +66,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
         totalTasks={totalTasks}
         completionPercentage={completionPercentage}
         users={users}
+        areas={areas.map(a => ({ id: a.id, name: a.name }))}
       />
     </MainLayout>
   );

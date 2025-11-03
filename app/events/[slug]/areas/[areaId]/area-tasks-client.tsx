@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Plus, List, LayoutGrid, Calendar as CalendarIcon } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/useTranslation";
+import { NewTaskModal } from "@/components/events/new-task-modal";
+import { useRouter } from "next/navigation";
 
 interface TaskWithDetails {
   id: string;
@@ -23,17 +25,31 @@ interface TaskWithDetails {
 }
 
 interface AreaTasksClientProps {
+  eventId: string;
   eventName: string;
+  areaId: string;
   areaName: string;
+  areas: Array<{ id: string; name: string }>;
+  users: Array<{ id: string; name: string; initials: string; email?: string }>;
   tasks: TaskWithDetails[];
 }
 
 export function AreaTasksClient({
+  eventId,
   eventName,
+  areaId,
   areaName,
+  areas,
+  users,
   tasks,
 }: AreaTasksClientProps) {
   const { t } = useTranslation();
+  const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleTaskCreated = () => {
+    router.refresh();
+  };
   const statusColors = {
     pending: "bg-gray-500",
     in_progress: "bg-blue-500",
@@ -84,7 +100,7 @@ export function AreaTasksClient({
             Tareas filtradas para {areaName} en {eventName}
           </p>
         </div>
-        <Button>
+        <Button onClick={() => setIsModalOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
           {t("eventDetail.newTask")}
         </Button>
@@ -115,7 +131,7 @@ export function AreaTasksClient({
                 {tasks.length === 0 ? (
                   <div className="text-center py-12">
                     <p className="text-muted-foreground mb-4">No se encontraron tareas</p>
-                    <Button>
+                    <Button onClick={() => setIsModalOpen(true)}>
                       <Plus className="mr-2 h-4 w-4" />
                       {t("eventDetail.createFirstTask")}
                     </Button>
@@ -215,7 +231,7 @@ export function AreaTasksClient({
                 {tasks.length === 0 ? (
                   <div className="text-center py-12">
                     <p className="text-muted-foreground mb-4">No se encontraron tareas</p>
-                    <Button>
+                    <Button onClick={() => setIsModalOpen(true)}>
                       <Plus className="mr-2 h-4 w-4" />
                       {t("eventDetail.createFirstTask")}
                     </Button>
@@ -303,6 +319,18 @@ export function AreaTasksClient({
           </Card>
         </TabsContent>
       </Tabs>
+
+      <NewTaskModal
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        eventId={eventId}
+        areaId={areaId}
+        eventName={eventName}
+        areaName={areaName}
+        areas={areas}
+        users={users}
+        onSuccess={handleTaskCreated}
+      />
     </div>
   );
 }

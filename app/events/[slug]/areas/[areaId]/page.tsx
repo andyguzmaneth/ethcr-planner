@@ -4,7 +4,9 @@ import {
   getEventBySlug, 
   getAreaById, 
   getTasksByAreaId, 
-  getUserById 
+  getUserById,
+  getAreasByEventId,
+  getUsers
 } from "@/lib/data";
 
 interface AreaDetailPageProps {
@@ -38,10 +40,13 @@ export default async function AreaDetailPage({ params }: AreaDetailPageProps) {
 
   const tasks = getTasksByAreaId(areaId);
   const lead = getUserById(area.leadId);
+  const areas = getAreasByEventId(event.id);
+  const users = getUsers();
 
   // Enrich tasks with details
   const tasksWithDetails = tasks.map((task) => {
-    const assignee = task.assigneeId ? getUserById(task.assigneeId) : null;
+    const user = task.assigneeId ? getUserById(task.assigneeId) : undefined;
+    const assignee = user ? { id: user.id, name: user.name, initials: user.initials } : null;
 
     return {
       ...task,
@@ -68,8 +73,12 @@ export default async function AreaDetailPage({ params }: AreaDetailPageProps) {
 
         {/* Tasks Section */}
         <AreaTasksClient 
+          eventId={event.id}
           eventName={event.name}
+          areaId={area.id}
           areaName={area.name}
+          areas={areas.map(a => ({ id: a.id, name: a.name }))}
+          users={users.map(u => ({ id: u.id, name: u.name, initials: u.initials, email: u.email }))}
           tasks={tasksWithDetails}
         />
       </div>

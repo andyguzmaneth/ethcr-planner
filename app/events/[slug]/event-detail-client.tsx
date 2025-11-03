@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Settings } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import { NewAreaModal } from "@/components/events/new-area-modal";
+import { NewTaskModal } from "@/components/events/new-task-modal";
 import { useRouter } from "next/navigation";
 
 interface AreaWithStats {
@@ -38,6 +39,7 @@ interface EventDetailClientProps {
   totalTasks: number;
   completionPercentage: number;
   users: User[];
+  areas: Array<{ id: string; name: string }>;
 }
 
 export function EventDetailClient({
@@ -47,10 +49,12 @@ export function EventDetailClient({
   totalTasks,
   completionPercentage,
   users,
+  areas,
 }: EventDetailClientProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const [isAreaModalOpen, setIsAreaModalOpen] = useState(false);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
 
   const handleAreaCreated = () => {
     router.refresh();
@@ -162,7 +166,7 @@ export function EventDetailClient({
         <TabsContent value="tasks">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-2xl font-bold">{t("nav.tasks")}</h2>
-            <Button>
+            <Button onClick={() => setIsTaskModalOpen(true)}>
               <Plus className="mr-2 h-4 w-4" />
               {t("eventDetail.addTask")}
             </Button>
@@ -200,6 +204,15 @@ export function EventDetailClient({
         eventId={event.id}
         users={users}
         onSuccess={handleAreaCreated}
+      />
+      <NewTaskModal
+        open={isTaskModalOpen}
+        onOpenChange={setIsTaskModalOpen}
+        eventId={event.id}
+        eventName={event.name}
+        areas={areas}
+        users={users}
+        onSuccess={() => router.refresh()}
       />
     </div>
   );
