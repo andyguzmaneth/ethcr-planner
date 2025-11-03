@@ -1,22 +1,20 @@
 import { MainLayout } from "@/components/layout/main-layout";
+import { EventAreasClient } from "./event-areas-client";
 import { getEventBySlug, getAreasByEventId, getTasksByEventId, getUserById, getUsers } from "@/lib/data";
-import { EventDetailClient } from "./event-detail-client";
-import { createServerTranslationFunction } from "@/lib/i18n";
 
-interface EventDetailPageProps {
+interface EventAreasPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export default async function EventDetailPage({ params }: EventDetailPageProps) {
+export default async function EventAreasPage({ params }: EventAreasPageProps) {
   const { slug } = await params;
-  const t = createServerTranslationFunction();
 
   const event = getEventBySlug(slug);
   if (!event) {
     return (
       <MainLayout>
         <div className="container mx-auto p-6">
-          <p>{t("eventDetail.notFound")}</p>
+          <p>Evento no encontrado</p>
         </div>
       </MainLayout>
     );
@@ -25,25 +23,27 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
   const areas = getAreasByEventId(event.id);
   const allTasks = getTasksByEventId(event.id);
 
-  // Calculate stats for areas
+  // Calculate stats for each area
   const areasWithStats = areas.map((area) => {
     const areaTasks = allTasks.filter((t) => t.areaId === area.id);
     const completed = areaTasks.filter((t) => t.status === "completed").length;
-    const lead = getUserById(area.leadId);
+    const progress = areaTasks.length > 0 ? Math.round((completed / areaTasks.length) * 100) : 0;
+    const leadUser = getUserById(area.leadId);
+
     return {
-      id: area.id,
-      name: area.name,
-      leadId: area.leadId,
-      leadName: lead?.name || null,
+      ...area,
       taskCount: areaTasks.length,
       completed,
+      progress,
+      lead: leadUser
+        ? {
+            id: leadUser.id,
+            name: leadUser.name,
+            initials: leadUser.initials,
+          }
+        : null,
     };
   });
-
-  const totalTasks = allTasks.length;
-  const totalCompleted = allTasks.filter((t) => t.status === "completed").length;
-  const completionPercentage =
-    totalTasks > 0 ? Math.round((totalCompleted / totalTasks) * 100) : 0;
 
   const users = getUsers().map((user) => ({
     id: user.id,
@@ -54,19 +54,13 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
 
   return (
     <MainLayout>
-      <EventDetailClient
-        event={{
-          id: event.id,
-          name: event.name,
-          type: event.type,
-          status: event.status,
-        }}
+      <EventAreasClient
+        eventId={event.id}
+        eventName={event.name}
         areasWithStats={areasWithStats}
-        totalAreas={areas.length}
-        totalTasks={totalTasks}
-        completionPercentage={completionPercentage}
         users={users}
       />
     </MainLayout>
   );
 }
+

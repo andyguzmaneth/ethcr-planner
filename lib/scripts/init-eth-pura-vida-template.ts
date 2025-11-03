@@ -29,12 +29,12 @@ function main() {
   // Create template file (or update existing)
   const template = templates[0];
   console.log(`Found template: ${template.name}`);
-  console.log(`  - Tracks: ${template.tracks.length}`);
+  console.log(`  - Areas: ${template.areas.length}`);
   console.log(
-    `  - Total Tasks: ${template.tracks.reduce(
-      (sum, track) =>
+    `  - Total Tasks: ${template.areas.reduce(
+      (sum, area) =>
         sum +
-        track.responsibilities.reduce(
+        area.responsibilities.reduce(
           (s, resp) => s + resp.tasks.length,
           0
         ),

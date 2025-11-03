@@ -1,6 +1,6 @@
 [
   {
-    "id": "track-coordinacion",
+    "id": "area-coordinacion",
     "eventId": "1",
     "name": "Coordinación General",
     "description": "Coordinación general del evento ETH Pura Vida",
@@ -13,7 +13,7 @@
     "updatedAt": "2025-01-15T10:00:00Z"
   },
   {
-    "id": "track-marketing",
+    "id": "area-marketing",
     "eventId": "1",
     "name": "Marketing",
     "description": "Marketing y difusión del evento",
@@ -25,7 +25,7 @@
     "updatedAt": "2025-01-15T10:00:00Z"
   },
   {
-    "id": "track-diseno",
+    "id": "area-diseno",
     "eventId": "1",
     "name": "Diseño y Producción",
     "description": "Diseño gráfico y producción de material audiovisual",
@@ -37,7 +37,7 @@
     "updatedAt": "2025-01-15T10:00:00Z"
   },
   {
-    "id": "track-hackathon",
+    "id": "area-hackathon",
     "eventId": "1",
     "name": "Hackathon Circuit",
     "description": "Organización y ejecución del Hackathon Circuit",
@@ -47,7 +47,7 @@
     "updatedAt": "2025-01-15T10:00:00Z"
   },
   {
-    "id": "track-lugar",
+    "id": "area-lugar",
     "eventId": "1",
     "name": "Lugar y Logística",
     "description": "Gestión del lugar del evento y logística",
@@ -57,7 +57,7 @@
     "updatedAt": "2025-01-15T10:00:00Z"
   },
   {
-    "id": "track-sponsors",
+    "id": "area-sponsors",
     "eventId": "1",
     "name": "Sponsors y Finanzas",
     "description": "Gestión de sponsors y control financiero",
@@ -67,7 +67,7 @@
     "updatedAt": "2025-01-15T10:00:00Z"
   },
   {
-    "id": "track-agenda",
+    "id": "area-agenda",
     "eventId": "1",
     "name": "Agenda y Charlistas",
     "description": "Coordinación de agenda y speakers",
@@ -77,7 +77,7 @@
     "updatedAt": "2025-01-15T10:00:00Z"
   },
   {
-    "id": "track-website",
+    "id": "area-website",
     "eventId": "1",
     "name": "Website",
     "description": "Desarrollo y mantenimiento del sitio web",
@@ -89,7 +89,7 @@
     "updatedAt": "2025-01-15T10:00:00Z"
   },
   {
-    "id": "track-universidades",
+    "id": "area-universidades",
     "eventId": "1",
     "name": "Universidades",
     "description": "Coordinación con universidades",
@@ -104,8 +104,9 @@
     "description": "testing",
     "leadId": "user-alfredo",
     "participantIds": [],
-    "id": "track-1762131308525",
+    "id": "area-1762131308525",
     "createdAt": "2025-11-03T00:55:08.525Z",
     "updatedAt": "2025-11-03T00:55:08.525Z"
   }
 ]
+

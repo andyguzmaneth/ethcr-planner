@@ -40,7 +40,7 @@ export function initEthPuraVidaTemplate(): EventTemplate {
   if (existingTemplate) {
     // Update existing template
     const updated = updateTemplate(existingTemplate.id, {
-      tracks: template.tracks,
+      areas: template.areas,
       description: template.description,
     });
     if (!updated) {
@@ -54,17 +54,17 @@ export function initEthPuraVidaTemplate(): EventTemplate {
       name: template.name,
       eventType: template.eventType,
       description: template.description,
-      tracks: template.tracks,
+      areas: template.areas,
     });
     console.log(`✅ Template "${savedTemplate.name}" created with ID: ${savedTemplate.id}`);
   }
   
-  console.log(`  - Tracks: ${savedTemplate.tracks.length}`);
+  console.log(`  - Areas: ${savedTemplate.areas.length}`);
   
-  const totalTasks = savedTemplate.tracks.reduce(
-    (sum, track) =>
+  const totalTasks = savedTemplate.areas.reduce(
+    (sum, area) =>
       sum +
-      track.responsibilities.reduce((s, resp) => s + resp.tasks.length, 0),
+      area.responsibilities.reduce((s, resp) => s + resp.tasks.length, 0),
     0
   );
   console.log(`  - Total Tasks: ${totalTasks}`);
@@ -92,7 +92,7 @@ export function initEventFromEthPuraVidaTemplate(eventDetails: {
   });
 
   console.log(`✅ Event "${result.event.name}" created with ID: ${result.event.id}`);
-  console.log(`  - Tracks: ${result.tracks.length}`);
+  console.log(`  - Areas: ${result.areas.length}`);
   console.log(`  - Responsibilities: ${result.responsibilities.length}`);
   console.log(`  - Tasks: ${result.tasks.length}`);
 

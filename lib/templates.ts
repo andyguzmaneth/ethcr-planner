@@ -1,25 +1,24 @@
 import type {
   EventTemplate,
-  TemplateTrack,
+  TemplateArea,
   TemplateResponsibility,
   TemplateTask,
   RawTemplateArea,
   TaskStatus,
   EventType,
   Event,
-  Track,
+  Area,
   Responsibility,
   Task,
   User,
 } from "./types";
 import {
   createEvent,
-  createTrack,
+  createArea,
   createResponsibility,
   createTask,
   getUsers,
-  createUser,
-  getUserById,
+  createUser
 } from "./data";
 
 /**
@@ -84,7 +83,7 @@ export function convertRawTemplateToEventTemplate(
   eventType: EventType,
   rawAreas: Record<string, RawTemplateArea>
 ): EventTemplate {
-  const tracks: TemplateTrack[] = Object.entries(rawAreas).map(
+  const areas: TemplateArea[] = Object.entries(rawAreas).map(
     ([areaName, areaData]) => {
       // Convert Responsabilidades array to TemplateResponsibility objects
       const responsibilities: TemplateResponsibility[] = [];
@@ -118,14 +117,14 @@ export function convertRawTemplateToEventTemplate(
         responsibilities.push(defaultResponsibility);
       }
 
-      const track: TemplateTrack = {
+      const area: TemplateArea = {
         name: areaName,
         team: areaData.Equipo,
         responsibilities,
         sections: areaData.Secciones,
       };
 
-      return track;
+      return area;
     }
   );
 
@@ -133,7 +132,7 @@ export function convertRawTemplateToEventTemplate(
     id: `template-${Date.now()}`,
     name: templateName,
     eventType,
-    tracks,
+    areas,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -141,7 +140,7 @@ export function convertRawTemplateToEventTemplate(
 
 /**
  * Initializes an event from a template
- * Creates Event, Tracks, Responsibilities, and Tasks
+ * Creates Event, Areas, Responsibilities, and Tasks
  */
 export function initializeEventFromTemplate(
   template: EventTemplate,
@@ -152,12 +151,12 @@ export function initializeEventFromTemplate(
     endDate?: string;
   },
   options?: {
-    assignTeamMembers?: boolean; // Whether to assign team members to tracks
+    assignTeamMembers?: boolean; // Whether to assign team members to areas
     defaultTaskStatus?: TaskStatus; // Override default status for tasks
   }
 ): {
   event: Event;
-  tracks: Track[];
+  areas: Area[];
   responsibilities: Responsibility[];
   tasks: Task[];
 } {
@@ -174,41 +173,41 @@ export function initializeEventFromTemplate(
   });
 
   const allUsers = getUsers();
-  const tracks: Track[] = [];
+  const areas: Area[] = [];
   const responsibilities: Responsibility[] = [];
   const tasks: Task[] = [];
 
-  // Process each track in the template
-  for (const templateTrack of template.tracks) {
-    // Find or create team members for this track
+  // Process each area in the template
+  for (const templateArea of template.areas) {
+    // Find or create team members for this area
     let leadId: string | undefined;
     const participantIds: string[] = [];
 
-    if (assignTeamMembers && templateTrack.team && templateTrack.team.length > 0) {
+    if (assignTeamMembers && templateArea.team && templateArea.team.length > 0) {
       // First team member becomes the lead
-      leadId = findOrCreateUser(templateTrack.team[0], allUsers);
+      leadId = findOrCreateUser(templateArea.team[0], allUsers);
 
       // Rest become participants
-      for (let i = 1; i < templateTrack.team.length; i++) {
-        const participantId = findOrCreateUser(templateTrack.team[i], allUsers);
+      for (let i = 1; i < templateArea.team.length; i++) {
+        const participantId = findOrCreateUser(templateArea.team[i], allUsers);
         participantIds.push(participantId);
       }
     }
 
-    // Create the track
-    const track = createTrack({
+    // Create the area
+    const area = createArea({
       eventId: event.id,
-      name: templateTrack.name,
-      description: templateTrack.description,
+      name: templateArea.name,
+      description: templateArea.description,
       leadId: leadId || allUsers[0]?.id || "", // Fallback to first user or empty
       participantIds,
     });
-    tracks.push(track);
+    areas.push(area);
 
     // Process responsibilities and tasks
-    for (const templateResponsibility of templateTrack.responsibilities) {
+    for (const templateResponsibility of templateArea.responsibilities) {
       const responsibility = createResponsibility({
-        trackId: track.id,
+        areaId: area.id,
         name: templateResponsibility.name,
         description: templateResponsibility.description,
       });
@@ -229,7 +228,7 @@ export function initializeEventFromTemplate(
 
         const task = createTask({
           responsibilityId: responsibility.id,
-          trackId: track.id,
+          areaId: area.id,
           eventId: event.id,
           title: templateTask.title,
           description,
@@ -244,7 +243,7 @@ export function initializeEventFromTemplate(
 
   return {
     event,
-    tracks,
+    areas,
     responsibilities,
     tasks,
   };

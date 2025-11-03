@@ -14,7 +14,7 @@ import type { Event } from "@/lib/types";
 interface EventsClientProps {
   events: Array<
     Event & {
-      trackCount: number;
+      areaCount: number;
       taskCount: number;
       completedTasks: number;
       isJoined: boolean;
@@ -32,7 +32,7 @@ export function EventsClient({ events }: EventsClientProps) {
   const router = useRouter();
 
   const handleContinue = (template: "meetup" | "eth-pura-vida") => {
-    // Aquí se implementará la lógica para crear el evento con la plantilla seleccionada
+    // ROAquí se implementará la lógica para crear el evento con la plantilla seleccionada
     console.log("Crear evento con plantilla:", template);
     // TODO: Implementar creación de evento
   };
@@ -156,7 +156,7 @@ export function EventsClient({ events }: EventsClientProps) {
                   <CardContent>
                     <div className="space-y-4">
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">{event.trackCount} {t("events.tracks")}</span>
+                        <span className="text-muted-foreground">{event.areaCount} {t("events.areas")}</span>
                         <span className="text-muted-foreground">
                           {event.completedTasks}/{event.taskCount} {t("events.tasks")}
                         </span>

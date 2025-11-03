@@ -1,10 +1,10 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { getTasks, getTracks, getUserById, getEvents } from "@/lib/data";
+import { getTasks, getAreas, getUserById, getEvents } from "@/lib/data";
 import { DashboardClient } from "./dashboard-client";
 
 export default function DashboardPage() {
   const allTasks = getTasks();
-  const allTracks = getTracks();
+  const allAreas = getAreas();
 
   // Calculate stats (assuming current user ID - in real app, get from auth)
   const currentUserId = "user-alfredo"; // TODO: Get from auth session
@@ -32,22 +32,22 @@ export default function DashboardPage() {
     return deadline >= today && deadline <= nextWeek;
   });
 
-  // Get tracks where user is lead or participant
-  const myTracks = allTracks.filter(
-    (t) => t.leadId === currentUserId || t.participantIds.includes(currentUserId)
+  // Get areas where user is lead or participant
+  const myAreas = allAreas.filter(
+    (a) => a.leadId === currentUserId || a.participantIds.includes(currentUserId)
   );
 
-  // Calculate progress for my tracks
-  const tracksWithProgress = myTracks.map((track) => {
-    const trackTasks = allTasks.filter((t) => t.trackId === track.id);
-    const completed = trackTasks.filter((t) => t.status === "completed").length;
-    const total = trackTasks.length;
+  // Calculate progress for my areas
+  const areasWithProgress = myAreas.map((area) => {
+    const areaTasks = allTasks.filter((t) => t.areaId === area.id);
+    const completed = areaTasks.filter((t) => t.status === "completed").length;
+    const total = areaTasks.length;
     const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
 
-    const event = getEvents().find((e) => e.id === track.eventId);
+    const event = getEvents().find((e) => e.id === area.eventId);
 
     return {
-      name: track.name,
+      name: area.name,
       eventName: event?.name || "Unknown Event",
       progress,
       completed,
@@ -83,7 +83,7 @@ export default function DashboardPage() {
         completedTodayCount={completedToday.length}
         upcomingDeadlinesCount={upcomingDeadlines.length}
         recentTasks={recentTasks}
-        tracksWithProgress={tracksWithProgress}
+        areasWithProgress={areasWithProgress}
       />
     </MainLayout>
   );

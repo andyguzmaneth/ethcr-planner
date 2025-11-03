@@ -16,7 +16,7 @@ interface DashboardClientProps {
     assigneeName: string | null;
     completedAt: string;
   }>;
-  tracksWithProgress: Array<{
+  areasWithProgress: Array<{
     name: string;
     eventName: string;
     progress: number;
@@ -31,7 +31,7 @@ export function DashboardClient({
   completedTodayCount,
   upcomingDeadlinesCount,
   recentTasks,
-  tracksWithProgress,
+  areasWithProgress,
 }: DashboardClientProps) {
   const { t } = useTranslation();
 
@@ -142,19 +142,19 @@ export function DashboardClient({
 
         <Card className="col-span-3">
           <CardHeader>
-            <CardTitle>{t("dashboard.myTracks")}</CardTitle>
-            <CardDescription>{t("dashboard.myTracksDesc")}</CardDescription>
+            <CardTitle>{t("dashboard.myAreas")}</CardTitle>
+            <CardDescription>{t("dashboard.myAreasDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {tracksWithProgress.slice(0, 5).map((track, idx) => (
+              {areasWithProgress.slice(0, 5).map((area, idx) => (
                 <div key={idx} className="space-y-1">
-                  <p className="text-sm font-medium">{track.name}</p>
-                  <p className="text-xs text-muted-foreground">{track.eventName}</p>
+                  <p className="text-sm font-medium">{area.name}</p>
+                  <p className="text-xs text-muted-foreground">{area.eventName}</p>
                   <div className="w-full bg-secondary rounded-full h-2 mt-2">
                     <div
                       className="bg-primary h-2 rounded-full"
-                      style={{ width: `${track.progress}%` }}
+                      style={{ width: `${area.progress}%` }}
                     ></div>
                   </div>
                 </div>

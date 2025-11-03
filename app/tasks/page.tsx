@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, List, LayoutGrid, Calendar as CalendarIcon } from "lucide-react";
-import { getTasks, getUserById, getEventById, getTrackById } from "@/lib/data";
+import { getTasks, getUserById, getEventById, getAreaById } from "@/lib/data";
 
 export default function TasksPage() {
   const tasks = getTasks();
@@ -27,13 +27,13 @@ export default function TasksPage() {
   const tasksWithDetails = tasks.map((task) => {
     const assignee = task.assigneeId ? getUserById(task.assigneeId) : null;
     const event = getEventById(task.eventId);
-    const track = getTrackById(task.trackId);
+    const area = getAreaById(task.areaId);
 
     return {
       ...task,
       assignee,
       event,
-      track,
+      area,
     };
   });
 
@@ -100,9 +100,9 @@ export default function TasksPage() {
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
                             <h3 className="font-medium">{task.title}</h3>
-                            {task.track && (
+                            {task.area && (
                               <Badge variant="outline" className="text-xs">
-                                {task.track.name}
+                                {task.area.name}
                               </Badge>
                             )}
                           </div>

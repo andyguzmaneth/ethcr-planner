@@ -160,16 +160,16 @@ export function Sidebar({ events }: SidebarProps) {
 
                   <CollapsibleContent className="pl-6 pt-1 space-y-1">
                     <Link
-                      href={`/events/${event.slug}/tracks`}
+                      href={`/events/${event.slug}/areas`}
                       className={cn(
                         "flex items-center px-3 py-1.5 text-sm rounded-md transition-colors",
-                        isEventPathActive(event.slug, "/tracks")
+                        isEventPathActive(event.slug, "/areas")
                           ? "bg-sidebar-accent text-sidebar-accent-foreground"
                           : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                       )}
                     >
                       <GitBranch className="mr-2 h-4 w-4" />
-                      {t("nav.tracks")}
+                      {t("nav.areas")}
                     </Link>
                     <Link
                       href={`/events/${event.slug}/tasks`}

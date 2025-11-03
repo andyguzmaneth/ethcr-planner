@@ -4,7 +4,7 @@ import path from "path";
 import type {
   User,
   Event,
-  Track,
+  Area,
   Responsibility,
   Task,
   Meeting,
@@ -167,44 +167,44 @@ export function isUserJoinedEvent(eventId: string, userId: string): boolean {
   return event.participantIds.includes(userId);
 }
 
-// Track operations
-export function getTracks(): Track[] {
-  return readJsonFile<Track>("tracks.json");
+// Area operations
+export function getAreas(): Area[] {
+  return readJsonFile<Area>("areas.json");
 }
 
-export function getTracksByEventId(eventId: string): Track[] {
-  return getTracks().filter((track) => track.eventId === eventId);
+export function getAreasByEventId(eventId: string): Area[] {
+  return getAreas().filter((area) => area.eventId === eventId);
 }
 
-export function getTrackById(id: string): Track | undefined {
-  return getTracks().find((track) => track.id === id);
+export function getAreaById(id: string): Area | undefined {
+  return getAreas().find((area) => area.id === id);
 }
 
-export function createTrack(track: Omit<Track, "id" | "createdAt" | "updatedAt">): Track {
-  const tracks = getTracks();
-  const newTrack: Track = {
-    ...track,
-    id: `track-${Date.now()}`,
+export function createArea(area: Omit<Area, "id" | "createdAt" | "updatedAt">): Area {
+  const areas = getAreas();
+  const newArea: Area = {
+    ...area,
+    id: `area-${Date.now()}`,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
-  tracks.push(newTrack);
-  writeJsonFile("tracks.json", tracks);
-  return newTrack;
+  areas.push(newArea);
+  writeJsonFile("areas.json", areas);
+  return newArea;
 }
 
-export function updateTrack(id: string, updates: Partial<Track>): Track | null {
-  const tracks = getTracks();
-  const index = tracks.findIndex((t) => t.id === id);
+export function updateArea(id: string, updates: Partial<Area>): Area | null {
+  const areas = getAreas();
+  const index = areas.findIndex((a) => a.id === id);
   if (index === -1) return null;
 
-  tracks[index] = {
-    ...tracks[index],
+  areas[index] = {
+    ...areas[index],
     ...updates,
     updatedAt: new Date().toISOString(),
   };
-  writeJsonFile("tracks.json", tracks);
-  return tracks[index];
+  writeJsonFile("areas.json", areas);
+  return areas[index];
 }
 
 // Responsibility operations
@@ -212,8 +212,8 @@ export function getResponsibilities(): Responsibility[] {
   return readJsonFile<Responsibility>("responsibilities.json");
 }
 
-export function getResponsibilitiesByTrackId(trackId: string): Responsibility[] {
-  return getResponsibilities().filter((resp) => resp.trackId === trackId);
+export function getResponsibilitiesByAreaId(areaId: string): Responsibility[] {
+  return getResponsibilities().filter((resp) => resp.areaId === areaId);
 }
 
 export function getResponsibilityById(id: string): Responsibility | undefined {
@@ -244,8 +244,8 @@ export function getTasksByEventId(eventId: string): Task[] {
   return getTasks().filter((task) => task.eventId === eventId);
 }
 
-export function getTasksByTrackId(trackId: string): Task[] {
-  return getTasks().filter((task) => task.trackId === trackId);
+export function getTasksByAreaId(areaId: string): Task[] {
+  return getTasks().filter((task) => task.areaId === areaId);
 }
 
 export function getTaskById(id: string): Task | undefined {

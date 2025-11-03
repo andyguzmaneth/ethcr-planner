@@ -11,7 +11,7 @@ export type Translations = {
   readonly nav: {
     readonly dashboard: string;
     readonly events: string;
-    readonly tracks: string;
+    readonly areas: string;
     readonly tasks: string;
     readonly meetings: string;
     readonly settings: string;
@@ -35,8 +35,8 @@ export type Translations = {
     readonly upcomingDeadlinesDesc: string;
     readonly recentActivity: string;
     readonly recentActivityDesc: string;
-    readonly myTracks: string;
-    readonly myTracksDesc: string;
+    readonly myAreas: string;
+    readonly myAreasDesc: string;
     readonly taskCompleted: string;
     readonly taskCompletedBy: string;
     readonly unknownUser: string;
@@ -53,7 +53,7 @@ export type Translations = {
     readonly newEvent: string;
     readonly noEvents: string;
     readonly createFirstEvent: string;
-    readonly tracks: string;
+    readonly areas: string;
     readonly tasks: string;
     readonly progress: string;
     readonly joined: string;
@@ -66,10 +66,10 @@ export type Translations = {
     readonly eventPlanningPanel: string;
     readonly editEvent: string;
     readonly overview: string;
-    readonly totalTracks: string;
+    readonly totalAreas: string;
     readonly totalTasks: string;
     readonly completion: string;
-    readonly addTrack: string;
+    readonly addArea: string;
     readonly addTask: string;
     readonly scheduleMeeting: string;
     readonly tasksListDescription: string;

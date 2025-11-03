@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { joinEvent, leaveEvent } from "@/lib/data";
 
-// For now, we'll use a hardcoded user ID. In a real app, get from auth session
+// TODO For now, we'll use a hardcoded user ID. In a real app, get from auth session
 const CURRENT_USER_ID = "user-alfredo";
 
 export async function POST(

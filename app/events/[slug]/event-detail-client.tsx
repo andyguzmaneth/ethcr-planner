@@ -7,10 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Settings } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/useTranslation";
-import { NewTrackModal } from "@/components/events/new-track-modal";
+import { NewAreaModal } from "@/components/events/new-area-modal";
 import { useRouter } from "next/navigation";
 
-interface TrackWithStats {
+interface AreaWithStats {
   id: string;
   name: string;
   leadId: string;
@@ -33,8 +33,8 @@ interface EventDetailClientProps {
     type: string;
     status: string;
   };
-  tracksWithStats: TrackWithStats[];
-  totalTracks: number;
+  areasWithStats: AreaWithStats[];
+  totalAreas: number;
   totalTasks: number;
   completionPercentage: number;
   users: User[];
@@ -42,17 +42,17 @@ interface EventDetailClientProps {
 
 export function EventDetailClient({
   event,
-  tracksWithStats,
-  totalTracks,
+  areasWithStats,
+  totalAreas,
   totalTasks,
   completionPercentage,
   users,
 }: EventDetailClientProps) {
   const { t } = useTranslation();
   const router = useRouter();
-  const [isTrackModalOpen, setIsTrackModalOpen] = useState(false);
+  const [isAreaModalOpen, setIsAreaModalOpen] = useState(false);
 
-  const handleTrackCreated = () => {
+  const handleAreaCreated = () => {
     router.refresh();
   };
 
@@ -82,7 +82,7 @@ export function EventDetailClient({
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">{t("eventDetail.overview")}</TabsTrigger>
-          <TabsTrigger value="tracks">{t("nav.tracks")}</TabsTrigger>
+          <TabsTrigger value="areas">{t("nav.areas")}</TabsTrigger>
           <TabsTrigger value="tasks">{t("nav.tasks")}</TabsTrigger>
           <TabsTrigger value="meetings">{t("nav.meetings")}</TabsTrigger>
         </TabsList>
@@ -91,10 +91,10 @@ export function EventDetailClient({
           <div className="grid gap-4 md:grid-cols-3">
             <Card>
               <CardHeader>
-                <CardTitle className="text-sm font-medium">{t("eventDetail.totalTracks")}</CardTitle>
+                <CardTitle className="text-sm font-medium">{t("eventDetail.totalAreas")}</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{totalTracks}</div>
+                <div className="text-2xl font-bold">{totalAreas}</div>
               </CardContent>
             </Card>
             <Card>
@@ -116,33 +116,33 @@ export function EventDetailClient({
           </div>
         </TabsContent>
 
-        <TabsContent value="tracks" className="space-y-4">
+        <TabsContent value="areas" className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold">{t("nav.tracks")}</h2>
-            <Button onClick={() => setIsTrackModalOpen(true)}>
+            <h2 className="text-2xl font-bold">{t("nav.areas")}</h2>
+            <Button onClick={() => setIsAreaModalOpen(true)}>
               <Plus className="mr-2 h-4 w-4" />
-              {t("eventDetail.addTrack")}
+              {t("eventDetail.addArea")}
             </Button>
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {tracksWithStats.map((track) => {
-              const progress = track.taskCount > 0
-                ? Math.round((track.completed / track.taskCount) * 100)
+            {areasWithStats.map((area) => {
+              const progress = area.taskCount > 0
+                ? Math.round((area.completed / area.taskCount) * 100)
                 : 0;
 
               return (
-                <Card key={track.id}>
+                <Card key={area.id}>
                   <CardHeader>
-                    <CardTitle className="text-lg">{track.name}</CardTitle>
+                    <CardTitle className="text-lg">{area.name}</CardTitle>
                     <CardDescription>
-                      {t("eventDetail.leader")}: {track.leadName || t("eventDetail.unassigned")}
+                      {t("eventDetail.leader")}: {area.leadName || t("eventDetail.unassigned")}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-muted-foreground">
-                          {track.completed}/{track.taskCount} {t("events.tasks")}
+                          {area.completed}/{area.taskCount} {t("events.tasks")}
                         </span>
                       </div>
                       <div className="w-full bg-secondary rounded-full h-2">
@@ -194,12 +194,12 @@ export function EventDetailClient({
         </TabsContent>
       </Tabs>
 
-      <NewTrackModal
-        open={isTrackModalOpen}
-        onOpenChange={setIsTrackModalOpen}
+      <NewAreaModal
+        open={isAreaModalOpen}
+        onOpenChange={setIsAreaModalOpen}
         eventId={event.id}
         users={users}
-        onSuccess={handleTrackCreated}
+        onSuccess={handleAreaCreated}
       />
     </div>
   );

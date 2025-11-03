@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createTrack } from "@/lib/data";
+import { createArea } from "@/lib/data";
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,13 +16,13 @@ export async function POST(request: NextRequest) {
 
     if (!name || typeof name !== "string" || name.trim().length === 0) {
       return NextResponse.json(
-        { error: "Track name is required" },
+        { error: "Area name is required" },
         { status: 400 }
       );
     }
 
-    // Create track
-    const track = createTrack({
+    // Create area
+    const area = createArea({
       eventId,
       name: name.trim(),
       description: description?.trim() || undefined,
@@ -30,11 +30,11 @@ export async function POST(request: NextRequest) {
       participantIds: [], // Participants will be added automatically as tasks are assigned
     });
 
-    return NextResponse.json(track, { status: 201 });
+    return NextResponse.json(area, { status: 201 });
   } catch (error) {
-    console.error("Error creating track:", error);
+    console.error("Error creating area:", error);
     return NextResponse.json(
-      { error: "Failed to create track" },
+      { error: "Failed to create area" },
       { status: 500 }
     );
   }

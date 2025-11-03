@@ -25,7 +25,7 @@ interface User {
   email?: string;
 }
 
-interface NewTrackModalProps {
+interface NewAreaModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   eventId: string;
@@ -33,15 +33,15 @@ interface NewTrackModalProps {
   onSuccess?: () => void;
 }
 
-export function NewTrackModal({
+export function NewAreaModal({
   open,
   onOpenChange,
   eventId,
   users,
   onSuccess,
-}: NewTrackModalProps) {
+}: NewAreaModalProps) {
   const { t } = useTranslation();
-  const [trackName, setTrackName] = useState("");
+  const [areaName, setAreaName] = useState("");
   const [description, setDescription] = useState("");
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -84,8 +84,8 @@ export function NewTrackModal({
   const selectedLead = users.find((u) => u.id === selectedLeadId) || null;
 
   const handleSubmit = async () => {
-    if (!trackName.trim()) {
-      setError(t("newTrackModal.errors.nameRequired"));
+    if (!areaName.trim()) {
+      setError(t("newAreaModal.errors.nameRequired"));
       return;
     }
 
@@ -93,14 +93,14 @@ export function NewTrackModal({
     setError(null);
 
     try {
-      const response = await fetch("/api/tracks", {
+      const response = await fetch("/api/areas", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           eventId,
-          name: trackName.trim(),
+          name: areaName.trim(),
           description: description.trim() || undefined,
           leadId: selectedLeadId || undefined,
         }),
@@ -108,11 +108,11 @@ export function NewTrackModal({
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || t("newTrackModal.errors.createFailed"));
+        throw new Error(data.error || t("newAreaModal.errors.createFailed"));
       }
 
       // Reset form
-      setTrackName("");
+      setAreaName("");
       setDescription("");
       setSelectedLeadId(null);
       setLeadSearchQuery("");
@@ -123,7 +123,7 @@ export function NewTrackModal({
       setError(
         err instanceof Error
           ? err.message
-          : t("newTrackModal.errors.createFailed")
+          : t("newAreaModal.errors.createFailed")
       );
     } finally {
       setIsSubmitting(false);
@@ -131,7 +131,7 @@ export function NewTrackModal({
   };
 
   const handleCancel = () => {
-    setTrackName("");
+    setAreaName("");
     setDescription("");
     setSelectedLeadId(null);
     setLeadSearchQuery("");
@@ -144,35 +144,35 @@ export function NewTrackModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{t("newTrackModal.title")}</DialogTitle>
+          <DialogTitle>{t("newAreaModal.title")}</DialogTitle>
           <DialogDescription>
-            {t("newTrackModal.description")}
+            {t("newAreaModal.description")}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          {/* Track Name */}
+          {/* Area Name */}
           <div className="space-y-2">
-            <Label htmlFor="track-name">
-              {t("newTrackModal.trackName")} <span className="text-destructive">*</span>
+            <Label htmlFor="area-name">
+              {t("newAreaModal.areaName")} <span className="text-destructive">*</span>
             </Label>
             <Input
-              id="track-name"
-              placeholder={t("newTrackModal.trackNamePlaceholder")}
-              value={trackName}
-              onChange={(e) => setTrackName(e.target.value)}
+              id="area-name"
+              placeholder={t("newAreaModal.areaNamePlaceholder")}
+              value={areaName}
+              onChange={(e) => setAreaName(e.target.value)}
               disabled={isSubmitting}
             />
           </div>
 
           {/* Description */}
           <div className="space-y-2">
-            <Label htmlFor="track-description">
-              {t("newTrackModal.description")}
+            <Label htmlFor="area-description">
+              {t("newAreaModal.description")}
             </Label>
             <Textarea
-              id="track-description"
-              placeholder={t("newTrackModal.descriptionPlaceholder")}
+              id="area-description"
+              placeholder={t("newAreaModal.descriptionPlaceholder")}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               disabled={isSubmitting}
@@ -182,7 +182,7 @@ export function NewTrackModal({
 
           {/* Lead Selector */}
           <div className="space-y-2">
-            <Label>{t("newTrackModal.lead")}</Label>
+            <Label>{t("newAreaModal.lead")}</Label>
             <div className="relative" ref={dropdownRef}>
               <button
                 type="button"
@@ -205,7 +205,7 @@ export function NewTrackModal({
                     </>
                   ) : (
                     <span className="text-muted-foreground">
-                      {t("newTrackModal.leadPlaceholder")}
+                      {t("newAreaModal.leadPlaceholder")}
                     </span>
                   )}
                 </div>
@@ -218,7 +218,7 @@ export function NewTrackModal({
                     <div className="relative">
                       <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                       <Input
-                        placeholder={t("newTrackModal.searchLead")}
+                        placeholder={t("newAreaModal.searchLead")}
                         value={leadSearchQuery}
                         onChange={(e) => setLeadSearchQuery(e.target.value)}
                         className="pl-8 h-8"
@@ -245,12 +245,12 @@ export function NewTrackModal({
                         )}
                       </div>
                       <span className="text-muted-foreground">
-                        {t("newTrackModal.noLead")}
+                        {t("newAreaModal.noLead")}
                       </span>
                     </button>
                     {filteredUsers.length === 0 ? (
                       <div className="px-3 py-2 text-sm text-muted-foreground text-center">
-                        {t("newTrackModal.noUsersFound")}
+                        {t("newAreaModal.noUsersFound")}
                       </div>
                     ) : (
                       filteredUsers.map((user) => (
@@ -303,12 +303,12 @@ export function NewTrackModal({
 
         <DialogFooter>
           <Button variant="outline" onClick={handleCancel} disabled={isSubmitting}>
-            {t("newTrackModal.cancel")}
+            {t("newAreaModal.cancel")}
           </Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting || !trackName.trim()}>
+          <Button onClick={handleSubmit} disabled={isSubmitting || !areaName.trim()}>
             {isSubmitting
-              ? t("newTrackModal.creating")
-              : t("newTrackModal.create")}
+              ? t("newAreaModal.creating")
+              : t("newAreaModal.create")}
           </Button>
         </DialogFooter>
       </DialogContent>

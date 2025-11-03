@@ -30,7 +30,7 @@ export interface Event {
   updatedAt: string;
 }
 
-export interface Track {
+export interface Area {
   id: string;
   eventId: string;
   name: string;
@@ -43,7 +43,7 @@ export interface Track {
 
 export interface Responsibility {
   id: string;
-  trackId: string;
+  areaId: string;
   name: string;
   description?: string;
   createdAt: string;
@@ -53,7 +53,7 @@ export interface Responsibility {
 export interface Task {
   id: string;
   responsibilityId: string;
-  trackId: string;
+  areaId: string;
   eventId: string;
   title: string;
   description?: string;
@@ -110,15 +110,15 @@ export interface EventTemplate {
   name: string;
   eventType: EventType;
   description?: string;
-  tracks: TemplateTrack[];
+  areas: TemplateArea[];
   createdAt: string;
   updatedAt: string;
 }
 
-export interface TemplateTrack {
+export interface TemplateArea {
   name: string;
   description?: string;
-  team?: TemplateTeamMember[]; // Team members for this track
+  team?: TemplateTeamMember[]; // Team members for this area
   responsibilities: TemplateResponsibility[];
   sections?: string[]; // Optional sections (like "Secciones" in JSON)
 }
