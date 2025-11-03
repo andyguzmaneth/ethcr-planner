@@ -286,6 +286,16 @@ export function updateTask(id: string, updates: Partial<Task>): Task | null {
   return tasks[index];
 }
 
+export function deleteTask(id: string): boolean {
+  const tasks = getTasks();
+  const index = tasks.findIndex((t) => t.id === id);
+  if (index === -1) return false;
+
+  tasks.splice(index, 1);
+  writeJsonFile("tasks.json", tasks);
+  return true;
+}
+
 // Meeting operations
 export function getMeetings(): Meeting[] {
   return readJsonFile<Meeting>("meetings.json");

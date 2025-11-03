@@ -152,6 +152,12 @@ export const ko = {
       updateFailed: "작업을 업데이트하지 못했습니다",
     },
   },
+  // Delete Task Dialog
+  deleteTask: {
+    title: "작업 삭제",
+    description: "\"{taskTitle}\"를 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.",
+    deleting: "삭제 중...",
+  },
   // Common
   common: {
     loading: "로딩 중...",
@@ -167,6 +173,7 @@ export const ko = {
     confirm: "확인",
     yes: "예",
     no: "아니오",
+    actions: "작업",
   },
 } as const;
 

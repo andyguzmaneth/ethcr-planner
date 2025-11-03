@@ -28,19 +28,6 @@
     "updatedAt": "2025-01-18T10:00:00Z"
   },
   {
-    "id": "task-3",
-    "areaId": "area-marketing",
-    "eventId": "1",
-    "title": "Diseñar materiales de marketing",
-    "description": "Crear banners, flyers y material gráfico para promoción",
-    "assigneeId": null,
-    "deadline": "2025-01-25",
-    "status": "pending",
-    "supportResources": [],
-    "createdAt": "2025-01-08T00:00:00Z",
-    "updatedAt": "2025-01-08T00:00:00Z"
-  },
-  {
     "id": "task-4",
     "areaId": "area-lugar",
     "eventId": "1",

@@ -152,6 +152,12 @@ export const en = {
       updateFailed: "Failed to update task",
     },
   },
+  // Delete Task Dialog
+  deleteTask: {
+    title: "Delete Task",
+    description: "Are you sure you want to delete \"{taskTitle}\"? This action cannot be undone.",
+    deleting: "Deleting...",
+  },
   // Common
   common: {
     loading: "Loading...",
@@ -167,6 +173,7 @@ export const en = {
     confirm: "Confirm",
     yes: "Yes",
     no: "No",
+    actions: "Actions",
   },
 } as const;
 

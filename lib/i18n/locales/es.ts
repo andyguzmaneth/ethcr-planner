@@ -152,6 +152,12 @@ export const es = {
       updateFailed: "Error al actualizar la tarea",
     },
   },
+  // Delete Task Dialog
+  deleteTask: {
+    title: "Eliminar Tarea",
+    description: "¿Estás seguro de que quieres eliminar \"{taskTitle}\"? Esta acción no se puede deshacer.",
+    deleting: "Eliminando...",
+  },
   // Common
   common: {
     loading: "Cargando...",
@@ -167,6 +173,7 @@ export const es = {
     confirm: "Confirmar",
     yes: "Sí",
     no: "No",
+    actions: "Acciones",
   },
 } as const;
 

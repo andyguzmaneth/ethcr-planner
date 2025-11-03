@@ -1,11 +1,9 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { List, LayoutGrid, Calendar as CalendarIcon } from "lucide-react";
 import { getEventBySlug, getTasksByEventId, getUserById, getAreaById, getAreasByEventId, getUsers } from "@/lib/data";
 import { createServerTranslationFunction, getLocaleFromCookies } from "@/lib/i18n";
 import { cookies } from "next/headers";
 import { EventTasksClient } from "./event-tasks-client";
-import { EventTasksListClient } from "./event-tasks-list-client";
+import { EventTasksViewClient } from "./event-tasks-view-client";
 
 interface EventTasksPageProps {
   params: Promise<{ slug: string }>;
@@ -81,26 +79,8 @@ export default async function EventTasksPage({ params }: EventTasksPageProps) {
           />
         </div>
 
-        {/* View Toggle */}
-        <Tabs defaultValue="list" className="w-full">
-          <TabsList>
-            <TabsTrigger value="list">
-              <List className="mr-2 h-4 w-4" />
-              Lista
-            </TabsTrigger>
-            <TabsTrigger value="kanban">
-              <LayoutGrid className="mr-2 h-4 w-4" />
-              Kanban
-            </TabsTrigger>
-            <TabsTrigger value="calendar">
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              Calendario
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-
-        {/* Tasks List View */}
-        <EventTasksListClient
+        {/* Tasks Views (List, Kanban, Calendar) */}
+        <EventTasksViewClient
           tasks={tasksWithDetails}
           eventId={event.id}
           eventName={event.name}

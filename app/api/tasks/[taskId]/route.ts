@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { updateTask, getTaskById } from "@/lib/data";
+import { updateTask, getTaskById, deleteTask } from "@/lib/data";
 
 interface RouteParams {
   params: Promise<{ taskId: string }>;
@@ -73,6 +73,41 @@ export async function PUT(
     console.error("Error updating task:", error);
     return NextResponse.json(
       { error: "Failed to update task" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: RouteParams
+) {
+  try {
+    const { taskId } = await params;
+
+    // Check if task exists
+    const existingTask = getTaskById(taskId);
+    if (!existingTask) {
+      return NextResponse.json(
+        { error: "Task not found" },
+        { status: 404 }
+      );
+    }
+
+    // Delete task
+    const deleted = deleteTask(taskId);
+    if (!deleted) {
+      return NextResponse.json(
+        { error: "Failed to delete task" },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error) {
+    console.error("Error deleting task:", error);
+    return NextResponse.json(
+      { error: "Failed to delete task" },
       { status: 500 }
     );
   }
