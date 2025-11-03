@@ -112,6 +112,8 @@ export const ko = {
   newTaskModal: {
     title: "새 작업 만들기",
     description: "이 이벤트에 대한 작업을 추적할 새 작업을 추가하세요.",
+    editTitle: "작업 편집",
+    editDescription: "이 이벤트에 대한 작업 세부 정보를 업데이트하세요.",
     event: "이벤트",
     eventPlaceholder: "이벤트 선택",
     area: "영역",
@@ -141,10 +143,13 @@ export const ko = {
     cancel: "취소",
     create: "작업 만들기",
     creating: "만드는 중...",
+    update: "작업 업데이트",
+    updating: "업데이트 중...",
     errors: {
       titleRequired: "작업 제목이 필요합니다",
       eventRequired: "이벤트가 필요합니다",
       createFailed: "작업을 만들지 못했습니다",
+      updateFailed: "작업을 업데이트하지 못했습니다",
     },
   },
   // Common

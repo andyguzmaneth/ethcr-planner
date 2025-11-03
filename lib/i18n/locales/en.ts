@@ -112,6 +112,8 @@ export const en = {
   newTaskModal: {
     title: "Create New Task",
     description: "Add a new task to track work for this event.",
+    editTitle: "Edit Task",
+    editDescription: "Update task details for this event.",
     event: "Event",
     eventPlaceholder: "Select an event",
     area: "Area",
@@ -141,10 +143,13 @@ export const en = {
     cancel: "Cancel",
     create: "Create Task",
     creating: "Creating...",
+    update: "Update Task",
+    updating: "Updating...",
     errors: {
       titleRequired: "Task title is required",
       eventRequired: "Event is required",
       createFailed: "Failed to create task",
+      updateFailed: "Failed to update task",
     },
   },
   // Common

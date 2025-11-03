@@ -1,13 +1,11 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, List, LayoutGrid, Calendar as CalendarIcon } from "lucide-react";
+import { List, LayoutGrid, Calendar as CalendarIcon } from "lucide-react";
 import { getTasks, getUserById, getEventById, getAreaById, getEvents, getUsers, getAreas } from "@/lib/data";
 import { createServerTranslationFunction, getLocaleFromCookies } from "@/lib/i18n";
 import { cookies } from "next/headers";
 import { TasksPageClient } from "./tasks-page-client";
+import { TasksListClient } from "./tasks-list-client";
 
 export default async function TasksPage() {
   const cookieStore = await cookies();
@@ -87,60 +85,14 @@ export default async function TasksPage() {
         </div>
 
         {/* Tasks List View */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="space-y-4">
-              {tasksWithDetails.length === 0 ? (
-                <div className="text-center py-12">
-                  <p className="text-muted-foreground mb-4">No se encontraron tareas</p>
-                  <Button>
-                    <Plus className="mr-2 h-4 w-4" />
-                    {t("eventDetail.createFirstTask")}
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {tasksWithDetails.map((task) => (
-                    <div
-                      key={task.id}
-                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
-                    >
-                      <div className="flex items-center gap-4 flex-1">
-                        <div
-                          className={`w-3 h-3 rounded-full ${statusColors[task.status as keyof typeof statusColors]}`}
-                        />
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-medium">{task.title}</h3>
-                            {task.area && (
-                              <Badge variant="outline" className="text-xs">
-                                {task.area.name}
-                              </Badge>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
-                            <span>{task.assignee?.name || "Sin asignar"}</span>
-                            <span>•</span>
-                            <span>{task.event?.name || "Evento desconocido"}</span>
-                            {task.deadline && (
-                              <>
-                                <span>•</span>
-                                <span>Vence: {task.deadline}</span>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                      <Badge variant="secondary">
-                        {statusLabels[task.status as keyof typeof statusLabels]}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        <TasksListClient
+          tasks={tasksWithDetails}
+          events={events.map(e => ({ id: e.id, name: e.name }))}
+          areas={allAreas.map(a => ({ id: a.id, name: a.name, eventId: a.eventId }))}
+          users={users.map(u => ({ id: u.id, name: u.name, initials: u.initials, email: u.email }))}
+          statusColors={statusColors}
+          statusLabels={statusLabels}
+        />
       </div>
     </MainLayout>
   );

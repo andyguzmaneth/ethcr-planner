@@ -17,6 +17,7 @@ import { useTranslation } from "@/lib/i18n/useTranslation";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Check, ChevronsUpDown, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Task } from "@/lib/types";
 
 interface User {
   id: string;
@@ -39,6 +40,7 @@ interface Event {
 interface NewTaskModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  task?: Task; // Optional task for edit mode
   eventId?: string; // Auto-filled from URL
   areaId?: string; // Auto-filled from URL
   eventName?: string; // For display
@@ -52,6 +54,7 @@ interface NewTaskModalProps {
 export function NewTaskModal({
   open,
   onOpenChange,
+  task: editingTask,
   eventId: initialEventId,
   areaId: initialAreaId,
   eventName,
@@ -62,14 +65,17 @@ export function NewTaskModal({
   onSuccess,
 }: NewTaskModalProps) {
   const { t } = useTranslation();
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [selectedEventId, setSelectedEventId] = useState<string | null>(initialEventId || null);
-  const [selectedAreaId, setSelectedAreaId] = useState<string | null>(initialAreaId || null);
-  const [selectedAssigneeId, setSelectedAssigneeId] = useState<string | null>(null);
-  const [deadline, setDeadline] = useState("");
-  const [status, setStatus] = useState<"pending" | "in_progress" | "blocked" | "completed">("pending");
-  const [supportResources, setSupportResources] = useState("");
+  const isEditMode = !!editingTask;
+  
+  // Initialize form with task data if editing
+  const [title, setTitle] = useState(editingTask?.title || "");
+  const [description, setDescription] = useState(editingTask?.description || "");
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(editingTask?.eventId || initialEventId || null);
+  const [selectedAreaId, setSelectedAreaId] = useState<string | null>(editingTask?.areaId || initialAreaId || null);
+  const [selectedAssigneeId, setSelectedAssigneeId] = useState<string | null>(editingTask?.assigneeId || null);
+  const [deadline, setDeadline] = useState(editingTask?.deadline ? editingTask.deadline.split("T")[0] : "");
+  const [status, setStatus] = useState<"pending" | "in_progress" | "blocked" | "completed">(editingTask?.status || "pending");
+  const [supportResources, setSupportResources] = useState(editingTask?.supportResources?.join("\n") || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
@@ -174,6 +180,32 @@ export function NewTaskModal({
     }
   }, [initialAreaId]);
 
+  // Reset form when modal opens/closes or task changes
+  useEffect(() => {
+    if (open && editingTask) {
+      setTitle(editingTask.title || "");
+      setDescription(editingTask.description || "");
+      setSelectedEventId(editingTask.eventId);
+      setSelectedAreaId(editingTask.areaId || initialAreaId || null);
+      setSelectedAssigneeId(editingTask.assigneeId || null);
+      setDeadline(editingTask.deadline ? editingTask.deadline.split("T")[0] : "");
+      setStatus(editingTask.status || "pending");
+      setSupportResources(editingTask.supportResources?.join("\n") || "");
+      setError(null);
+    } else if (open && !editingTask) {
+      // Reset to defaults when creating new task
+      setTitle("");
+      setDescription("");
+      setSelectedEventId(initialEventId || null);
+      setSelectedAreaId(initialAreaId || null);
+      setSelectedAssigneeId(null);
+      setDeadline("");
+      setStatus("pending");
+      setSupportResources("");
+      setError(null);
+    }
+  }, [open, editingTask, initialEventId, initialAreaId]);
+
   const handleSubmit = async () => {
     if (!title.trim()) {
       setError(t("newTaskModal.errors.titleRequired"));
@@ -190,8 +222,20 @@ export function NewTaskModal({
     setError(null);
 
     try {
-      const response = await fetch("/api/tasks", {
-        method: "POST",
+      const url = editingTask ? `/api/tasks/${editingTask.id}` : "/api/tasks";
+      const method = editingTask ? "PUT" : "POST";
+
+      // Parse support resources from textarea (one per line)
+      let parsedSupportResources: string[] = [];
+      if (supportResources && typeof supportResources === "string") {
+        parsedSupportResources = supportResources
+          .split("\n")
+          .map((line) => line.trim())
+          .filter((line) => line.length > 0);
+      }
+
+      const response = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
         },
@@ -203,13 +247,13 @@ export function NewTaskModal({
           assigneeId: selectedAssigneeId || undefined,
           deadline: deadline || undefined,
           status,
-          supportResources: supportResources.trim() || undefined,
+          supportResources: parsedSupportResources.length > 0 ? parsedSupportResources : undefined,
         }),
       });
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || t("newTaskModal.errors.createFailed"));
+        throw new Error(data.error || (editingTask ? t("newTaskModal.errors.updateFailed") : t("newTaskModal.errors.createFailed")));
       }
 
       // Reset form
@@ -232,7 +276,7 @@ export function NewTaskModal({
       setError(
         err instanceof Error
           ? err.message
-          : t("newTaskModal.errors.createFailed")
+          : (editingTask ? t("newTaskModal.errors.updateFailed") : t("newTaskModal.errors.createFailed"))
       );
     } finally {
       setIsSubmitting(false);
@@ -262,9 +306,9 @@ export function NewTaskModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t("newTaskModal.title")}</DialogTitle>
+          <DialogTitle>{isEditMode ? t("newTaskModal.editTitle") : t("newTaskModal.title")}</DialogTitle>
           <DialogDescription>
-            {t("newTaskModal.description")}
+            {isEditMode ? t("newTaskModal.editDescription") : t("newTaskModal.description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -653,8 +697,8 @@ export function NewTaskModal({
           </Button>
           <Button onClick={handleSubmit} disabled={isSubmitting || !title.trim()}>
             {isSubmitting
-              ? t("newTaskModal.creating")
-              : t("newTaskModal.create")}
+              ? (isEditMode ? t("newTaskModal.updating") : t("newTaskModal.creating"))
+              : (isEditMode ? t("newTaskModal.update") : t("newTaskModal.create"))}
           </Button>
         </DialogFooter>
       </DialogContent>

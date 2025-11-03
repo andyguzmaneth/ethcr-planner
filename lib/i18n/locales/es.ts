@@ -112,6 +112,8 @@ export const es = {
   newTaskModal: {
     title: "Crear Nueva Tarea",
     description: "Agrega una nueva tarea para rastrear el trabajo de este evento.",
+    editTitle: "Editar Tarea",
+    editDescription: "Actualiza los detalles de la tarea para este evento.",
     event: "Evento",
     eventPlaceholder: "Seleccionar un evento",
     area: "Área",
@@ -141,10 +143,13 @@ export const es = {
     cancel: "Cancelar",
     create: "Crear Tarea",
     creating: "Creando...",
+    update: "Actualizar Tarea",
+    updating: "Actualizando...",
     errors: {
       titleRequired: "El título de la tarea es requerido",
       eventRequired: "El evento es requerido",
       createFailed: "Error al crear la tarea",
+      updateFailed: "Error al actualizar la tarea",
     },
   },
   // Common

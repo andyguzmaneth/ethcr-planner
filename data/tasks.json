@@ -5,12 +5,11 @@
     "eventId": "1",
     "title": "Reservar venue para meetup",
     "description": "Contactar y reservar el venue para el evento principal",
-    "assigneeId": "user-2",
+    "assigneeId": "user-maria",
     "deadline": "2025-01-15",
     "status": "completed",
-    "supportResources": [],
     "createdAt": "2025-01-05T00:00:00Z",
-    "updatedAt": "2025-01-14T15:30:00Z",
+    "updatedAt": "2025-11-03T01:52:39.919Z",
     "completedAt": "2025-01-14T15:30:00Z"
   },
   {
@@ -115,7 +114,7 @@
     "status": "pending",
     "id": "task-1762134388378",
     "createdAt": "2025-11-03T01:46:28.378Z",
-    "updatedAt": "2025-11-03T01:46:28.378Z"
+    "updatedAt": "2025-11-03T01:53:11.336Z"
   },
   {
     "eventId": "1",
@@ -136,5 +135,38 @@
     "id": "task-1762134434946",
     "createdAt": "2025-11-03T01:47:14.946Z",
     "updatedAt": "2025-11-03T01:47:14.946Z"
+  },
+  {
+    "eventId": "1",
+    "areaId": "area-hackathon",
+    "title": "Invite People",
+    "assigneeId": "user-andy",
+    "deadline": "2025-10-30",
+    "status": "blocked",
+    "id": "task-1762134823135",
+    "createdAt": "2025-11-03T01:53:43.135Z",
+    "updatedAt": "2025-11-03T01:53:43.135Z"
+  },
+  {
+    "eventId": "1",
+    "areaId": "area-hackathon",
+    "title": "Define date",
+    "assigneeId": "user-andy",
+    "deadline": "2025-10-28",
+    "status": "completed",
+    "id": "task-1762134856447",
+    "createdAt": "2025-11-03T01:54:16.447Z",
+    "updatedAt": "2025-11-03T01:54:16.447Z"
+  },
+  {
+    "eventId": "1",
+    "areaId": "area-hackathon",
+    "title": "Prepare Bounties",
+    "assigneeId": "user-andy",
+    "deadline": "2025-11-06",
+    "status": "in_progress",
+    "id": "task-1762134880832",
+    "createdAt": "2025-11-03T01:54:40.832Z",
+    "updatedAt": "2025-11-03T01:54:40.832Z"
   }
 ]

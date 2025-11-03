@@ -9,14 +9,9 @@ import { Plus, List, LayoutGrid, Calendar as CalendarIcon } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import { NewTaskModal } from "@/components/events/new-task-modal";
 import { useRouter } from "next/navigation";
+import { Task } from "@/lib/types";
 
-interface TaskWithDetails {
-  id: string;
-  title: string;
-  description?: string;
-  assigneeId?: string;
-  deadline?: string;
-  status: "pending" | "in_progress" | "blocked" | "completed";
+interface TaskWithDetails extends Task {
   assignee: {
     id: string;
     name: string;
@@ -46,9 +41,22 @@ export function AreaTasksClient({
   const { t } = useTranslation();
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
 
   const handleTaskCreated = () => {
     router.refresh();
+  };
+
+  const handleTaskClick = (task: TaskWithDetails) => {
+    setEditingTask(task);
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = (open: boolean) => {
+    setIsModalOpen(open);
+    if (!open) {
+      setEditingTask(null);
+    }
   };
   const statusColors = {
     pending: "bg-gray-500",
@@ -141,7 +149,8 @@ export function AreaTasksClient({
                     {tasks.map((task) => (
                       <div
                         key={task.id}
-                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
+                        onClick={() => handleTaskClick(task)}
+                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer"
                       >
                         <div className="flex items-center gap-4 flex-1">
                           <div
@@ -196,6 +205,7 @@ export function AreaTasksClient({
                           statusTasks.map((task) => (
                             <div
                               key={task.id}
+                              onClick={() => handleTaskClick(task)}
                               className="p-3 border rounded-lg bg-background hover:bg-accent/50 transition-colors cursor-pointer"
                             >
                               <div className="space-y-2">
@@ -256,7 +266,8 @@ export function AreaTasksClient({
                                 {dateTasks.map((task) => (
                                   <div
                                     key={task.id}
-                                    className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent/50 transition-colors"
+                                    onClick={() => handleTaskClick(task)}
+                                    className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer"
                                   >
                                     <div className="flex items-center gap-3 flex-1">
                                       <div
@@ -289,7 +300,8 @@ export function AreaTasksClient({
                           {tasksByDate["no-deadline"].map((task) => (
                             <div
                               key={task.id}
-                              className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent/50 transition-colors"
+                              onClick={() => handleTaskClick(task)}
+                              className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer"
                             >
                               <div className="flex items-center gap-3 flex-1">
                                 <div
@@ -322,7 +334,8 @@ export function AreaTasksClient({
 
       <NewTaskModal
         open={isModalOpen}
-        onOpenChange={setIsModalOpen}
+        onOpenChange={handleModalClose}
+        task={editingTask || undefined}
         eventId={eventId}
         areaId={areaId}
         eventName={eventName}
