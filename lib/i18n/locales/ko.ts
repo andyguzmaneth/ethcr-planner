@@ -158,6 +158,13 @@ export const ko = {
     description: "\"{taskTitle}\"를 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.",
     deleting: "삭제 중...",
   },
+  // Delete Area Dialog
+  deleteArea: {
+    title: "영역 삭제",
+    description: "\"{areaName}\"를 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.",
+    descriptionWithTasks: "\"{areaName}\"를 삭제하시겠습니까? 이것은 이 영역의 모든 {taskCount}개 {taskCount, plural, one {작업} other {작업}}도 영구적으로 삭제합니다. 이 작업은 취소할 수 없습니다.",
+    deleting: "삭제 중...",
+  },
   // Common
   common: {
     loading: "로딩 중...",

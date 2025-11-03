@@ -207,6 +207,28 @@ export function updateArea(id: string, updates: Partial<Area>): Area | null {
   return areas[index];
 }
 
+export function deleteArea(id: string): boolean {
+  const areas = getAreas();
+  const index = areas.findIndex((a) => a.id === id);
+  if (index === -1) return false;
+
+  // Delete all tasks associated with this area
+  const tasks = getTasks();
+  const areaTasks = tasks.filter((task) => task.areaId === id);
+  
+  // Remove tasks that belong to this area
+  const remainingTasks = tasks.filter((task) => task.areaId !== id);
+  if (remainingTasks.length !== tasks.length) {
+    writeJsonFile("tasks.json", remainingTasks);
+  }
+
+  // Delete the area
+  areas.splice(index, 1);
+  writeJsonFile("areas.json", areas);
+  
+  return true;
+}
+
 // Responsibility operations
 export function getResponsibilities(): Responsibility[] {
   return readJsonFile<Responsibility>("responsibilities.json");

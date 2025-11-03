@@ -158,6 +158,13 @@ export const es = {
     description: "¿Estás seguro de que quieres eliminar \"{taskTitle}\"? Esta acción no se puede deshacer.",
     deleting: "Eliminando...",
   },
+  // Delete Area Dialog
+  deleteArea: {
+    title: "Eliminar Área",
+    description: "¿Estás seguro de que quieres eliminar \"{areaName}\"? Esta acción no se puede deshacer.",
+    descriptionWithTasks: "¿Estás seguro de que quieres eliminar \"{areaName}\"? Esto también eliminará permanentemente todas las {taskCount} {taskCount, plural, one {tarea} other {tareas}} de esta área. Esta acción no se puede deshacer.",
+    deleting: "Eliminando...",
+  },
   // Common
   common: {
     loading: "Cargando...",

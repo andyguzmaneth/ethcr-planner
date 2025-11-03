@@ -100,26 +100,6 @@
   },
   {
     "eventId": "1",
-    "name": "3",
-    "description": "testing",
-    "leadId": "user-alfredo",
-    "participantIds": [],
-    "id": "area-1762131308525",
-    "createdAt": "2025-11-03T00:55:08.525Z",
-    "updatedAt": "2025-11-03T00:55:08.525Z"
-  },
-  {
-    "eventId": "1",
-    "name": "🏡 HOuse",
-    "description": "Test",
-    "leadId": "user-lidia",
-    "participantIds": [],
-    "id": "area-1762133135900",
-    "createdAt": "2025-11-03T01:25:35.900Z",
-    "updatedAt": "2025-11-03T01:25:35.900Z"
-  },
-  {
-    "eventId": "1",
     "name": "🚨 Pending",
     "description": "Tareas pendientes para cerrar el evento 2025",
     "leadId": "user-andy",

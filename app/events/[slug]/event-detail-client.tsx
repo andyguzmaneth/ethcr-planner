@@ -5,10 +5,18 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Settings } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Plus, Settings, MoreVertical, Edit, Trash2 } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import { NewAreaModal } from "@/components/events/new-area-modal";
 import { NewTaskModal } from "@/components/events/new-task-modal";
+import { DeleteAreaDialog } from "@/components/events/delete-area-dialog";
 import { useRouter } from "next/navigation";
 
 interface AreaWithStats {
@@ -55,9 +63,47 @@ export function EventDetailClient({
   const router = useRouter();
   const [isAreaModalOpen, setIsAreaModalOpen] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [areaToDelete, setAreaToDelete] = useState<AreaWithStats | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleAreaCreated = () => {
     router.refresh();
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent, area: AreaWithStats) => {
+    e.stopPropagation();
+    setAreaToDelete(area);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!areaToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/areas/${areaToDelete.id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        setDeleteDialogOpen(false);
+        setAreaToDelete(null);
+        router.refresh();
+      } else {
+        console.error("Failed to delete area");
+      }
+    } catch (error) {
+      console.error("Error deleting area:", error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleEditClick = (e: React.MouseEvent, area: AreaWithStats) => {
+    e.stopPropagation();
+    // TODO: Implement edit area functionality
+    console.log("Edit area:", area);
   };
 
   return (
@@ -135,12 +181,43 @@ export function EventDetailClient({
                 : 0;
 
               return (
-                <Card key={area.id}>
+                <Card key={area.id} className="group relative">
                   <CardHeader>
-                    <CardTitle className="text-lg">{area.name}</CardTitle>
-                    <CardDescription>
-                      {t("eventDetail.leader")}: {area.leadName || t("eventDetail.unassigned")}
-                    </CardDescription>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1">
+                        <CardTitle className="text-lg">{area.name}</CardTitle>
+                        <CardDescription>
+                          {t("eventDetail.leader")}: {area.leadName || t("eventDetail.unassigned")}
+                        </CardDescription>
+                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon-sm"
+                            className="opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                            <span className="sr-only">{t("common.actions")}</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={(e) => handleEditClick(e, area)}>
+                            <Edit className="mr-2 h-4 w-4" />
+                            {t("common.edit")}
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            variant="destructive"
+                            onClick={(e) => handleDeleteClick(e, area)}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            {t("common.delete")}
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
@@ -214,6 +291,16 @@ export function EventDetailClient({
         users={users}
         onSuccess={() => router.refresh()}
       />
+      {areaToDelete && (
+        <DeleteAreaDialog
+          open={deleteDialogOpen}
+          onOpenChange={setDeleteDialogOpen}
+          areaName={areaToDelete.name}
+          taskCount={areaToDelete.taskCount}
+          onConfirm={handleConfirmDelete}
+          isDeleting={isDeleting}
+        />
+      )}
     </div>
   );
 }

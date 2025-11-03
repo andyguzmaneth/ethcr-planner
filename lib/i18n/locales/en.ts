@@ -158,6 +158,13 @@ export const en = {
     description: "Are you sure you want to delete \"{taskTitle}\"? This action cannot be undone.",
     deleting: "Deleting...",
   },
+  // Delete Area Dialog
+  deleteArea: {
+    title: "Delete Area",
+    description: "Are you sure you want to delete \"{areaName}\"? This action cannot be undone.",
+    descriptionWithTasks: "Are you sure you want to delete \"{areaName}\"? This will also permanently delete all {taskCount} {taskCount, plural, one {task} other {tasks}} in this area. This action cannot be undone.",
+    deleting: "Deleting...",
+  },
   // Common
   common: {
     loading: "Loading...",
