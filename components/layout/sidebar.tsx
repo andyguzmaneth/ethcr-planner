@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -40,7 +40,36 @@ interface SidebarProps {
 
 export function Sidebar({ events }: SidebarProps) {
   const pathname = usePathname();
-  const [openEvents, setOpenEvents] = useState<Record<string, boolean>>({});
+  
+  // Initialize open events based on current pathname
+  const initializeOpenEvents = (): Record<string, boolean> => {
+    const initial: Record<string, boolean> = {};
+    events.forEach((event) => {
+      // Check if current path is under this event (but not just the event root)
+      const eventPath = `/events/${event.slug}`;
+      if (pathname.startsWith(eventPath) && pathname !== eventPath) {
+        initial[event.id] = true;
+      }
+    });
+    return initial;
+  };
+
+  const [openEvents, setOpenEvents] = useState<Record<string, boolean>>(initializeOpenEvents);
+
+  // Update open events when pathname changes
+  useEffect(() => {
+    setOpenEvents((prev) => {
+      const updated = { ...prev };
+      events.forEach((event) => {
+        const eventPath = `/events/${event.slug}`;
+        const shouldBeOpen = pathname.startsWith(eventPath) && pathname !== eventPath;
+        if (shouldBeOpen && !updated[event.id]) {
+          updated[event.id] = true;
+        }
+      });
+      return updated;
+    });
+  }, [pathname, events]);
 
   const toggleEvent = (eventId: string) => {
     setOpenEvents((prev) => ({
