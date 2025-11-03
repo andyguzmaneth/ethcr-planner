@@ -19,20 +19,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-// Events are passed as props
-
-const mainNavigation = [
-  {
-    name: "Panel",
-    href: "/",
-    icon: LayoutDashboard,
-  },
-  {
-    name: "Eventos",
-    href: "/events",
-    icon: Calendar,
-  },
-];
+import { useTranslation } from "@/lib/i18n/useTranslation";
 
 interface SidebarProps {
   events: Array<{ id: string; name: string; slug: string }>;
@@ -40,6 +27,20 @@ interface SidebarProps {
 
 export function Sidebar({ events }: SidebarProps) {
   const pathname = usePathname();
+  const { t } = useTranslation();
+
+  const mainNavigation = [
+    {
+      name: t("nav.dashboard"),
+      href: "/",
+      icon: LayoutDashboard,
+    },
+    {
+      name: t("nav.events"),
+      href: "/events",
+      icon: Calendar,
+    },
+  ];
   
   // Initialize open events based on current pathname
   const initializeOpenEvents = (): Record<string, boolean> => {
@@ -168,7 +169,7 @@ export function Sidebar({ events }: SidebarProps) {
                       )}
                     >
                       <GitBranch className="mr-2 h-4 w-4" />
-                      Tracks
+                      {t("nav.tracks")}
                     </Link>
                     <Link
                       href={`/events/${event.slug}/tasks`}
@@ -180,7 +181,7 @@ export function Sidebar({ events }: SidebarProps) {
                       )}
                     >
                       <CheckSquare className="mr-2 h-4 w-4" />
-                      Tareas
+                      {t("nav.tasks")}
                     </Link>
                     <Link
                       href={`/events/${event.slug}/meetings`}
@@ -192,7 +193,7 @@ export function Sidebar({ events }: SidebarProps) {
                       )}
                     >
                       <Users className="mr-2 h-4 w-4" />
-                      Reuniones
+                      {t("nav.meetings")}
                     </Link>
                   </CollapsibleContent>
                 </Collapsible>
@@ -213,7 +214,7 @@ export function Sidebar({ events }: SidebarProps) {
             )}
           >
             <Settings className="mr-3 h-5 w-5 flex-shrink-0" />
-            Configuración
+            {t("nav.settings")}
           </Link>
         </div>
       </div>

@@ -1,7 +1,6 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckSquare, Clock, AlertCircle, TrendingUp } from "lucide-react";
 import { getTasks, getTracks, getUserById, getEvents } from "@/lib/data";
+import { DashboardClient } from "./dashboard-client";
 
 export default function DashboardPage() {
   const allTasks = getTasks();
@@ -56,145 +55,36 @@ export default function DashboardPage() {
     };
   });
 
+  // Prepare recent tasks
+  const recentTasks = allTasks
+    .filter((t) => t.status === "completed" && t.completedAt)
+    .sort((a, b) => {
+      const dateA = new Date(a.completedAt || 0).getTime();
+      const dateB = new Date(b.completedAt || 0).getTime();
+      return dateB - dateA;
+    })
+    .slice(0, 5)
+    .map((task) => {
+      const assignee = getUserById(task.assigneeId || "");
+      return {
+        id: task.id,
+        title: task.title,
+        assigneeId: task.assigneeId || null,
+        assigneeName: assignee?.name || null,
+        completedAt: task.completedAt || "",
+      };
+    });
+
   return (
     <MainLayout>
-      <div className="container mx-auto p-6 space-y-6">
-        {/* Welcome Header */}
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Panel</h1>
-          <p className="text-muted-foreground mt-2">
-            ¡Bienvenido de vuelta! Aquí está lo que sucede con tus eventos.
-          </p>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Mis Tareas</CardTitle>
-              <CheckSquare className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{activeTasks.length}</div>
-              <p className="text-xs text-muted-foreground">Tareas activas asignadas a ti</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Vencidas</CardTitle>
-              <AlertCircle className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{overdueTasks.length}</div>
-              <p className="text-xs text-muted-foreground">Tareas pasadas de fecha límite</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Completadas Hoy</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{completedToday.length}</div>
-              <p className="text-xs text-muted-foreground">Tareas completadas hoy</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Próximas Fechas</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{upcomingDeadlines.length}</div>
-              <p className="text-xs text-muted-foreground">Tareas para esta semana</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Recent Activity */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-          <Card className="col-span-4">
-            <CardHeader>
-              <CardTitle>Actividad Reciente</CardTitle>
-              <CardDescription>Últimas actualizaciones de tus eventos</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {allTasks
-                  .filter((t) => t.status === "completed" && t.completedAt)
-                  .sort((a, b) => {
-                    const dateA = new Date(a.completedAt || 0).getTime();
-                    const dateB = new Date(b.completedAt || 0).getTime();
-                    return dateB - dateA;
-                  })
-                  .slice(0, 5)
-                  .map((task) => {
-                    const assignee = getUserById(task.assigneeId || "");
-                    const timeAgo = task.completedAt
-                      ? getTimeAgo(new Date(task.completedAt))
-                      : "";
-
-                    return (
-                      <div key={task.id} className="flex items-center">
-                        <div className="ml-4 space-y-1">
-                          <p className="text-sm font-medium">Tarea completada</p>
-                          <p className="text-sm text-muted-foreground">
-                            &ldquo;{task.title}&rdquo; marcada como completada por{" "}
-                            {assignee?.name || "Usuario desconocido"}
-                          </p>
-                          <p className="text-xs text-muted-foreground">{timeAgo}</p>
-                        </div>
-                      </div>
-                    );
-                  })}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="col-span-3">
-            <CardHeader>
-              <CardTitle>Mis Tracks</CardTitle>
-              <CardDescription>Tracks que lideras o en los que participas</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {tracksWithProgress.slice(0, 5).map((track, idx) => (
-                  <div key={idx} className="space-y-1">
-                    <p className="text-sm font-medium">{track.name}</p>
-                    <p className="text-xs text-muted-foreground">{track.eventName}</p>
-                    <div className="w-full bg-secondary rounded-full h-2 mt-2">
-                      <div
-                        className="bg-primary h-2 rounded-full"
-                        style={{ width: `${track.progress}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      <DashboardClient
+        activeTasksCount={activeTasks.length}
+        overdueTasksCount={overdueTasks.length}
+        completedTodayCount={completedToday.length}
+        upcomingDeadlinesCount={upcomingDeadlines.length}
+        recentTasks={recentTasks}
+        tracksWithProgress={tracksWithProgress}
+      />
     </MainLayout>
   );
-}
-
-function getTimeAgo(date: Date): string {
-  const now = new Date();
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-  if (diffInSeconds < 60) return "Hace menos de un minuto";
-  if (diffInSeconds < 3600) {
-    const minutes = Math.floor(diffInSeconds / 60);
-    return `Hace ${minutes} ${minutes === 1 ? "minuto" : "minutos"}`;
-  }
-  if (diffInSeconds < 86400) {
-    const hours = Math.floor(diffInSeconds / 3600);
-    return `Hace ${hours} ${hours === 1 ? "hora" : "horas"}`;
-  }
-  const days = Math.floor(diffInSeconds / 86400);
-  return `Hace ${days} ${days === 1 ? "día" : "días"}`;
 }

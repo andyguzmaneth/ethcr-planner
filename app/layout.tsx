@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { TranslationProvider } from "@/lib/i18n/useTranslation";
+import { getLocale } from "@/lib/i18n";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,12 +24,18 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Use default locale from env or fallback to "es"
+  // The client-side TranslationProvider will handle actual locale switching
+  const defaultLocale = (process.env.NEXT_PUBLIC_DEFAULT_LOCALE as "en" | "es" | "ko") || "es";
+
   return (
-    <html lang="en">
+    <html lang={defaultLocale} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <TranslationProvider initialLocale={defaultLocale}>
+          {children}
+        </TranslationProvider>
       </body>
     </html>
   );

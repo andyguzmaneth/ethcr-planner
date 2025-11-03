@@ -22,20 +22,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-// Mobile sidebar will receive events as prop or fetch them
-
-const mainNavigation = [
-  {
-    name: "Panel",
-    href: "/",
-    icon: LayoutDashboard,
-  },
-  {
-    name: "Eventos",
-    href: "/events",
-    icon: Calendar,
-  },
-];
+import { useTranslation } from "@/lib/i18n/useTranslation";
 
 interface MobileSidebarProps {
   events: Array<{ id: string; name: string; slug: string }>;
@@ -43,6 +30,20 @@ interface MobileSidebarProps {
 
 export function MobileSidebar({ events }: MobileSidebarProps) {
   const pathname = usePathname();
+  const { t } = useTranslation();
+
+  const mainNavigation = [
+    {
+      name: t("nav.dashboard"),
+      href: "/",
+      icon: LayoutDashboard,
+    },
+    {
+      name: t("nav.events"),
+      href: "/events",
+      icon: Calendar,
+    },
+  ];
   
   // Initialize open events based on current pathname
   const initializeOpenEvents = (): Record<string, boolean> => {
@@ -92,9 +93,9 @@ export function MobileSidebar({ events }: MobileSidebarProps) {
   return (
     <Sheet>
       <SheetTrigger asChild className="md:hidden">
-        <Button variant="ghost" size="icon" className="mr-2">
+          <Button variant="ghost" size="icon" className="mr-2">
           <Menu className="h-5 w-5" />
-          <span className="sr-only">Alternar menú</span>
+          <span className="sr-only">{t("header.toggleMenu")}</span>
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="w-[240px] p-0">
@@ -165,41 +166,41 @@ export function MobileSidebar({ events }: MobileSidebarProps) {
 
                     <CollapsibleContent className="pl-6 pt-1 space-y-1">
                       <Link
-                        href={`/events/${event.slug}/tracks`}
-                        className={cn(
-                          "flex items-center px-3 py-1.5 text-sm rounded-md transition-colors",
-                          isEventPathActive(event.slug, "/tracks")
-                            ? "bg-accent text-accent-foreground"
-                            : "text-foreground/60 hover:bg-accent hover:text-accent-foreground"
-                        )}
-                      >
-                        <GitBranch className="mr-2 h-4 w-4" />
-                        Tracks
-                      </Link>
-                      <Link
-                        href={`/events/${event.slug}/tasks`}
-                        className={cn(
-                          "flex items-center px-3 py-1.5 text-sm rounded-md transition-colors",
-                          isEventPathActive(event.slug, "/tasks")
-                            ? "bg-accent text-accent-foreground"
-                            : "text-foreground/60 hover:bg-accent hover:text-accent-foreground"
-                        )}
-                      >
-                        <CheckSquare className="mr-2 h-4 w-4" />
-                        Tareas
-                      </Link>
-                      <Link
-                        href={`/events/${event.slug}/meetings`}
-                        className={cn(
-                          "flex items-center px-3 py-1.5 text-sm rounded-md transition-colors",
-                          isEventPathActive(event.slug, "/meetings")
-                            ? "bg-accent text-accent-foreground"
-                            : "text-foreground/60 hover:bg-accent hover:text-accent-foreground"
-                        )}
-                      >
-                        <Users className="mr-2 h-4 w-4" />
-                        Reuniones
-                      </Link>
+                      href={`/events/${event.slug}/tracks`}
+                      className={cn(
+                        "flex items-center px-3 py-1.5 text-sm rounded-md transition-colors",
+                        isEventPathActive(event.slug, "/tracks")
+                          ? "bg-accent text-accent-foreground"
+                          : "text-foreground/60 hover:bg-accent hover:text-accent-foreground"
+                      )}
+                    >
+                      <GitBranch className="mr-2 h-4 w-4" />
+                      {t("nav.tracks")}
+                    </Link>
+                    <Link
+                      href={`/events/${event.slug}/tasks`}
+                      className={cn(
+                        "flex items-center px-3 py-1.5 text-sm rounded-md transition-colors",
+                        isEventPathActive(event.slug, "/tasks")
+                          ? "bg-accent text-accent-foreground"
+                          : "text-foreground/60 hover:bg-accent hover:text-accent-foreground"
+                      )}
+                    >
+                      <CheckSquare className="mr-2 h-4 w-4" />
+                      {t("nav.tasks")}
+                    </Link>
+                    <Link
+                      href={`/events/${event.slug}/meetings`}
+                      className={cn(
+                        "flex items-center px-3 py-1.5 text-sm rounded-md transition-colors",
+                        isEventPathActive(event.slug, "/meetings")
+                          ? "bg-accent text-accent-foreground"
+                          : "text-foreground/60 hover:bg-accent hover:text-accent-foreground"
+                      )}
+                    >
+                      <Users className="mr-2 h-4 w-4" />
+                      {t("nav.meetings")}
+                    </Link>
                     </CollapsibleContent>
                   </Collapsible>
                 );
@@ -217,7 +218,7 @@ export function MobileSidebar({ events }: MobileSidebarProps) {
               )}
             >
               <Settings className="mr-3 h-5 w-5 flex-shrink-0" />
-              Configuración
+              {t("nav.settings")}
             </Link>
           </div>
         </div>

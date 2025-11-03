@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, UserPlus, Check } from "lucide-react";
 import Link from "next/link";
 import { NewEventModal } from "@/components/events/new-event-modal";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 import type { Event } from "@/lib/types";
 
 interface EventsClientProps {
@@ -22,6 +23,7 @@ interface EventsClientProps {
 }
 
 export function EventsClient({ events }: EventsClientProps) {
+  const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [joiningEvents, setJoiningEvents] = useState<Set<string>>(new Set());
   const [joinedStates, setJoinedStates] = useState<Set<string>>(
@@ -100,14 +102,14 @@ export function EventsClient({ events }: EventsClientProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Eventos</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t("events.title")}</h1>
           <p className="text-muted-foreground mt-2">
-            Gestiona todos tus eventos de Ethereum Costa Rica
+            {t("events.description")}
           </p>
         </div>
         <Button onClick={() => setIsModalOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
-          Nuevo Evento
+          {t("events.newEvent")}
         </Button>
       </div>
 
@@ -115,10 +117,10 @@ export function EventsClient({ events }: EventsClientProps) {
       {events.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <p className="text-muted-foreground mb-4">Aún no hay eventos</p>
+            <p className="text-muted-foreground mb-4">{t("events.noEvents")}</p>
             <Button onClick={() => setIsModalOpen(true)}>
               <Plus className="mr-2 h-4 w-4" />
-              Crea tu primer evento
+              {t("events.createFirstEvent")}
             </Button>
           </CardContent>
         </Card>
@@ -154,14 +156,14 @@ export function EventsClient({ events }: EventsClientProps) {
                   <CardContent>
                     <div className="space-y-4">
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">{event.trackCount} Tracks</span>
+                        <span className="text-muted-foreground">{event.trackCount} {t("events.tracks")}</span>
                         <span className="text-muted-foreground">
-                          {event.completedTasks}/{event.taskCount} Tareas
+                          {event.completedTasks}/{event.taskCount} {t("events.tasks")}
                         </span>
                       </div>
                       <div className="space-y-2">
                         <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <span>Progreso</span>
+                          <span>{t("events.progress")}</span>
                           <span>{progress}%</span>
                         </div>
                         <div className="w-full bg-secondary rounded-full h-2">
@@ -187,12 +189,12 @@ export function EventsClient({ events }: EventsClientProps) {
                       {isLoading ? (
                         <>
                           <span className="animate-spin">⟳</span>
-                          Dejando...
+                          {t("events.leaving")}
                         </>
                       ) : (
                         <>
                           <Check className="h-4 w-4" />
-                          Unido
+                          {t("events.joined")}
                         </>
                       )}
                     </Button>
@@ -207,12 +209,12 @@ export function EventsClient({ events }: EventsClientProps) {
                       {isLoading ? (
                         <>
                           <span className="animate-spin">⟳</span>
-                          Uniendo...
+                          {t("events.joining")}
                         </>
                       ) : (
                         <>
                           <UserPlus className="h-4 w-4" />
-                          Unirse
+                          {t("events.join")}
                         </>
                       )}
                     </Button>

@@ -5,12 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Search, Bell } from "lucide-react";
 import { MobileSidebar } from "./mobile-sidebar";
+import { useTranslation } from "@/lib/i18n/useTranslation";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
 
 interface HeaderProps {
   events: Array<{ id: string; name: string; slug: string }>;
 }
 
 export function Header({ events }: HeaderProps) {
+  const { t } = useTranslation();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -29,55 +32,58 @@ export function Header({ events }: HeaderProps) {
             href="/"
             className="transition-colors hover:text-foreground/80 text-foreground/60"
           >
-            Panel
+            {t("nav.dashboard")}
           </Link>
           <Link
             href="/events"
             className="transition-colors hover:text-foreground/80 text-foreground/60"
           >
-            Eventos
+            {t("nav.events")}
           </Link>
           <Link
             href="/tracks"
             className="transition-colors hover:text-foreground/80 text-foreground/60"
           >
-            Tracks
+            {t("nav.tracks")}
           </Link>
           <Link
             href="/tasks"
             className="transition-colors hover:text-foreground/80 text-foreground/60"
           >
-            Tareas
+            {t("nav.tasks")}
           </Link>
           <Link
             href="/meetings"
             className="transition-colors hover:text-foreground/80 text-foreground/60"
           >
-            Reuniones
+            {t("nav.meetings")}
           </Link>
         </nav>
 
         {/* Right side actions */}
         <div className="ml-auto flex items-center space-x-2">
+          {/* Language Switcher */}
+          <LanguageSwitcher />
+
           {/* Search */}
           <Button variant="ghost" size="icon" className="hidden sm:flex">
             <Search className="h-5 w-5" />
-            <span className="sr-only">Buscar</span>
+            <span className="sr-only">{t("header.search")}</span>
           </Button>
 
           {/* Notifications */}
           <Button variant="ghost" size="icon">
             <Bell className="h-5 w-5" />
-            <span className="sr-only">Notificaciones</span>
+            <span className="sr-only">{t("header.notifications")}</span>
           </Button>
 
           {/* User profile */}
           <Button variant="ghost" size="icon" className="rounded-full">
             <Avatar className="h-8 w-8">
-              <AvatarImage src="" alt="Usuario" />
+              <AvatarImage src="" alt={t("header.userMenu")} />
               <AvatarFallback>U</AvatarFallback>
             </Avatar>
-            <span className="sr-only">Menú de usuario</span>
+            <span className="sr-only">{t("header.userMenu")}</span>
           </Button>
         </div>
       </div>
