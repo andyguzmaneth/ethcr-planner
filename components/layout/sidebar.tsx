@@ -307,18 +307,15 @@ export function Sidebar({ events }: SidebarProps) {
 
         {/* Settings at bottom */}
         <div className="px-4 pt-4 border-t">
-          <Link
-            href="/settings"
+          <div
             className={cn(
-              "group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
-              pathname === "/settings"
-                ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              "group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-not-allowed opacity-50",
+              "text-sidebar-foreground/30"
             )}
           >
-            <Settings className="mr-3 h-5 w-5 flex-shrink-0" />
+            <Settings className="mr-3 h-5 w-5 flex-shrink-0 text-sidebar-foreground/30" />
             {t("nav.settings")}
-          </Link>
+          </div>
         </div>
       </div>
     </aside>

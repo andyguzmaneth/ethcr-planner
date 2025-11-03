@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Plus, List, LayoutGrid, Calendar as CalendarIcon } from "lucide-react";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 
 interface TaskWithDetails {
   id: string;
@@ -32,6 +33,7 @@ export function AreaTasksClient({
   areaName,
   tasks,
 }: AreaTasksClientProps) {
+  const { t } = useTranslation();
   const statusColors = {
     pending: "bg-gray-500",
     in_progress: "bg-blue-500",
@@ -84,7 +86,7 @@ export function AreaTasksClient({
         </div>
         <Button>
           <Plus className="mr-2 h-4 w-4" />
-          Nueva Tarea
+          {t("eventDetail.newTask")}
         </Button>
       </div>
 
@@ -115,7 +117,7 @@ export function AreaTasksClient({
                     <p className="text-muted-foreground mb-4">No se encontraron tareas</p>
                     <Button>
                       <Plus className="mr-2 h-4 w-4" />
-                      Crea tu primera tarea
+                      {t("eventDetail.createFirstTask")}
                     </Button>
                   </div>
                 ) : (
@@ -215,7 +217,7 @@ export function AreaTasksClient({
                     <p className="text-muted-foreground mb-4">No se encontraron tareas</p>
                     <Button>
                       <Plus className="mr-2 h-4 w-4" />
-                      Crea tu primera tarea
+                      {t("eventDetail.createFirstTask")}
                     </Button>
                   </div>
                 ) : (

@@ -71,7 +71,10 @@ export type Translations = {
     readonly completion: string;
     readonly addArea: string;
     readonly addTask: string;
+    readonly newTask: string;
+    readonly createFirstTask: string;
     readonly scheduleMeeting: string;
+    readonly createFirstMeeting: string;
     readonly tasksListDescription: string;
     readonly meetingsListDescription: string;
     readonly leader: string;

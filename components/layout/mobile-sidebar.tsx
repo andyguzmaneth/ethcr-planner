@@ -234,18 +234,15 @@ export function MobileSidebar({ events }: MobileSidebarProps) {
             </div>
           </nav>
           <div className="px-4 pt-4 border-t pb-4">
-            <Link
-              href="/settings"
+            <div
               className={cn(
-                "group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                pathname === "/settings"
-                  ? "bg-accent text-accent-foreground"
-                  : "text-foreground/60 hover:bg-accent hover:text-accent-foreground"
+                "group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-not-allowed opacity-50",
+                "text-foreground/30"
               )}
             >
-              <Settings className="mr-3 h-5 w-5 flex-shrink-0" />
+              <Settings className="mr-3 h-5 w-5 flex-shrink-0 text-foreground/30" />
               {t("nav.settings")}
-            </Link>
+            </div>
           </div>
         </div>
       </SheetContent>

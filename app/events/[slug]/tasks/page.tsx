@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, List, LayoutGrid, Calendar as CalendarIcon } from "lucide-react";
 import { getEventBySlug, getTasksByEventId, getUserById, getAreaById } from "@/lib/data";
+import { createServerTranslationFunction, getLocaleFromCookies } from "@/lib/i18n";
+import { cookies } from "next/headers";
 
 interface EventTasksPageProps {
   params: Promise<{ slug: string }>;
@@ -12,6 +14,11 @@ interface EventTasksPageProps {
 
 export default async function EventTasksPage({ params }: EventTasksPageProps) {
   const { slug } = await params;
+
+  const cookieStore = await cookies();
+  const localeFromCookie = cookieStore.get("app_locale")?.value;
+  const locale = getLocaleFromCookies(localeFromCookie);
+  const t = createServerTranslationFunction(locale);
 
   const event = getEventBySlug(slug);
   if (!event) {
@@ -67,7 +74,7 @@ export default async function EventTasksPage({ params }: EventTasksPageProps) {
           </div>
           <Button>
             <Plus className="mr-2 h-4 w-4" />
-            Nueva Tarea
+            {t("eventDetail.newTask")}
           </Button>
         </div>
 
@@ -98,7 +105,7 @@ export default async function EventTasksPage({ params }: EventTasksPageProps) {
                   <p className="text-muted-foreground mb-4">No se encontraron tareas</p>
                   <Button>
                     <Plus className="mr-2 h-4 w-4" />
-                    Crea tu primera tarea
+                    {t("eventDetail.createFirstTask")}
                   </Button>
                 </div>
               ) : (

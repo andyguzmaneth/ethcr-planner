@@ -54,10 +54,10 @@ export function Header({ events }: HeaderProps) {
           </Button>
 
           {/* User profile */}
-          <Button variant="ghost" size="icon" className="rounded-full">
-            <Avatar className="h-8 w-8">
+          <Button variant="ghost" size="icon" className="rounded-full" disabled>
+            <Avatar className="h-8 w-8 opacity-50">
               <AvatarImage src="" alt={t("header.userMenu")} />
-              <AvatarFallback>U</AvatarFallback>
+              <AvatarFallback className="text-muted-foreground/50">U</AvatarFallback>
             </Avatar>
             <span className="sr-only">{t("header.userMenu")}</span>
           </Button>

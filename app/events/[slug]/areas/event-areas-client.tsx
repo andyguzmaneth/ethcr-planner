@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Plus } from "lucide-react";
 import { NewAreaModal } from "@/components/events/new-area-modal";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 
 interface User {
   id: string;
@@ -47,6 +48,7 @@ export function EventAreasClient({
 }: EventAreasClientProps) {
   const router = useRouter();
   const [isAreaModalOpen, setIsAreaModalOpen] = useState(false);
+  const { t } = useTranslation();
 
   const handleAreaCreated = () => {
     router.refresh();
@@ -66,7 +68,7 @@ export function EventAreasClient({
         </div>
         <Button onClick={() => setIsAreaModalOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
-          Agregar Área
+          {t("eventDetail.addArea")}
         </Button>
       </div>
 
