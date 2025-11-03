@@ -1,11 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Settings } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/useTranslation";
+import { NewTrackModal } from "@/components/events/new-track-modal";
+import { useRouter } from "next/navigation";
 
 interface TrackWithStats {
   id: string;
@@ -16,8 +19,16 @@ interface TrackWithStats {
   completed: number;
 }
 
+interface User {
+  id: string;
+  name: string;
+  initials: string;
+  email?: string;
+}
+
 interface EventDetailClientProps {
   event: {
+    id: string;
     name: string;
     type: string;
     status: string;
@@ -26,6 +37,7 @@ interface EventDetailClientProps {
   totalTracks: number;
   totalTasks: number;
   completionPercentage: number;
+  users: User[];
 }
 
 export function EventDetailClient({
@@ -34,8 +46,15 @@ export function EventDetailClient({
   totalTracks,
   totalTasks,
   completionPercentage,
+  users,
 }: EventDetailClientProps) {
   const { t } = useTranslation();
+  const router = useRouter();
+  const [isTrackModalOpen, setIsTrackModalOpen] = useState(false);
+
+  const handleTrackCreated = () => {
+    router.refresh();
+  };
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -100,7 +119,7 @@ export function EventDetailClient({
         <TabsContent value="tracks" className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold">{t("nav.tracks")}</h2>
-            <Button>
+            <Button onClick={() => setIsTrackModalOpen(true)}>
               <Plus className="mr-2 h-4 w-4" />
               {t("eventDetail.addTrack")}
             </Button>
@@ -174,6 +193,14 @@ export function EventDetailClient({
           </Card>
         </TabsContent>
       </Tabs>
+
+      <NewTrackModal
+        open={isTrackModalOpen}
+        onOpenChange={setIsTrackModalOpen}
+        eventId={event.id}
+        users={users}
+        onSuccess={handleTrackCreated}
+      />
     </div>
   );
 }

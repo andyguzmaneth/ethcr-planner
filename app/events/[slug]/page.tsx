@@ -1,5 +1,5 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { getEventBySlug, getTracksByEventId, getTasksByEventId, getUserById } from "@/lib/data";
+import { getEventBySlug, getTracksByEventId, getTasksByEventId, getUserById, getUsers } from "@/lib/data";
 import { EventDetailClient } from "./event-detail-client";
 import { createServerTranslationFunction } from "@/lib/i18n";
 
@@ -45,10 +45,18 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
   const completionPercentage =
     totalTasks > 0 ? Math.round((totalCompleted / totalTasks) * 100) : 0;
 
+  const users = getUsers().map((user) => ({
+    id: user.id,
+    name: user.name,
+    initials: user.initials,
+    email: user.email,
+  }));
+
   return (
     <MainLayout>
       <EventDetailClient
         event={{
+          id: event.id,
           name: event.name,
           type: event.type,
           status: event.status,
@@ -57,6 +65,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
         totalTracks={tracks.length}
         totalTasks={totalTasks}
         completionPercentage={completionPercentage}
+        users={users}
       />
     </MainLayout>
   );

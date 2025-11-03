@@ -85,6 +85,27 @@ export const ko = {
     cancel: "취소",
     continue: "계속",
   },
+  // New Track Modal
+  newTrackModal: {
+    title: "새 트랙 추가",
+    description: "이 이벤트에 대한 새 트랙을 만듭니다. 필요시 나중에 리더를 할당할 수 있습니다.",
+    trackName: "트랙 이름",
+    trackNamePlaceholder: "예: 마케팅, 물류, 디자인",
+    description: "설명",
+    descriptionPlaceholder: "이 트랙에 대한 선택적 설명",
+    lead: "리더",
+    leadPlaceholder: "리더 선택 (선택사항)",
+    searchLead: "사용자 검색...",
+    noLead: "리더 없음",
+    noUsersFound: "사용자를 찾을 수 없습니다",
+    cancel: "취소",
+    create: "트랙 만들기",
+    creating: "만드는 중...",
+    errors: {
+      nameRequired: "트랙 이름이 필요합니다",
+      createFailed: "트랙을 만들지 못했습니다",
+    },
+  },
   // Common
   common: {
     loading: "로딩 중...",

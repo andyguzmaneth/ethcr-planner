@@ -26,54 +26,20 @@ export function Header({ events }: HeaderProps) {
           <span className="font-bold text-xl">ETHCR Planner</span>
         </Link>
 
-        {/* Desktop Navigation - will be hidden on mobile */}
-        <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
-          <Link
-            href="/"
-            className="transition-colors hover:text-foreground/80 text-foreground/60"
-          >
-            {t("nav.dashboard")}
-          </Link>
-          <Link
-            href="/events"
-            className="transition-colors hover:text-foreground/80 text-foreground/60"
-          >
-            {t("nav.events")}
-          </Link>
-          <Link
-            href="/tracks"
-            className="transition-colors hover:text-foreground/80 text-foreground/60"
-          >
-            {t("nav.tracks")}
-          </Link>
-          <Link
-            href="/tasks"
-            className="transition-colors hover:text-foreground/80 text-foreground/60"
-          >
-            {t("nav.tasks")}
-          </Link>
-          <Link
-            href="/meetings"
-            className="transition-colors hover:text-foreground/80 text-foreground/60"
-          >
-            {t("nav.meetings")}
-          </Link>
-        </nav>
-
         {/* Right side actions */}
         <div className="ml-auto flex items-center space-x-2">
           {/* Language Switcher */}
           <LanguageSwitcher />
 
           {/* Search */}
-          <Button variant="ghost" size="icon" className="hidden sm:flex">
-            <Search className="h-5 w-5" />
+          <Button variant="ghost" size="icon" className="hidden sm:flex" disabled>
+            <Search className="h-5 w-5 text-muted-foreground/50" />
             <span className="sr-only">{t("header.search")}</span>
           </Button>
 
           {/* Notifications */}
-          <Button variant="ghost" size="icon">
-            <Bell className="h-5 w-5" />
+          <Button variant="ghost" size="icon" disabled>
+            <Bell className="h-5 w-5 text-muted-foreground/50" />
             <span className="sr-only">{t("header.notifications")}</span>
           </Button>
 

@@ -85,6 +85,27 @@ export const es = {
     cancel: "Cancelar",
     continue: "Continuar",
   },
+  // New Track Modal
+  newTrackModal: {
+    title: "Agregar Nuevo Track",
+    description: "Crea un nuevo track para este evento. Puedes asignar un líder más tarde si es necesario.",
+    trackName: "Nombre del Track",
+    trackNamePlaceholder: "ej. Marketing, Logística, Diseño",
+    description: "Descripción",
+    descriptionPlaceholder: "Descripción opcional para este track",
+    lead: "Líder",
+    leadPlaceholder: "Seleccionar un líder (opcional)",
+    searchLead: "Buscar usuario...",
+    noLead: "Sin líder",
+    noUsersFound: "No se encontraron usuarios",
+    cancel: "Cancelar",
+    create: "Crear Track",
+    creating: "Creando...",
+    errors: {
+      nameRequired: "El nombre del track es requerido",
+      createFailed: "Error al crear el track",
+    },
+  },
   // Common
   common: {
     loading: "Cargando...",

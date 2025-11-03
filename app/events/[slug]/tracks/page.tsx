@@ -1,8 +1,6 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus } from "lucide-react";
-import { getEventBySlug, getTracksByEventId, getTasksByEventId, getUserById } from "@/lib/data";
+import { EventTracksClient } from "./event-tracks-client";
+import { getEventBySlug, getTracksByEventId, getTasksByEventId, getUserById, getUsers } from "@/lib/data";
 
 interface EventTracksPageProps {
   params: Promise<{ slug: string }>;
@@ -41,60 +39,21 @@ export default async function EventTracksPage({ params }: EventTracksPageProps) 
     };
   });
 
+  const users = getUsers().map((user) => ({
+    id: user.id,
+    name: user.name,
+    initials: user.initials,
+    email: user.email,
+  }));
+
   return (
     <MainLayout>
-      <div className="container mx-auto p-6 space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              Tracks - {event.name}
-            </h1>
-            <p className="text-muted-foreground mt-2">
-              Gestiona todos los tracks de este evento
-            </p>
-          </div>
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Agregar Track
-          </Button>
-        </div>
-
-        {/* Tracks Grid */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {tracksWithStats.map((track) => (
-            <Card key={track.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle className="text-lg">{track.name}</CardTitle>
-                <CardDescription>
-                  Líder: {track.lead?.name || "Sin asignar"}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">
-                      {track.completed}/{track.taskCount} Tareas
-                    </span>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>Progreso</span>
-                      <span>{track.progress}%</span>
-                    </div>
-                    <div className="w-full bg-secondary rounded-full h-2">
-                      <div
-                        className="bg-primary h-2 rounded-full transition-all"
-                        style={{ width: `${track.progress}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
+      <EventTracksClient
+        eventId={event.id}
+        eventName={event.name}
+        tracksWithStats={tracksWithStats}
+        users={users}
+      />
     </MainLayout>
   );
 }

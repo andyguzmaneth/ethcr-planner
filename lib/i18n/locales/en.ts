@@ -85,6 +85,27 @@ export const en = {
     cancel: "Cancel",
     continue: "Continue",
   },
+  // New Track Modal
+  newTrackModal: {
+    title: "Add New Track",
+    description: "Create a new track for this event. You can assign a lead later if needed.",
+    trackName: "Track Name",
+    trackNamePlaceholder: "e.g., Marketing, Logistics, Design",
+    description: "Description",
+    descriptionPlaceholder: "Optional description for this track",
+    lead: "Lead",
+    leadPlaceholder: "Select a lead (optional)",
+    searchLead: "Search for a user...",
+    noLead: "No lead",
+    noUsersFound: "No users found",
+    cancel: "Cancel",
+    create: "Create Track",
+    creating: "Creating...",
+    errors: {
+      nameRequired: "Track name is required",
+      createFailed: "Failed to create track",
+    },
+  },
   // Common
   common: {
     loading: "Loading...",
