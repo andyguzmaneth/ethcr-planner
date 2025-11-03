@@ -1,6 +1,6 @@
 import { Header } from "./header";
 import { Sidebar } from "./sidebar";
-import { getEvents, getUserJoinedEvents } from "@/lib/data";
+import { getEvents, getUserJoinedEvents, getAreasByEventId } from "@/lib/data";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -12,11 +12,18 @@ const CURRENT_USER_ID = "user-alfredo";
 export function MainLayout({ children }: MainLayoutProps) {
   // Only show events that the user has joined in the sidebar
   const joinedEvents = getUserJoinedEvents(CURRENT_USER_ID);
-  const sidebarEvents = joinedEvents.map((e) => ({ 
-    id: e.id, 
-    name: e.name, 
-    slug: e.slug 
-  }));
+  const sidebarEvents = joinedEvents.map((e) => {
+    const areas = getAreasByEventId(e.id).map((a) => ({
+      id: a.id,
+      name: a.name,
+    }));
+    return {
+      id: e.id,
+      name: e.name,
+      slug: e.slug,
+      areas,
+    };
+  });
 
   // All events for header (for now - could also filter if needed)
   const allEvents = getEvents().map((e) => ({ 

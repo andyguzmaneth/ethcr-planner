@@ -56,6 +56,7 @@ export default async function EventAreasPage({ params }: EventAreasPageProps) {
     <MainLayout>
       <EventAreasClient
         eventId={event.id}
+        eventSlug={slug}
         eventName={event.name}
         areasWithStats={areasWithStats}
         users={users}

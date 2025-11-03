@@ -22,7 +22,12 @@ import {
 import { useTranslation } from "@/lib/i18n/useTranslation";
 
 interface SidebarProps {
-  events: Array<{ id: string; name: string; slug: string }>;
+  events: Array<{ 
+    id: string; 
+    name: string; 
+    slug: string;
+    areas?: Array<{ id: string; name: string }>;
+  }>;
 }
 
 export function Sidebar({ events }: SidebarProps) {
@@ -41,6 +46,11 @@ export function Sidebar({ events }: SidebarProps) {
       icon: Calendar,
     },
   ];
+
+  // Helper function to check if an area path is active
+  const isAreaPathActive = (eventSlug: string, areaId: string) => {
+    return pathname === `/events/${eventSlug}/areas/${areaId}`;
+  };
   
   // Initialize open events based on current pathname
   const initializeOpenEvents = (): Record<string, boolean> => {
@@ -55,7 +65,25 @@ export function Sidebar({ events }: SidebarProps) {
     return initial;
   };
 
+  // Initialize open areas based on current pathname
+  const initializeOpenAreas = (): Record<string, boolean> => {
+    const initial: Record<string, boolean> = {};
+    events.forEach((event) => {
+      if (event.areas) {
+        // Check if current path is an area detail page for this event
+        const hasActiveArea = event.areas.some((area) => 
+          isAreaPathActive(event.slug, area.id)
+        );
+        if (hasActiveArea) {
+          initial[event.id] = true;
+        }
+      }
+    });
+    return initial;
+  };
+
   const [openEvents, setOpenEvents] = useState<Record<string, boolean>>(initializeOpenEvents);
+  const [openAreas, setOpenAreas] = useState<Record<string, boolean>>(initializeOpenAreas);
 
   // Update open events when pathname changes
   useEffect(() => {
@@ -70,10 +98,32 @@ export function Sidebar({ events }: SidebarProps) {
       });
       return updated;
     });
+
+    setOpenAreas((prev) => {
+      const updated = { ...prev };
+      events.forEach((event) => {
+        if (event.areas) {
+          const hasActiveArea = event.areas.some((area) => 
+            isAreaPathActive(event.slug, area.id)
+          );
+          if (hasActiveArea && !updated[event.id]) {
+            updated[event.id] = true;
+          }
+        }
+      });
+      return updated;
+    });
   }, [pathname, events]);
 
   const toggleEvent = (eventId: string) => {
     setOpenEvents((prev) => ({
+      ...prev,
+      [eventId]: !prev[eventId],
+    }));
+  };
+
+  const toggleAreas = (eventId: string) => {
+    setOpenAreas((prev) => ({
       ...prev,
       [eventId]: !prev[eventId],
     }));
@@ -159,18 +209,71 @@ export function Sidebar({ events }: SidebarProps) {
                   </div>
 
                   <CollapsibleContent className="pl-6 pt-1 space-y-1">
-                    <Link
-                      href={`/events/${event.slug}/areas`}
-                      className={cn(
-                        "flex items-center px-3 py-1.5 text-sm rounded-md transition-colors",
-                        isEventPathActive(event.slug, "/areas")
-                          ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                          : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                      )}
-                    >
-                      <GitBranch className="mr-2 h-4 w-4" />
-                      {t("nav.areas")}
-                    </Link>
+                    {event.areas && event.areas.length > 0 ? (
+                      <Collapsible
+                        open={openAreas[event.id] ?? false}
+                        onOpenChange={(open) => {
+                          setOpenAreas((prev) => ({
+                            ...prev,
+                            [event.id]: open,
+                          }));
+                        }}
+                      >
+                        <div className="flex items-center">
+                          <Link
+                            href={`/events/${event.slug}/areas`}
+                            className={cn(
+                              "flex-1 flex items-center px-3 py-1.5 text-sm rounded-md transition-colors",
+                              isEventPathActive(event.slug, "/areas") && !event.areas.some((area) => isAreaPathActive(event.slug, area.id))
+                                ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                                : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                            )}
+                          >
+                            <GitBranch className="mr-2 h-4 w-4" />
+                            {t("nav.areas")}
+                          </Link>
+                          <CollapsibleTrigger
+                            className="p-1 rounded-md hover:bg-sidebar-accent transition-colors"
+                          >
+                            {openAreas[event.id] ? (
+                              <ChevronDown className="h-4 w-4" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4" />
+                            )}
+                          </CollapsibleTrigger>
+                        </div>
+                        <CollapsibleContent className="pl-6 pt-1 space-y-1">
+                          {event.areas.map((area) => (
+                            <Link
+                              key={area.id}
+                              href={`/events/${event.slug}/areas/${area.id}`}
+                              className={cn(
+                                "flex items-center px-3 py-1.5 text-sm rounded-md transition-colors",
+                                isAreaPathActive(event.slug, area.id)
+                                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                                  : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                              )}
+                            >
+                              <span className="mr-2 h-2 w-2 rounded-full bg-current opacity-60" />
+                              <span className="truncate">{area.name}</span>
+                            </Link>
+                          ))}
+                        </CollapsibleContent>
+                      </Collapsible>
+                    ) : (
+                      <Link
+                        href={`/events/${event.slug}/areas`}
+                        className={cn(
+                          "flex items-center px-3 py-1.5 text-sm rounded-md transition-colors",
+                          isEventPathActive(event.slug, "/areas")
+                            ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                            : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                        )}
+                      >
+                        <GitBranch className="mr-2 h-4 w-4" />
+                        {t("nav.areas")}
+                      </Link>
+                    )}
                     <Link
                       href={`/events/${event.slug}/tasks`}
                       className={cn(

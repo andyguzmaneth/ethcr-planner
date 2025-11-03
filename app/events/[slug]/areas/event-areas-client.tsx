@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus } from "lucide-react";
@@ -31,6 +32,7 @@ interface AreaWithStats {
 
 interface EventAreasClientProps {
   eventId: string;
+  eventSlug: string;
   eventName: string;
   areasWithStats: AreaWithStats[];
   users: User[];
@@ -38,6 +40,7 @@ interface EventAreasClientProps {
 
 export function EventAreasClient({
   eventId,
+  eventSlug,
   eventName,
   areasWithStats,
   users,
@@ -70,35 +73,37 @@ export function EventAreasClient({
       {/* Areas Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {areasWithStats.map((area) => (
-          <Card key={area.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <CardTitle className="text-lg">{area.name}</CardTitle>
-              <CardDescription>
-                Líder: {area.lead?.name || "Sin asignar"}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">
-                    {area.completed}/{area.taskCount} Tareas
-                  </span>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>Progreso</span>
-                    <span>{area.progress}%</span>
+          <Link key={area.id} href={`/events/${eventSlug}/areas/${area.id}`}>
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+              <CardHeader>
+                <CardTitle className="text-lg">{area.name}</CardTitle>
+                <CardDescription>
+                  Líder: {area.lead?.name || "Sin asignar"}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      {area.completed}/{area.taskCount} Tareas
+                    </span>
                   </div>
-                  <div className="w-full bg-secondary rounded-full h-2">
-                    <div
-                      className="bg-primary h-2 rounded-full transition-all"
-                      style={{ width: `${area.progress}%` }}
-                    ></div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>Progreso</span>
+                      <span>{area.progress}%</span>
+                    </div>
+                    <div className="w-full bg-secondary rounded-full h-2">
+                      <div
+                        className="bg-primary h-2 rounded-full transition-all"
+                        style={{ width: `${area.progress}%` }}
+                      ></div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </Link>
         ))}
       </div>
 
