@@ -35,7 +35,7 @@ const mainNavigation = [
 ];
 
 interface SidebarProps {
-  events: Array<{ id: string; name: string }>;
+  events: Array<{ id: string; name: string; slug: string }>;
 }
 
 export function Sidebar({ events }: SidebarProps) {
@@ -49,12 +49,12 @@ export function Sidebar({ events }: SidebarProps) {
     }));
   };
 
-  const isEventActive = (eventId: string) => {
-    return pathname.startsWith(`/events/${eventId}`);
+  const isEventActive = (eventSlug: string) => {
+    return pathname.startsWith(`/events/${eventSlug}`);
   };
 
-  const isEventPathActive = (eventId: string, path: string) => {
-    return pathname === `/events/${eventId}${path}`;
+  const isEventPathActive = (eventSlug: string, path: string) => {
+    return pathname === `/events/${eventSlug}${path}`;
   };
 
   return (
@@ -97,7 +97,7 @@ export function Sidebar({ events }: SidebarProps) {
           <div className="space-y-1">
             {events.map((event) => {
               const isExpanded = openEvents[event.id] ?? false;
-              const eventIsActive = isEventActive(event.id);
+              const eventIsActive = isEventActive(event.slug);
 
               return (
                 <Collapsible
@@ -107,7 +107,7 @@ export function Sidebar({ events }: SidebarProps) {
                 >
                   <div className="flex items-center">
                     <Link
-                      href={`/events/${event.id}`}
+                      href={`/events/${event.slug}`}
                       className={cn(
                         "flex-1 flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
                         eventIsActive
@@ -130,10 +130,10 @@ export function Sidebar({ events }: SidebarProps) {
 
                   <CollapsibleContent className="pl-6 pt-1 space-y-1">
                     <Link
-                      href={`/events/${event.id}/tracks`}
+                      href={`/events/${event.slug}/tracks`}
                       className={cn(
                         "flex items-center px-3 py-1.5 text-sm rounded-md transition-colors",
-                        isEventPathActive(event.id, "/tracks")
+                        isEventPathActive(event.slug, "/tracks")
                           ? "bg-sidebar-accent text-sidebar-accent-foreground"
                           : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                       )}
@@ -142,10 +142,10 @@ export function Sidebar({ events }: SidebarProps) {
                       Tracks
                     </Link>
                     <Link
-                      href={`/events/${event.id}/tasks`}
+                      href={`/events/${event.slug}/tasks`}
                       className={cn(
                         "flex items-center px-3 py-1.5 text-sm rounded-md transition-colors",
-                        isEventPathActive(event.id, "/tasks")
+                        isEventPathActive(event.slug, "/tasks")
                           ? "bg-sidebar-accent text-sidebar-accent-foreground"
                           : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                       )}
@@ -154,10 +154,10 @@ export function Sidebar({ events }: SidebarProps) {
                       Tareas
                     </Link>
                     <Link
-                      href={`/events/${event.id}/meetings`}
+                      href={`/events/${event.slug}/meetings`}
                       className={cn(
                         "flex items-center px-3 py-1.5 text-sm rounded-md transition-colors",
-                        isEventPathActive(event.id, "/meetings")
+                        isEventPathActive(event.slug, "/meetings")
                           ? "bg-sidebar-accent text-sidebar-accent-foreground"
                           : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                       )}

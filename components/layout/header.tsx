@@ -7,7 +7,7 @@ import { Search, Bell } from "lucide-react";
 import { MobileSidebar } from "./mobile-sidebar";
 
 interface HeaderProps {
-  events: Array<{ id: string; name: string }>;
+  events: Array<{ id: string; name: string; slug: string }>;
 }
 
 export function Header({ events }: HeaderProps) {

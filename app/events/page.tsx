@@ -1,6 +1,9 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { getEvents, getTracks, getTasks } from "@/lib/data";
+import { getEvents, getTracks, getTasks, isUserJoinedEvent } from "@/lib/data";
 import { EventsClient } from "./events-client";
+
+// For now, we'll use a hardcoded user ID. In a real app, get from auth session
+const CURRENT_USER_ID = "user-alfredo";
 
 export default function EventsPage() {
   const events = getEvents();
@@ -12,12 +15,14 @@ export default function EventsPage() {
     const eventTracks = allTracks.filter((t) => t.eventId === event.id);
     const eventTasks = allTasks.filter((t) => t.eventId === event.id);
     const completedTasks = eventTasks.filter((t) => t.status === "completed").length;
+    const isJoined = isUserJoinedEvent(event.id, CURRENT_USER_ID);
 
     return {
       ...event,
       trackCount: eventTracks.length,
       taskCount: eventTasks.length,
       completedTasks,
+      isJoined,
     };
   });
 

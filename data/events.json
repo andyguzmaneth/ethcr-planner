@@ -2,17 +2,22 @@
   {
     "id": "1",
     "name": "ETH Pura Vida 2025",
+    "slug": "eth-pura-vida-2025",
     "type": "Conference",
     "status": "In Planning",
     "description": "Conferencia principal de Ethereum Costa Rica 2025",
     "startDate": "2025-06-15",
     "endDate": "2025-06-17",
     "createdAt": "2025-01-01T00:00:00Z",
-    "updatedAt": "2025-01-15T10:30:00Z"
+    "updatedAt": "2025-11-03T00:06:09.297Z",
+    "participantIds": [
+      "user-alfredo"
+    ]
   },
   {
     "id": "2",
     "name": "Meetup #12 - Blockchain Basics",
+    "slug": "meetup-12-blockchain-basics",
     "type": "Meetup",
     "status": "Active",
     "description": "Meetup mensual sobre fundamentos de blockchain",
@@ -24,14 +29,16 @@
   {
     "id": "3",
     "name": "Meetup #11 - DeFi Workshop",
+    "slug": "meetup-11-defi-workshop",
     "type": "Meetup",
     "status": "Completed",
     "description": "Taller sobre finanzas descentralizadas",
     "startDate": "2024-12-15",
     "endDate": "2024-12-15",
     "createdAt": "2024-11-01T00:00:00Z",
-    "updatedAt": "2024-12-20T16:00:00Z"
+    "updatedAt": "2025-11-03T00:06:11.226Z",
+    "participantIds": [
+      "user-alfredo"
+    ]
   }
 ]
-
-

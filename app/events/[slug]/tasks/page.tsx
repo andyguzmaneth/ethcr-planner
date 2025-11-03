@@ -4,16 +4,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, List, LayoutGrid, Calendar as CalendarIcon } from "lucide-react";
-import { getEventById, getTasksByEventId, getUserById, getTrackById } from "@/lib/data";
+import { getEventBySlug, getTasksByEventId, getUserById, getTrackById } from "@/lib/data";
 
 interface EventTasksPageProps {
-  params: Promise<{ eventId: string }>;
+  params: Promise<{ slug: string }>;
 }
 
 export default async function EventTasksPage({ params }: EventTasksPageProps) {
-  const { eventId } = await params;
+  const { slug } = await params;
 
-  const event = getEventById(eventId);
+  const event = getEventBySlug(slug);
   if (!event) {
     return (
       <MainLayout>
@@ -24,7 +24,7 @@ export default async function EventTasksPage({ params }: EventTasksPageProps) {
     );
   }
 
-  const tasks = getTasksByEventId(eventId);
+  const tasks = getTasksByEventId(event.id);
 
   const statusColors = {
     pending: "bg-gray-500",

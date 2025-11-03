@@ -19,11 +19,13 @@ export interface User {
 export interface Event {
   id: string;
   name: string;
+  slug: string; // URL-friendly version of the name
   type: EventType;
   status: EventStatus;
   description?: string;
   startDate?: string;
   endDate?: string;
+  participantIds?: string[]; // User IDs who have joined this event
   createdAt: string;
   updatedAt: string;
 }

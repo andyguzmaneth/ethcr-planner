@@ -2,16 +2,16 @@ import { MainLayout } from "@/components/layout/main-layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus } from "lucide-react";
-import { getEventById, getTracksByEventId, getTasksByEventId, getUserById } from "@/lib/data";
+import { getEventBySlug, getTracksByEventId, getTasksByEventId, getUserById } from "@/lib/data";
 
 interface EventTracksPageProps {
-  params: Promise<{ eventId: string }>;
+  params: Promise<{ slug: string }>;
 }
 
 export default async function EventTracksPage({ params }: EventTracksPageProps) {
-  const { eventId } = await params;
+  const { slug } = await params;
 
-  const event = getEventById(eventId);
+  const event = getEventBySlug(slug);
   if (!event) {
     return (
       <MainLayout>
@@ -22,8 +22,8 @@ export default async function EventTracksPage({ params }: EventTracksPageProps) 
     );
   }
 
-  const tracks = getTracksByEventId(eventId);
-  const allTasks = getTasksByEventId(eventId);
+  const tracks = getTracksByEventId(event.id);
+  const allTasks = getTasksByEventId(event.id);
 
   // Calculate stats for each track
   const tracksWithStats = tracks.map((track) => {

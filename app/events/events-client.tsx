@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus } from "lucide-react";
+import { Plus, UserPlus, Check } from "lucide-react";
 import Link from "next/link";
 import { NewEventModal } from "@/components/events/new-event-modal";
 import type { Event } from "@/lib/types";
@@ -15,17 +16,83 @@ interface EventsClientProps {
       trackCount: number;
       taskCount: number;
       completedTasks: number;
+      isJoined: boolean;
     }
   >;
 }
 
 export function EventsClient({ events }: EventsClientProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [joiningEvents, setJoiningEvents] = useState<Set<string>>(new Set());
+  const [joinedStates, setJoinedStates] = useState<Set<string>>(
+    new Set(events.filter((e) => e.isJoined).map((e) => e.id))
+  );
+  const router = useRouter();
 
   const handleContinue = (template: "meetup" | "eth-pura-vida") => {
     // Aquí se implementará la lógica para crear el evento con la plantilla seleccionada
     console.log("Crear evento con plantilla:", template);
     // TODO: Implementar creación de evento
+  };
+
+  const handleJoinEvent = async (eventId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (joiningEvents.has(eventId)) return;
+
+    setJoiningEvents((prev) => new Set(prev).add(eventId));
+
+    try {
+      const response = await fetch(`/api/events/${eventId}/join`, {
+        method: "POST",
+      });
+
+      if (response.ok) {
+        setJoinedStates((prev) => new Set(prev).add(eventId));
+        router.refresh(); // Refresh to update sidebar
+      }
+    } catch (error) {
+      console.error("Error joining event:", error);
+    } finally {
+      setJoiningEvents((prev) => {
+        const next = new Set(prev);
+        next.delete(eventId);
+        return next;
+      });
+    }
+  };
+
+  const handleLeaveEvent = async (eventId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (joiningEvents.has(eventId)) return;
+
+    setJoiningEvents((prev) => new Set(prev).add(eventId));
+
+    try {
+      const response = await fetch(`/api/events/${eventId}/join`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        setJoinedStates((prev) => {
+          const next = new Set(prev);
+          next.delete(eventId);
+          return next;
+        });
+        router.refresh(); // Refresh to update sidebar
+      }
+    } catch (error) {
+      console.error("Error leaving event:", error);
+    } finally {
+      setJoiningEvents((prev) => {
+        const next = new Set(prev);
+        next.delete(eventId);
+        return next;
+      });
+    }
   };
 
   return (
@@ -62,12 +129,18 @@ export function EventsClient({ events }: EventsClientProps) {
               ? Math.round((event.completedTasks / event.taskCount) * 100)
               : 0;
 
+            const isJoined = joinedStates.has(event.id);
+            const isLoading = joiningEvents.has(event.id);
+
             return (
-              <Link key={event.id} href={`/events/${event.id}`}>
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+              <Card
+                key={event.id}
+                className="hover:shadow-lg transition-shadow relative"
+              >
+                <Link href={`/events/${event.slug}`} className="block">
                   <CardHeader>
                     <div className="flex items-start justify-between">
-                      <div className="space-y-1">
+                      <div className="space-y-1 flex-1 pr-2">
                         <CardTitle className="text-xl">{event.name}</CardTitle>
                         <CardDescription>
                           <Badge variant="secondary" className="mr-2">
@@ -100,8 +173,52 @@ export function EventsClient({ events }: EventsClientProps) {
                       </div>
                     </div>
                   </CardContent>
-                </Card>
-              </Link>
+                </Link>
+                {/* Join/Leave Button - positioned absolutely to not interfere with card click */}
+                <div className="absolute top-4 right-4">
+                  {isJoined ? (
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={(e) => handleLeaveEvent(event.id, e)}
+                      disabled={isLoading}
+                      className="gap-2"
+                    >
+                      {isLoading ? (
+                        <>
+                          <span className="animate-spin">⟳</span>
+                          Dejando...
+                        </>
+                      ) : (
+                        <>
+                          <Check className="h-4 w-4" />
+                          Unido
+                        </>
+                      )}
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => handleJoinEvent(event.id, e)}
+                      disabled={isLoading}
+                      className="gap-2"
+                    >
+                      {isLoading ? (
+                        <>
+                          <span className="animate-spin">⟳</span>
+                          Uniendo...
+                        </>
+                      ) : (
+                        <>
+                          <UserPlus className="h-4 w-4" />
+                          Unirse
+                        </>
+                      )}
+                    </Button>
+                  )}
+                </div>
+              </Card>
             );
           })}
         </div>

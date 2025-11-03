@@ -11,6 +11,7 @@ import type {
   MeetingNote,
   EventTemplate,
 } from "./types";
+import { generateSlug } from "./utils";
 
 const dataDir = path.join(process.cwd(), "data");
 
@@ -68,10 +69,25 @@ export function getEventById(id: string): Event | undefined {
   return getEvents().find((event) => event.id === id);
 }
 
-export function createEvent(event: Omit<Event, "id" | "createdAt" | "updatedAt">): Event {
+export function getEventBySlug(slug: string): Event | undefined {
+  return getEvents().find((event) => event.slug === slug);
+}
+
+export function createEvent(event: Omit<Event, "id" | "slug" | "createdAt" | "updatedAt"> & { slug?: string }): Event {
   const events = getEvents();
+  const slug = event.slug || generateSlug(event.name);
+  
+  // Ensure slug is unique
+  let uniqueSlug = slug;
+  let counter = 1;
+  while (events.some((e) => e.slug === uniqueSlug)) {
+    uniqueSlug = `${slug}-${counter}`;
+    counter++;
+  }
+  
   const newEvent: Event = {
     ...event,
+    slug: uniqueSlug,
     id: `${Date.now()}`,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -86,6 +102,20 @@ export function updateEvent(id: string, updates: Partial<Event>): Event | null {
   const index = events.findIndex((e) => e.id === id);
   if (index === -1) return null;
 
+  // If name is being updated and no slug provided, regenerate slug
+  if (updates.name && !updates.slug) {
+    updates.slug = generateSlug(updates.name);
+    
+    // Ensure slug is unique (excluding current event)
+    let uniqueSlug = updates.slug;
+    let counter = 1;
+    while (events.some((e) => e.id !== id && e.slug === uniqueSlug)) {
+      uniqueSlug = `${updates.slug}-${counter}`;
+      counter++;
+    }
+    updates.slug = uniqueSlug;
+  }
+
   events[index] = {
     ...events[index],
     ...updates,
@@ -93,6 +123,48 @@ export function updateEvent(id: string, updates: Partial<Event>): Event | null {
   };
   writeJsonFile("events.json", events);
   return events[index];
+}
+
+export function joinEvent(eventId: string, userId: string): Event | null {
+  const event = getEventById(eventId);
+  if (!event) return null;
+
+  const participantIds = event.participantIds || [];
+  if (participantIds.includes(userId)) {
+    // Already joined
+    return event;
+  }
+
+  return updateEvent(eventId, {
+    participantIds: [...participantIds, userId],
+  });
+}
+
+export function leaveEvent(eventId: string, userId: string): Event | null {
+  const event = getEventById(eventId);
+  if (!event) return null;
+
+  const participantIds = event.participantIds || [];
+  if (!participantIds.includes(userId)) {
+    // Not joined
+    return event;
+  }
+
+  return updateEvent(eventId, {
+    participantIds: participantIds.filter((id) => id !== userId),
+  });
+}
+
+export function getUserJoinedEvents(userId: string): Event[] {
+  return getEvents().filter(
+    (event) => event.participantIds && event.participantIds.includes(userId)
+  );
+}
+
+export function isUserJoinedEvent(eventId: string, userId: string): boolean {
+  const event = getEventById(eventId);
+  if (!event || !event.participantIds) return false;
+  return event.participantIds.includes(userId);
 }
 
 // Track operations

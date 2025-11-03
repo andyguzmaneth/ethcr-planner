@@ -5,16 +5,16 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Plus, FileText } from "lucide-react";
 import Link from "next/link";
-import { getEventById, getMeetingsByEventId, getMeetingNoteByMeetingId, getUserById } from "@/lib/data";
+import { getEventBySlug, getMeetingsByEventId, getMeetingNoteByMeetingId, getUserById } from "@/lib/data";
 
 interface EventMeetingsPageProps {
-  params: Promise<{ eventId: string }>;
+  params: Promise<{ slug: string }>;
 }
 
 export default async function EventMeetingsPage({ params }: EventMeetingsPageProps) {
-  const { eventId } = await params;
+  const { slug } = await params;
 
-  const event = getEventById(eventId);
+  const event = getEventBySlug(slug);
   if (!event) {
     return (
       <MainLayout>
@@ -25,7 +25,7 @@ export default async function EventMeetingsPage({ params }: EventMeetingsPagePro
     );
   }
 
-  const meetings = getMeetingsByEventId(eventId);
+  const meetings = getMeetingsByEventId(event.id);
 
   // Enrich meetings with notes and attendees
   const meetingsWithDetails = meetings.map((meeting) => {
@@ -72,7 +72,7 @@ export default async function EventMeetingsPage({ params }: EventMeetingsPagePro
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {meetingsWithDetails.map((meeting) => (
-              <Link key={meeting.id} href={`/events/${eventId}/meetings/${meeting.id}`}>
+              <Link key={meeting.id} href={`/events/${event.slug}/meetings/${meeting.id}`}>
                 <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                   <CardHeader>
                     <div className="flex items-start justify-between">
