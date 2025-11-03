@@ -114,12 +114,11 @@ export const translations: Record<SupportedLocale, Translations> = {
 const DEFAULT_LOCALE: SupportedLocale = (process.env.NEXT_PUBLIC_DEFAULT_LOCALE as SupportedLocale) || "es";
 
 /**
- * Get the current locale from environment variable or default
- * In a real app, this would come from user preferences, cookies, or URL params
+ * Get the current locale from cookies (server-side) or localStorage (client-side)
  */
 export function getLocale(): SupportedLocale {
   if (typeof window !== "undefined") {
-    // Client-side: check localStorage or other user preference
+    // Client-side: check localStorage
     const stored = localStorage.getItem("app_locale") as SupportedLocale | null;
     if (stored && (stored === "en" || stored === "es" || stored === "ko")) {
       return stored;
@@ -129,11 +128,29 @@ export function getLocale(): SupportedLocale {
 }
 
 /**
- * Set the locale preference
+ * Get locale from cookies (server-side only)
+ */
+export function getLocaleFromCookies(cookies: string | undefined): SupportedLocale {
+  if (!cookies) return DEFAULT_LOCALE;
+  
+  const match = cookies.match(/(?:^|; )app_locale=([^;]*)/);
+  if (match) {
+    const locale = match[1] as SupportedLocale;
+    if (locale === "en" || locale === "es" || locale === "ko") {
+      return locale;
+    }
+  }
+  return DEFAULT_LOCALE;
+}
+
+/**
+ * Set the locale preference (both cookie and localStorage)
  */
 export function setLocale(locale: SupportedLocale): void {
   if (typeof window !== "undefined") {
     localStorage.setItem("app_locale", locale);
+    // Also set cookie so server can read it
+    document.cookie = `app_locale=${locale}; path=/; max-age=31536000; SameSite=Lax`;
   }
 }
 
