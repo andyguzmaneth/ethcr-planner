@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,11 @@ interface MobileSidebarProps {
 export function MobileSidebar({ events }: MobileSidebarProps) {
   const pathname = usePathname();
   const { t } = useTranslation();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const mainNavigation = [
     {
@@ -90,6 +96,15 @@ export function MobileSidebar({ events }: MobileSidebarProps) {
     return pathname === `/events/${eventSlug}${path}`;
   };
 
+  if (!mounted) {
+    return (
+      <Button variant="ghost" size="icon" className="mr-2 md:hidden" disabled>
+        <Menu className="h-5 w-5" />
+        <span className="sr-only">{t("header.toggleMenu")}</span>
+      </Button>
+    );
+  }
+
   return (
     <Sheet>
       <SheetTrigger asChild className="md:hidden">
@@ -101,7 +116,18 @@ export function MobileSidebar({ events }: MobileSidebarProps) {
       <SheetContent side="left" className="w-[240px] p-0">
         <div className="flex flex-col h-full">
           <div className="p-4 border-b">
-            <span className="font-bold text-lg">ETHCR Planner</span>
+            <Link href="/" className="flex items-center">
+              <div className="relative h-8 w-auto aspect-[16/5] max-w-[160px]">
+                <Image
+                  src="/hero-banner.png"
+                  alt="Ethereum Costa Rica Event Planner"
+                  fill
+                  className="object-contain object-left"
+                  priority
+                  sizes="160px"
+                />
+              </div>
+            </Link>
           </div>
           <nav className="flex-1 flex flex-col pt-6 pb-4 overflow-y-auto px-4 space-y-1">
             {/* Main Navigation Section */}

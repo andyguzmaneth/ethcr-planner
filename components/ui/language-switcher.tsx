@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import {
   DropdownMenu,
@@ -19,6 +20,20 @@ const languageNames: Record<SupportedLocale, string> = {
 
 export function LanguageSwitcher() {
   const { locale, setCurrentLocale } = useTranslation();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <Button variant="ghost" size="icon" disabled>
+        <Globe className="h-5 w-5" />
+        <span className="sr-only">Change language</span>
+      </Button>
+    );
+  }
 
   return (
     <DropdownMenu>

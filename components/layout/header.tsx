@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Search, Bell } from "lucide-react";
@@ -22,8 +23,17 @@ export function Header({ events }: HeaderProps) {
         <MobileSidebar events={events} />
 
         {/* Logo */}
-        <Link href="/" className="mr-6 flex items-center space-x-2">
-          <span className="font-bold text-xl">ETHCR Planner</span>
+        <Link href="/" className="mr-6 flex items-center">
+          <div className="relative h-10 w-auto aspect-[16/5] max-w-[200px]">
+            <Image
+              src="/hero-banner.png"
+              alt="Ethereum Costa Rica Event Planner"
+              fill
+              className="object-contain object-left"
+              priority
+              sizes="(max-width: 768px) 120px, 200px"
+            />
+          </div>
         </Link>
 
         {/* Right side actions */}

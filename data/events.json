@@ -24,8 +24,10 @@
     "startDate": "2025-02-10",
     "endDate": "2025-02-10",
     "createdAt": "2025-01-05T00:00:00Z",
-    "updatedAt": "2025-11-03T01:05:53.311Z",
-    "participantIds": []
+    "updatedAt": "2025-11-03T01:08:59.563Z",
+    "participantIds": [
+      "user-alfredo"
+    ]
   },
   {
     "id": "3",

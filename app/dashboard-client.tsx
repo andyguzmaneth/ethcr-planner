@@ -53,14 +53,15 @@ export function DashboardClient({
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      {/* Welcome Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">{t("dashboard.title")}</h1>
-        <p className="text-muted-foreground mt-2">
-          {t("dashboard.welcome")}
-        </p>
-      </div>
+    <div className="space-y-6">
+      <div className="container mx-auto px-6 space-y-6">
+        {/* Welcome Header */}
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">{t("dashboard.title")}</h1>
+          <p className="text-muted-foreground mt-2">
+            {t("dashboard.welcome")}
+          </p>
+        </div>
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -162,6 +163,7 @@ export function DashboardClient({
             </div>
           </CardContent>
         </Card>
+      </div>
       </div>
     </div>
   );
