@@ -92,6 +92,8 @@ export const ko = {
   newAreaModal: {
     title: "새 영역 추가",
     description: "이 이벤트에 대한 새 영역을 만듭니다. 필요시 나중에 리더를 할당할 수 있습니다.",
+    editTitle: "영역 편집",
+    editDescription: "이 이벤트에 대한 영역 세부 정보를 업데이트하세요.",
     areaName: "영역 이름",
     areaNamePlaceholder: "예: 마케팅, 물류, 디자인",
     descriptionPlaceholder: "이 영역에 대한 선택적 설명",
@@ -103,9 +105,12 @@ export const ko = {
     cancel: "취소",
     create: "영역 만들기",
     creating: "만드는 중...",
+    update: "영역 업데이트",
+    updating: "업데이트 중...",
     errors: {
       nameRequired: "영역 이름이 필요합니다",
       createFailed: "영역을 만들지 못했습니다",
+      updateFailed: "영역을 업데이트하지 못했습니다",
     },
   },
   // New Task Modal

@@ -106,22 +106,13 @@
   {
     "eventId": "1",
     "areaId": "area-1762133593744",
-    "title": "Ir a cenar!",
-    "assigneeId": "user-jose-pablo",
-    "deadline": "2025-11-15",
+    "title": "Organizar Cena",
+    "assigneeId": "user-alberto",
+    "deadline": "2025-11-13",
     "status": "in_progress",
     "id": "task-1762134405266",
     "createdAt": "2025-11-03T01:46:45.266Z",
-    "updatedAt": "2025-11-03T01:46:45.266Z"
-  },
-  {
-    "eventId": "1",
-    "areaId": "area-1762133593744",
-    "title": "TestingCompletada",
-    "status": "completed",
-    "id": "task-1762134434946",
-    "createdAt": "2025-11-03T01:47:14.946Z",
-    "updatedAt": "2025-11-03T01:47:14.946Z"
+    "updatedAt": "2025-11-03T02:19:39.405Z"
   },
   {
     "eventId": "1",
@@ -155,5 +146,25 @@
     "id": "task-1762134880832",
     "createdAt": "2025-11-03T01:54:40.832Z",
     "updatedAt": "2025-11-03T01:54:40.832Z"
+  },
+  {
+    "eventId": "3",
+    "areaId": "area-1762136127900",
+    "title": "Encontrar Lugar",
+    "status": "pending",
+    "id": "task-1762136151633",
+    "createdAt": "2025-11-03T02:15:51.633Z",
+    "updatedAt": "2025-11-03T02:15:51.633Z"
+  },
+  {
+    "eventId": "1",
+    "areaId": "area-1762133593744",
+    "title": "Agregar todas las fotos y videos a carpeta drive",
+    "assigneeId": "user-maria",
+    "deadline": "2025-11-04",
+    "status": "pending",
+    "id": "task-1762136357270",
+    "createdAt": "2025-11-03T02:19:17.270Z",
+    "updatedAt": "2025-11-03T02:19:17.270Z"
   }
 ]

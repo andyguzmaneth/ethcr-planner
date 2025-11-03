@@ -37,6 +37,7 @@ export interface Area {
   description?: string;
   leadId: string; // User ID
   participantIds: string[]; // User IDs
+  order?: number; // Display order (lower numbers appear first)
   createdAt: string;
   updatedAt: string;
 }

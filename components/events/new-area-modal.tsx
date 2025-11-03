@@ -17,6 +17,7 @@ import { useTranslation } from "@/lib/i18n/useTranslation";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Check, ChevronsUpDown, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Area } from "@/lib/types";
 
 interface User {
   id: string;
@@ -28,6 +29,7 @@ interface User {
 interface NewAreaModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  area?: Area; // Optional area for edit mode
   eventId: string;
   users: User[];
   onSuccess?: () => void;
@@ -36,19 +38,41 @@ interface NewAreaModalProps {
 export function NewAreaModal({
   open,
   onOpenChange,
+  area: editingArea,
   eventId,
   users,
   onSuccess,
 }: NewAreaModalProps) {
   const { t } = useTranslation();
-  const [areaName, setAreaName] = useState("");
-  const [description, setDescription] = useState("");
-  const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
+  const isEditMode = !!editingArea;
+  
+  // Initialize form with area data if editing
+  const [areaName, setAreaName] = useState(editingArea?.name || "");
+  const [description, setDescription] = useState(editingArea?.description || "");
+  const [selectedLeadId, setSelectedLeadId] = useState<string | null>(editingArea?.leadId || null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLeadDropdownOpen, setIsLeadDropdownOpen] = useState(false);
   const [leadSearchQuery, setLeadSearchQuery] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Reset form when modal opens/closes or editing area changes
+  useEffect(() => {
+    if (open) {
+      if (editingArea) {
+        setAreaName(editingArea.name);
+        setDescription(editingArea.description || "");
+        setSelectedLeadId(editingArea.leadId || null);
+      } else {
+        setAreaName("");
+        setDescription("");
+        setSelectedLeadId(null);
+      }
+      setLeadSearchQuery("");
+      setIsLeadDropdownOpen(false);
+      setError(null);
+    }
+  }, [open, editingArea]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -93,13 +117,18 @@ export function NewAreaModal({
     setError(null);
 
     try {
-      const response = await fetch("/api/areas", {
-        method: "POST",
+      const url = isEditMode
+        ? `/api/areas/${editingArea.id}`
+        : "/api/areas";
+      const method = isEditMode ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          eventId,
+          eventId: isEditMode ? editingArea.eventId : eventId,
           name: areaName.trim(),
           description: description.trim() || undefined,
           leadId: selectedLeadId || undefined,
@@ -108,7 +137,12 @@ export function NewAreaModal({
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || t("newAreaModal.errors.createFailed"));
+        throw new Error(
+          data.error ||
+            (isEditMode
+              ? t("newAreaModal.errors.updateFailed")
+              : t("newAreaModal.errors.createFailed"))
+        );
       }
 
       // Reset form
@@ -123,7 +157,9 @@ export function NewAreaModal({
       setError(
         err instanceof Error
           ? err.message
-          : t("newAreaModal.errors.createFailed")
+          : isEditMode
+            ? t("newAreaModal.errors.updateFailed")
+            : t("newAreaModal.errors.createFailed")
       );
     } finally {
       setIsSubmitting(false);
@@ -144,9 +180,13 @@ export function NewAreaModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{t("newAreaModal.title")}</DialogTitle>
+          <DialogTitle>
+            {isEditMode ? t("newAreaModal.editTitle") : t("newAreaModal.title")}
+          </DialogTitle>
           <DialogDescription>
-            {t("newAreaModal.description")}
+            {isEditMode
+              ? t("newAreaModal.editDescription")
+              : t("newAreaModal.description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -307,8 +347,12 @@ export function NewAreaModal({
           </Button>
           <Button onClick={handleSubmit} disabled={isSubmitting || !areaName.trim()}>
             {isSubmitting
-              ? t("newAreaModal.creating")
-              : t("newAreaModal.create")}
+              ? isEditMode
+                ? t("newAreaModal.updating")
+                : t("newAreaModal.creating")
+              : isEditMode
+                ? t("newAreaModal.update")
+                : t("newAreaModal.create")}
           </Button>
         </DialogFooter>
       </DialogContent>

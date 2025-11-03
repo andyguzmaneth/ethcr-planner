@@ -92,6 +92,8 @@ export const en = {
   newAreaModal: {
     title: "Add New Area",
     description: "Create a new area for this event. You can assign a lead later if needed.",
+    editTitle: "Edit Area",
+    editDescription: "Update the area details for this event.",
     areaName: "Area Name",
     areaNamePlaceholder: "e.g., Marketing, Logistics, Design",
     descriptionPlaceholder: "Optional description for this area",
@@ -103,9 +105,12 @@ export const en = {
     cancel: "Cancel",
     create: "Create Area",
     creating: "Creating...",
+    update: "Update Area",
+    updating: "Updating...",
     errors: {
       nameRequired: "Area name is required",
       createFailed: "Failed to create area",
+      updateFailed: "Failed to update area",
     },
   },
   // New Task Modal

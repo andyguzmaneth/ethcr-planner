@@ -18,6 +18,7 @@ import { NewAreaModal } from "@/components/events/new-area-modal";
 import { NewTaskModal } from "@/components/events/new-task-modal";
 import { DeleteAreaDialog } from "@/components/events/delete-area-dialog";
 import { useRouter } from "next/navigation";
+import { Area } from "@/lib/types";
 
 interface AreaWithStats {
   id: string;
@@ -62,6 +63,7 @@ export function EventDetailClient({
   const { t } = useTranslation();
   const router = useRouter();
   const [isAreaModalOpen, setIsAreaModalOpen] = useState(false);
+  const [editingArea, setEditingArea] = useState<Area | null>(null);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [areaToDelete, setAreaToDelete] = useState<AreaWithStats | null>(null);
@@ -69,6 +71,13 @@ export function EventDetailClient({
 
   const handleAreaCreated = () => {
     router.refresh();
+  };
+
+  const handleModalClose = (open: boolean) => {
+    setIsAreaModalOpen(open);
+    if (!open) {
+      setEditingArea(null);
+    }
   };
 
   const handleDeleteClick = (e: React.MouseEvent, area: AreaWithStats) => {
@@ -100,10 +109,22 @@ export function EventDetailClient({
     }
   };
 
-  const handleEditClick = (e: React.MouseEvent, area: AreaWithStats) => {
+  const handleEditClick = async (e: React.MouseEvent, area: AreaWithStats) => {
     e.stopPropagation();
-    // TODO: Implement edit area functionality
-    console.log("Edit area:", area);
+    
+    // Fetch full area data
+    try {
+      const response = await fetch(`/api/areas/${area.id}`);
+      if (response.ok) {
+        const fullArea = await response.json();
+        setEditingArea(fullArea);
+        setIsAreaModalOpen(true);
+      } else {
+        console.error("Failed to fetch area data");
+      }
+    } catch (error) {
+      console.error("Error fetching area data:", error);
+    }
   };
 
   return (
@@ -277,7 +298,8 @@ export function EventDetailClient({
 
       <NewAreaModal
         open={isAreaModalOpen}
-        onOpenChange={setIsAreaModalOpen}
+        onOpenChange={handleModalClose}
+        area={editingArea || undefined}
         eventId={event.id}
         users={users}
         onSuccess={handleAreaCreated}

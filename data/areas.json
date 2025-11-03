@@ -10,7 +10,8 @@
       "user-jose-pablo"
     ],
     "createdAt": "2025-01-01T00:00:00Z",
-    "updatedAt": "2025-01-15T10:00:00Z"
+    "updatedAt": "2025-11-03T02:26:38.763Z",
+    "order": 2
   },
   {
     "id": "area-marketing",
@@ -22,7 +23,8 @@
       "user-daniel"
     ],
     "createdAt": "2025-01-01T00:00:00Z",
-    "updatedAt": "2025-01-15T10:00:00Z"
+    "updatedAt": "2025-11-03T02:26:38.763Z",
+    "order": 3
   },
   {
     "id": "area-diseno",
@@ -34,7 +36,8 @@
       "user-mari"
     ],
     "createdAt": "2025-01-01T00:00:00Z",
-    "updatedAt": "2025-01-15T10:00:00Z"
+    "updatedAt": "2025-11-03T02:26:38.763Z",
+    "order": 4
   },
   {
     "id": "area-hackathon",
@@ -44,7 +47,8 @@
     "leadId": "user-alberto",
     "participantIds": [],
     "createdAt": "2025-01-01T00:00:00Z",
-    "updatedAt": "2025-01-15T10:00:00Z"
+    "updatedAt": "2025-11-03T02:26:38.763Z",
+    "order": 5
   },
   {
     "id": "area-lugar",
@@ -54,7 +58,8 @@
     "leadId": "user-maria",
     "participantIds": [],
     "createdAt": "2025-01-01T00:00:00Z",
-    "updatedAt": "2025-01-15T10:00:00Z"
+    "updatedAt": "2025-11-03T02:26:38.763Z",
+    "order": 6
   },
   {
     "id": "area-sponsors",
@@ -64,7 +69,8 @@
     "leadId": "user-andy",
     "participantIds": [],
     "createdAt": "2025-01-01T00:00:00Z",
-    "updatedAt": "2025-01-15T10:00:00Z"
+    "updatedAt": "2025-11-03T02:26:38.763Z",
+    "order": 7
   },
   {
     "id": "area-agenda",
@@ -74,7 +80,8 @@
     "leadId": "user-jose-pablo",
     "participantIds": [],
     "createdAt": "2025-01-01T00:00:00Z",
-    "updatedAt": "2025-01-15T10:00:00Z"
+    "updatedAt": "2025-11-03T02:26:38.763Z",
+    "order": 8
   },
   {
     "id": "area-website",
@@ -86,7 +93,8 @@
       "user-justin"
     ],
     "createdAt": "2025-01-01T00:00:00Z",
-    "updatedAt": "2025-01-15T10:00:00Z"
+    "updatedAt": "2025-11-03T02:26:38.763Z",
+    "order": 9
   },
   {
     "id": "area-universidades",
@@ -96,16 +104,38 @@
     "leadId": "user-robert",
     "participantIds": [],
     "createdAt": "2025-01-01T00:00:00Z",
-    "updatedAt": "2025-01-15T10:00:00Z"
+    "updatedAt": "2025-11-03T02:26:38.763Z",
+    "order": 10
   },
   {
     "eventId": "1",
-    "name": "🚨 Pending",
+    "name": "🚨 Pendientes Para Terminar",
     "description": "Tareas pendientes para cerrar el evento 2025",
     "leadId": "user-andy",
     "participantIds": [],
     "id": "area-1762133593744",
     "createdAt": "2025-11-03T01:33:13.744Z",
-    "updatedAt": "2025-11-03T01:33:13.744Z"
+    "updatedAt": "2025-11-03T02:26:38.763Z",
+    "order": 1
+  },
+  {
+    "eventId": "2",
+    "name": "Logistica",
+    "leadId": "user-maria",
+    "participantIds": [],
+    "id": "area-1762136111084",
+    "createdAt": "2025-11-03T02:15:11.084Z",
+    "updatedAt": "2025-11-03T02:21:13.004Z",
+    "order": 1
+  },
+  {
+    "eventId": "3",
+    "name": "Logistica",
+    "leadId": "user-maria",
+    "participantIds": [],
+    "id": "area-1762136127900",
+    "createdAt": "2025-11-03T02:15:27.901Z",
+    "updatedAt": "2025-11-03T02:21:13.005Z",
+    "order": 1
   }
 ]

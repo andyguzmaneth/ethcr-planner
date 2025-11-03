@@ -173,7 +173,56 @@ export function getAreas(): Area[] {
 }
 
 export function getAreasByEventId(eventId: string): Area[] {
-  return getAreas().filter((area) => area.eventId === eventId);
+  const allAreas = getAreas();
+  let areas = allAreas.filter((area) => area.eventId === eventId);
+  
+  // Migrate areas without order values
+  let needsUpdate = false;
+  const areasWithoutOrder = areas.filter((area) => area.order === undefined);
+  if (areasWithoutOrder.length > 0) {
+    const areasWithOrder = areas.filter((area) => area.order !== undefined);
+    const maxOrder = areasWithOrder.reduce((max, a) => Math.max(max, a.order ?? 0), 0);
+    
+    // Sort areas without order by createdAt
+    const sortedWithoutOrder = [...areasWithoutOrder].sort(
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+    
+    // Assign order values - update both in filtered array and allAreas array
+    sortedWithoutOrder.forEach((area, index) => {
+      const newOrder = maxOrder + index + 1;
+      area.order = newOrder;
+      area.updatedAt = new Date().toISOString();
+      
+      // Update in allAreas array as well
+      const areaInAll = allAreas.find((a) => a.id === area.id);
+      if (areaInAll) {
+        areaInAll.order = newOrder;
+        areaInAll.updatedAt = area.updatedAt;
+      }
+    });
+    
+    needsUpdate = true;
+  }
+  
+  // Save if we made changes
+  if (needsUpdate) {
+    writeJsonFile("areas.json", allAreas);
+    // Reload to get updated data
+    const updatedAreas = getAreas();
+    areas = updatedAreas.filter((area) => area.eventId === eventId);
+  }
+  
+  // Sort by order, then by createdAt for areas without order (shouldn't happen after migration)
+  return areas.sort((a, b) => {
+    const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
+    const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
+    if (orderA !== orderB) {
+      return orderA - orderB;
+    }
+    // If orders are equal (or both undefined), sort by createdAt
+    return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+  });
 }
 
 export function getAreaById(id: string): Area | undefined {
@@ -182,8 +231,12 @@ export function getAreaById(id: string): Area | undefined {
 
 export function createArea(area: Omit<Area, "id" | "createdAt" | "updatedAt">): Area {
   const areas = getAreas();
+  const eventAreas = areas.filter((a) => a.eventId === area.eventId);
+  const maxOrder = eventAreas.reduce((max, a) => Math.max(max, a.order ?? 0), 0);
+  
   const newArea: Area = {
     ...area,
+    order: area.order ?? maxOrder + 1,
     id: `area-${Date.now()}`,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -214,7 +267,6 @@ export function deleteArea(id: string): boolean {
 
   // Delete all tasks associated with this area
   const tasks = getTasks();
-  const areaTasks = tasks.filter((task) => task.areaId === id);
   
   // Remove tasks that belong to this area
   const remainingTasks = tasks.filter((task) => task.areaId !== id);
@@ -227,6 +279,31 @@ export function deleteArea(id: string): boolean {
   writeJsonFile("areas.json", areas);
   
   return true;
+}
+
+export function reorderAreas(eventId: string, areaOrders: { id: string; order: number }[]): boolean {
+  const areas = getAreas();
+  const eventAreas = areas.filter((a) => a.eventId === eventId);
+  
+  // Create a map of new orders
+  const orderMap = new Map(areaOrders.map((ao) => [ao.id, ao.order]));
+  
+  // Update all event areas
+  let updated = false;
+  for (const area of eventAreas) {
+    const newOrder = orderMap.get(area.id);
+    if (newOrder !== undefined && area.order !== newOrder) {
+      area.order = newOrder;
+      area.updatedAt = new Date().toISOString();
+      updated = true;
+    }
+  }
+  
+  if (updated) {
+    writeJsonFile("areas.json", areas);
+  }
+  
+  return updated;
 }
 
 // Responsibility operations
