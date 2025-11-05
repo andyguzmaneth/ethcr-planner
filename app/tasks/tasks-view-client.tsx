@@ -28,32 +28,38 @@ import {
 } from "@/components/ui/table";
 
 interface TaskWithDetails extends Task {
-  assignee: {
+  assignee?: {
     id: string;
     name: string;
     initials?: string;
   } | null;
+  area?: {
+    id: string;
+    name: string;
+  } | null;
+  event?: {
+    id: string;
+    name: string;
+  } | null;
 }
 
-interface AreaTasksClientProps {
-  eventId: string;
-  eventName: string;
-  areaId: string;
-  areaName: string;
-  areas: Array<{ id: string; name: string }>;
-  users: Array<{ id: string; name: string; initials: string; email?: string }>;
+interface TasksViewClientProps {
   tasks: TaskWithDetails[];
+  events: Array<{ id: string; name: string }>;
+  areas: Array<{ id: string; name: string; eventId: string }>;
+  users: Array<{ id: string; name: string; initials: string; email?: string }>;
+  statusColors: Record<string, string>;
+  statusLabels: Record<string, string>;
 }
 
-export function AreaTasksClient({
-  eventId,
-  eventName,
-  areaId,
-  areaName,
+export function TasksViewClient({
+  tasks,
+  events,
   areas,
   users,
-  tasks,
-}: AreaTasksClientProps) {
+  statusColors,
+  statusLabels,
+}: TasksViewClientProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -112,19 +118,6 @@ export function AreaTasksClient({
     setEditingTask(task);
     setIsModalOpen(true);
   };
-  const statusColors = {
-    pending: "bg-gray-500",
-    in_progress: "bg-blue-500",
-    blocked: "bg-red-500",
-    completed: "bg-green-500",
-  };
-
-  const statusLabels = {
-    pending: "Pendiente",
-    in_progress: "En Progreso",
-    blocked: "Bloqueada",
-    completed: "Completada",
-  };
 
   // Group tasks by status for Kanban view
   const tasksByStatus = {
@@ -154,20 +147,6 @@ export function AreaTasksClient({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Tareas</h2>
-          <p className="text-muted-foreground mt-1">
-            Tareas filtradas para {areaName} en {eventName}
-          </p>
-        </div>
-        <Button onClick={() => setIsModalOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          {t("eventDetail.newTask")}
-        </Button>
-      </div>
-
       {/* View Toggle */}
       <Tabs defaultValue="list" className="w-full">
         <TabsList>
@@ -212,14 +191,21 @@ export function AreaTasksClient({
                       >
                         <div className="flex items-center gap-4 flex-1">
                           <div
-                            className={`w-3 h-3 rounded-full ${statusColors[task.status]}`}
+                            className={`w-3 h-3 rounded-full ${statusColors[task.status as keyof typeof statusColors]}`}
                           />
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
                               <h3 className="font-medium">{task.title}</h3>
+                              {task.area && (
+                                <Badge variant="outline" className="text-xs">
+                                  {task.area.name}
+                                </Badge>
+                              )}
                             </div>
                             <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
                               <span>{task.assignee?.name || "Sin asignar"}</span>
+                              <span>•</span>
+                              <span>{task.event?.name || "Evento desconocido"}</span>
                               {task.deadline && (
                                 <>
                                   <span>•</span>
@@ -231,7 +217,7 @@ export function AreaTasksClient({
                         </div>
                         <div className="flex items-center gap-2">
                           <Badge variant="secondary">
-                            {statusLabels[task.status]}
+                            {statusLabels[task.status as keyof typeof statusLabels]}
                           </Badge>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -336,6 +322,16 @@ export function AreaTasksClient({
                                     {new Date(task.deadline).toLocaleDateString()}
                                   </div>
                                 )}
+                                {task.area && (
+                                  <Badge variant="outline" className="text-xs w-fit">
+                                    {task.area.name}
+                                  </Badge>
+                                )}
+                                {task.event && (
+                                  <div className="text-xs text-muted-foreground">
+                                    {task.event.name}
+                                  </div>
+                                )}
                               </div>
                             </div>
                           ))
@@ -387,7 +383,7 @@ export function AreaTasksClient({
                                   >
                                     <div className="flex items-center gap-3 flex-1">
                                       <div
-                                        className={`w-2 h-2 rounded-full ${statusColors[task.status]}`}
+                                        className={`w-2 h-2 rounded-full ${statusColors[task.status as keyof typeof statusColors]}`}
                                       />
                                       <div className="flex-1">
                                         <h4 className="font-medium">{task.title}</h4>
@@ -400,7 +396,7 @@ export function AreaTasksClient({
                                     </div>
                                     <div className="flex items-center gap-2">
                                       <Badge variant="secondary">
-                                        {statusLabels[task.status]}
+                                        {statusLabels[task.status as keyof typeof statusLabels]}
                                       </Badge>
                                       <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
@@ -450,7 +446,7 @@ export function AreaTasksClient({
                             >
                               <div className="flex items-center gap-3 flex-1">
                                 <div
-                                  className={`w-2 h-2 rounded-full ${statusColors[task.status]}`}
+                                  className={`w-2 h-2 rounded-full ${statusColors[task.status as keyof typeof statusColors]}`}
                                 />
                                 <div className="flex-1">
                                   <h4 className="font-medium">{task.title}</h4>
@@ -463,7 +459,7 @@ export function AreaTasksClient({
                               </div>
                               <div className="flex items-center gap-2">
                                 <Badge variant="secondary">
-                                  {statusLabels[task.status]}
+                                  {statusLabels[task.status as keyof typeof statusLabels]}
                                 </Badge>
                                 <DropdownMenu>
                                   <DropdownMenuTrigger asChild>
@@ -523,6 +519,8 @@ export function AreaTasksClient({
                     <TableRow>
                       <TableHead>Estado</TableHead>
                       <TableHead>Tarea</TableHead>
+                      <TableHead>Área</TableHead>
+                      <TableHead>Evento</TableHead>
                       <TableHead>Asignado a</TableHead>
                       <TableHead>Fecha límite</TableHead>
                       <TableHead>Acciones</TableHead>
@@ -538,14 +536,28 @@ export function AreaTasksClient({
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <div
-                              className={`w-3 h-3 rounded-full ${statusColors[task.status]}`}
+                              className={`w-3 h-3 rounded-full ${statusColors[task.status as keyof typeof statusColors]}`}
                             />
                             <Badge variant="secondary">
-                              {statusLabels[task.status]}
+                              {statusLabels[task.status as keyof typeof statusLabels]}
                             </Badge>
                           </div>
                         </TableCell>
                         <TableCell className="font-medium">{task.title}</TableCell>
+                        <TableCell>
+                          {task.area ? (
+                            <Badge variant="outline" className="text-xs">
+                              {task.area.name}
+                            </Badge>
+                          ) : (
+                            <span className="text-muted-foreground text-sm">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-sm">
+                            {task.event?.name || "Evento desconocido"}
+                          </span>
+                        </TableCell>
                         <TableCell>
                           <span className="text-sm">
                             {task.assignee?.name || "Sin asignar"}
@@ -602,10 +614,7 @@ export function AreaTasksClient({
         open={isModalOpen}
         onOpenChange={handleModalClose}
         task={editingTask || undefined}
-        eventId={eventId}
-        areaId={areaId}
-        eventName={eventName}
-        areaName={areaName}
+        events={events}
         areas={areas}
         users={users}
         onSuccess={handleTaskCreated}

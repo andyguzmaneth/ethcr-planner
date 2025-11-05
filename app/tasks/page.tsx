@@ -1,11 +1,9 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { List, LayoutGrid, Calendar as CalendarIcon } from "lucide-react";
 import { getTasks, getUserById, getEventById, getAreaById, getEvents, getUsers, getAreas } from "@/lib/data";
 import { createServerTranslationFunction, getLocaleFromCookies } from "@/lib/i18n";
 import { cookies } from "next/headers";
 import { TasksPageClient } from "./tasks-page-client";
-import { TasksListClient } from "./tasks-list-client";
+import { TasksViewClient } from "./tasks-view-client";
 
 export default async function TasksPage() {
   const cookieStore = await cookies();
@@ -64,28 +62,8 @@ export default async function TasksPage() {
           />
         </div>
 
-        {/* View Toggle and Filters */}
-        <div className="flex items-center justify-between">
-          <Tabs defaultValue="list" className="w-full">
-            <TabsList>
-              <TabsTrigger value="list">
-                <List className="mr-2 h-4 w-4" />
-                Lista
-              </TabsTrigger>
-              <TabsTrigger value="kanban">
-                <LayoutGrid className="mr-2 h-4 w-4" />
-                Kanban
-              </TabsTrigger>
-              <TabsTrigger value="calendar">
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                Calendario
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-
-        {/* Tasks List View */}
-        <TasksListClient
+        {/* Tasks Views (List, Kanban, Calendar, Table) */}
+        <TasksViewClient
           tasks={tasksWithDetails}
           events={events.map(e => ({ id: e.id, name: e.name }))}
           areas={allAreas.map(a => ({ id: a.id, name: a.name, eventId: a.eventId }))}

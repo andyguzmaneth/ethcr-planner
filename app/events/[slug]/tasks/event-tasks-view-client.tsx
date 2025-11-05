@@ -12,12 +12,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Plus, List, LayoutGrid, Calendar as CalendarIcon, MoreVertical, Edit, Trash2 } from "lucide-react";
+import { Plus, List, LayoutGrid, Calendar as CalendarIcon, MoreVertical, Edit, Trash2, Table as TableIcon } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import { NewTaskModal } from "@/components/events/new-task-modal";
 import { DeleteTaskDialog } from "@/components/events/delete-task-dialog";
 import { useRouter } from "next/navigation";
 import { Task } from "@/lib/types";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface TaskWithDetails extends Task {
   assignee?: {
@@ -151,6 +159,10 @@ export function EventTasksViewClient({
           <TabsTrigger value="calendar">
             <CalendarIcon className="mr-2 h-4 w-4" />
             Calendario
+          </TabsTrigger>
+          <TabsTrigger value="table">
+            <TableIcon className="mr-2 h-4 w-4" />
+            Tabla
           </TabsTrigger>
         </TabsList>
 
@@ -478,6 +490,108 @@ export function EventTasksViewClient({
                   </>
                 )}
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Table View */}
+        <TabsContent value="table" className="space-y-4">
+          <Card>
+            <CardContent className="pt-6">
+              {tasks.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground mb-4">No se encontraron tareas</p>
+                  <Button onClick={() => setIsModalOpen(true)}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    {t("eventDetail.createFirstTask")}
+                  </Button>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Estado</TableHead>
+                      <TableHead>Tarea</TableHead>
+                      <TableHead>Área</TableHead>
+                      <TableHead>Asignado a</TableHead>
+                      <TableHead>Fecha límite</TableHead>
+                      <TableHead>Acciones</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {tasks.map((task) => (
+                      <TableRow
+                        key={task.id}
+                        onClick={() => handleTaskClick(task)}
+                        className="cursor-pointer"
+                      >
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <div
+                              className={`w-3 h-3 rounded-full ${statusColors[task.status as keyof typeof statusColors]}`}
+                            />
+                            <Badge variant="secondary">
+                              {statusLabels[task.status as keyof typeof statusLabels]}
+                            </Badge>
+                          </div>
+                        </TableCell>
+                        <TableCell className="font-medium">{task.title}</TableCell>
+                        <TableCell>
+                          {task.area ? (
+                            <Badge variant="outline" className="text-xs">
+                              {task.area.name}
+                            </Badge>
+                          ) : (
+                            <span className="text-muted-foreground text-sm">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-sm">
+                            {task.assignee?.name || "Sin asignar"}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          {task.deadline ? (
+                            <span className="text-sm">
+                              {new Date(task.deadline).toLocaleDateString()}
+                            </span>
+                          ) : (
+                            <span className="text-muted-foreground text-sm">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell onClick={(e) => e.stopPropagation()}>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                className="h-8 w-8"
+                              >
+                                <MoreVertical className="h-4 w-4" />
+                                <span className="sr-only">{t("common.actions")}</span>
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={(e) => handleEditClick(e, task)}>
+                                <Edit className="mr-2 h-4 w-4" />
+                                {t("common.edit")}
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                variant="destructive"
+                                onClick={(e) => handleDeleteClick(e, task)}
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                {t("common.delete")}
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

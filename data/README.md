@@ -106,3 +106,4 @@ const updated = updateEvent("1", { status: "Active" });
 Cuando implementes el backend, simplemente reemplaza las funciones en `lib/data.ts` con llamadas a tu API. Los tipos TypeScript en `lib/types/index.ts` pueden reutilizarse.
 
 
+
