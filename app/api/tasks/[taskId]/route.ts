@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { updateTask, getTaskById, deleteTask } from "@/lib/data";
+import { updateTask, getTaskById, deleteTask } from "@/lib/data-supabase";
+import type { Task } from "@/lib/types";
+import { parseSupportResources } from "../utils";
 
 interface RouteParams {
   params: Promise<{ taskId: string }>;
@@ -12,75 +14,41 @@ export async function PUT(
   try {
     const { taskId } = await params;
     const body = await request.json();
-    const { projectId, eventId, areaId, title, description, assigneeId, deadline, status, supportResources, dependsOn, isRecurring, recurrence } = body;
+    const { title, description, assigneeId, deadline, status, supportResources, dependsOn, isRecurring, recurrence } = body;
 
-    // Check if task exists
-    const existingTask = getTaskById(taskId);
+    const existingTask = await getTaskById(taskId);
     if (!existingTask) {
-      return NextResponse.json(
-        { error: "Task not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Task not found" }, { status: 404 });
     }
 
-    // Support both projectId and eventId for backward compatibility
-    const finalProjectId = projectId || eventId || existingTask.projectId || existingTask.eventId;
-
-    // Validation
-    if (!finalProjectId) {
-      return NextResponse.json(
-        { error: "Project ID is required" },
-        { status: 400 }
-      );
+    if (!title?.trim()) {
+      return NextResponse.json({ error: "Task title is required" }, { status: 400 });
     }
 
-    if (!title || typeof title !== "string" || title.trim().length === 0) {
-      return NextResponse.json(
-        { error: "Task title is required" },
-        { status: 400 }
-      );
-    }
-
-    // Parse support resources from textarea (one per line) or array
-    let parsedSupportResources: string[] = [];
-    if (supportResources && typeof supportResources === "string") {
-      parsedSupportResources = supportResources
-        .split("\n")
-        .map((line) => line.trim())
-        .filter((line) => line.length > 0);
-    } else if (Array.isArray(supportResources)) {
-      parsedSupportResources = supportResources;
-    }
-
-    // Update task
-    const updatedTask = updateTask(taskId, {
-      projectId: finalProjectId,
-      areaId: areaId || undefined,
+    const updatePayload: Partial<Task> = {
       title: title.trim(),
-      description: description?.trim() || undefined,
-      assigneeId: assigneeId || undefined,
-      deadline: deadline || undefined,
-      status: status || existingTask.status,
-      supportResources: parsedSupportResources.length > 0 ? parsedSupportResources : undefined,
-      dependsOn: dependsOn && Array.isArray(dependsOn) ? (dependsOn.length > 0 ? dependsOn : undefined) : undefined,
-      isRecurring: isRecurring !== undefined ? isRecurring : undefined,
-      recurrence: recurrence || undefined,
-    });
+      ...(description !== undefined && { description: description.trim() || undefined }),
+      ...(assigneeId !== undefined && { assigneeId: assigneeId || undefined }),
+      ...(deadline !== undefined && { deadline: deadline || undefined }),
+      ...(status && { status }),
+      ...(supportResources !== undefined && { supportResources: parseSupportResources(supportResources) }),
+      ...(dependsOn !== undefined && {
+        dependsOn: Array.isArray(dependsOn) && dependsOn.length > 0 ? dependsOn : undefined,
+      }),
+      ...(isRecurring !== undefined && { isRecurring }),
+      ...(recurrence !== undefined && { recurrence: recurrence || undefined }),
+    };
 
+    const updatedTask = await updateTask(taskId, updatePayload);
     if (!updatedTask) {
-      return NextResponse.json(
-        { error: "Failed to update task" },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: "Failed to update task" }, { status: 500 });
     }
 
     return NextResponse.json(updatedTask, { status: 200 });
   } catch (error) {
     console.error("Error updating task:", error);
-    return NextResponse.json(
-      { error: "Failed to update task" },
-      { status: 500 }
-    );
+    const errorMessage = error instanceof Error ? error.message : "Failed to update task";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
 
@@ -91,31 +59,21 @@ export async function DELETE(
   try {
     const { taskId } = await params;
 
-    // Check if task exists
-    const existingTask = getTaskById(taskId);
+    const existingTask = await getTaskById(taskId);
     if (!existingTask) {
-      return NextResponse.json(
-        { error: "Task not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Task not found" }, { status: 404 });
     }
 
-    // Delete task
-    const deleted = deleteTask(taskId);
+    const deleted = await deleteTask(taskId);
     if (!deleted) {
-      return NextResponse.json(
-        { error: "Failed to delete task" },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: "Failed to delete task" }, { status: 500 });
     }
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error("Error deleting task:", error);
-    return NextResponse.json(
-      { error: "Failed to delete task" },
-      { status: 500 }
-    );
+    const errorMessage = error instanceof Error ? error.message : "Failed to delete task";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
 

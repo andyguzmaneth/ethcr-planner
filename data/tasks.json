@@ -168,20 +168,6 @@
     "updatedAt": "2025-11-03T02:19:17.270Z"
   },
   {
-    "id": "task-1766595594361-6tsrep3mo",
-    "areaId": "area-1766595594361-i3ixq7az4",
-    "projectId": "1766595594356",
-    "title": "Schedule quarterly HVAC inspection",
-    "description": null,
-    "assigneeId": null,
-    "deadline": null,
-    "status": "pending",
-    "supportResources": null,
-    "templateId": null,
-    "createdAt": "2025-12-24T16:59:54.361Z",
-    "updatedAt": "2025-12-24T16:59:54.361Z"
-  },
-  {
     "id": "task-1766595594361-1czrmyd75",
     "areaId": "area-1766595594361-i3ixq7az4",
     "projectId": "1766595594356",
@@ -1006,5 +992,17 @@
     "templateId": null,
     "createdAt": "2025-12-24T16:59:54.362Z",
     "updatedAt": "2025-12-24T16:59:54.362Z"
+  },
+  {
+    "projectId": "1766595594356",
+    "areaId": "area-1766595594361-i3ixq7az4",
+    "title": "Prueba",
+    "description": "Prueba",
+    "assigneeId": "user-maria",
+    "deadline": "2025-12-24",
+    "status": "in_progress",
+    "id": "task-1766617793530",
+    "createdAt": "2025-12-24T23:09:53.530Z",
+    "updatedAt": "2025-12-24T23:10:00.305Z"
   }
 ]
