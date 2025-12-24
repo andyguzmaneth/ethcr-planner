@@ -28,8 +28,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Plus, MoreVertical, Edit, Trash2, GripVertical } from "lucide-react";
-import { NewAreaModal } from "@/components/events/new-area-modal";
-import { DeleteAreaDialog } from "@/components/events/delete-area-dialog";
+import { NewAreaModal } from "@/components/projects/new-area-modal";
+import { DeleteAreaDialog } from "@/components/projects/delete-area-dialog";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import { Area } from "@/lib/types";
@@ -56,17 +56,17 @@ interface AreaWithStats {
   } | null;
 }
 
-interface EventAreasClientProps {
-  eventId: string;
-  eventSlug: string;
-  eventName: string;
+interface ProjectAreasClientProps {
+  projectId: string;
+  projectSlug: string;
+  projectName: string;
   areasWithStats: AreaWithStats[];
   users: User[];
 }
 
 interface SortableAreaCardProps {
   area: AreaWithStats;
-  eventSlug: string;
+  projectSlug: string;
   onEditClick: (e: React.MouseEvent, area: AreaWithStats) => void;
   onDeleteClick: (e: React.MouseEvent, area: AreaWithStats) => void;
   t: (key: string) => string;
@@ -74,7 +74,7 @@ interface SortableAreaCardProps {
 
 function SortableAreaCard({
   area,
-  eventSlug,
+  projectSlug,
   onEditClick,
   onDeleteClick,
   t,
@@ -96,7 +96,7 @@ function SortableAreaCard({
 
   const handleCardClick = () => {
     if (!isDragging) {
-      window.location.href = `/events/${eventSlug}/areas/${area.id}`;
+      window.location.href = `/projects/${projectSlug}/areas/${area.id}`;
     }
   };
 
@@ -179,13 +179,13 @@ function SortableAreaCard({
   );
 }
 
-export function EventAreasClient({
-  eventId,
-  eventSlug,
-  eventName,
+export function ProjectAreasClient({
+  projectId,
+  projectSlug,
+  projectName,
   areasWithStats,
   users,
-}: EventAreasClientProps) {
+}: ProjectAreasClientProps) {
   const router = useRouter();
   const [isAreaModalOpen, setIsAreaModalOpen] = useState(false);
   const [editingArea, setEditingArea] = useState<Area | null>(null);
@@ -289,7 +289,7 @@ export function EventAreasClient({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          eventId,
+          projectId,
           areaOrders,
         }),
       });
@@ -319,10 +319,10 @@ export function EventAreasClient({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
-            Areas - {eventName}
+            Areas - {projectName}
           </h1>
           <p className="text-muted-foreground mt-2">
-            Gestiona todas las áreas de este evento
+            Gestiona todas las áreas de este proyecto
           </p>
         </div>
         <Button onClick={() => setIsAreaModalOpen(true)}>
@@ -346,7 +346,7 @@ export function EventAreasClient({
               <SortableAreaCard
                 key={area.id}
                 area={area}
-                eventSlug={eventSlug}
+                projectSlug={projectSlug}
                 onEditClick={handleEditClick}
                 onDeleteClick={handleDeleteClick}
                 t={t}
@@ -360,7 +360,7 @@ export function EventAreasClient({
         open={isAreaModalOpen}
         onOpenChange={handleModalClose}
         area={editingArea || undefined}
-        eventId={eventId}
+        projectId={projectId}
         users={users}
         onSuccess={handleAreaCreated}
       />

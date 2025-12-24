@@ -1,11 +1,11 @@
 import { MainLayout } from "@/components/layout/main-layout";
 import { AreaTasksClient } from "./area-tasks-client";
 import { 
-  getEventBySlug, 
+  getProjectBySlug, 
   getAreaById, 
   getTasksByAreaId, 
   getUserById,
-  getAreasByEventId,
+  getAreasByProjectId,
   getUsers
 } from "@/lib/data";
 
@@ -16,19 +16,19 @@ interface AreaDetailPageProps {
 export default async function AreaDetailPage({ params }: AreaDetailPageProps) {
   const { slug, areaId } = await params;
 
-  const event = getEventBySlug(slug);
-  if (!event) {
+  const project = getProjectBySlug(slug);
+  if (!project) {
     return (
       <MainLayout>
         <div className="container mx-auto p-6">
-          <p>Evento no encontrado</p>
+          <p>Proyecto no encontrado</p>
         </div>
       </MainLayout>
     );
   }
 
   const area = getAreaById(areaId);
-  if (!area || area.eventId !== event.id) {
+  if (!area || (area.projectId !== project.id && area.eventId !== project.id)) {
     return (
       <MainLayout>
         <div className="container mx-auto p-6">
@@ -40,7 +40,7 @@ export default async function AreaDetailPage({ params }: AreaDetailPageProps) {
 
   const tasks = getTasksByAreaId(areaId);
   const lead = getUserById(area.leadId);
-  const areas = getAreasByEventId(event.id);
+  const areas = getAreasByProjectId(project.id);
   const users = getUsers();
 
   // Enrich tasks with details
@@ -73,8 +73,8 @@ export default async function AreaDetailPage({ params }: AreaDetailPageProps) {
 
         {/* Tasks Section */}
         <AreaTasksClient 
-          eventId={event.id}
-          eventName={event.name}
+          projectId={project.id}
+          projectName={project.name}
           areaId={area.id}
           areaName={area.name}
           areas={areas.map(a => ({ id: a.id, name: a.name }))}

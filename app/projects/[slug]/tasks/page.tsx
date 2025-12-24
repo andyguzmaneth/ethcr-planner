@@ -1,15 +1,15 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { getEventBySlug, getTasksByEventId, getUserById, getAreaById, getAreasByEventId, getUsers } from "@/lib/data";
+import { getProjectBySlug, getTasksByProjectId, getUserById, getAreaById, getAreasByProjectId, getUsers } from "@/lib/data";
 import { createServerTranslationFunction, getLocaleFromCookies } from "@/lib/i18n";
 import { cookies } from "next/headers";
-import { EventTasksClient } from "./event-tasks-client";
-import { EventTasksViewClient } from "./event-tasks-view-client";
+import { ProjectTasksClient } from "./project-tasks-client";
+import { ProjectTasksViewClient } from "./project-tasks-view-client";
 
-interface EventTasksPageProps {
+interface ProjectTasksPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export default async function EventTasksPage({ params }: EventTasksPageProps) {
+export default async function ProjectTasksPage({ params }: ProjectTasksPageProps) {
   const { slug } = await params;
 
   const cookieStore = await cookies();
@@ -17,19 +17,19 @@ export default async function EventTasksPage({ params }: EventTasksPageProps) {
   const locale = getLocaleFromCookies(localeFromCookie);
   const t = createServerTranslationFunction(locale);
 
-  const event = getEventBySlug(slug);
-  if (!event) {
+  const project = getProjectBySlug(slug);
+  if (!project) {
     return (
       <MainLayout>
         <div className="container mx-auto p-6">
-          <p>Evento no encontrado</p>
+          <p>Proyecto no encontrado</p>
         </div>
       </MainLayout>
     );
   }
 
-  const tasks = getTasksByEventId(event.id);
-  const areas = getAreasByEventId(event.id);
+  const tasks = getTasksByProjectId(project.id);
+  const areas = getAreasByProjectId(project.id);
   const users = getUsers();
 
   const statusColors = {
@@ -65,25 +65,25 @@ export default async function EventTasksPage({ params }: EventTasksPageProps) {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
-              Tareas - {event.name}
+              Tareas - {project.name}
             </h1>
             <p className="text-muted-foreground mt-2">
-              Gestiona y rastrea todas las tareas de este evento
+              Gestiona y rastrea todas las tareas de este proyecto
             </p>
           </div>
-          <EventTasksClient
-            eventId={event.id}
-            eventName={event.name}
+          <ProjectTasksClient
+            projectId={project.id}
+            projectName={project.name}
             areas={areas.map(a => ({ id: a.id, name: a.name }))}
             users={users.map(u => ({ id: u.id, name: u.name, initials: u.initials, email: u.email }))}
           />
         </div>
 
         {/* Tasks Views (List, Kanban, Calendar) */}
-        <EventTasksViewClient
+        <ProjectTasksViewClient
           tasks={tasksWithDetails}
-          eventId={event.id}
-          eventName={event.name}
+          projectId={project.id}
+          projectName={project.name}
           areas={areas.map(a => ({ id: a.id, name: a.name }))}
           users={users.map(u => ({ id: u.id, name: u.name, initials: u.initials, email: u.email }))}
           statusColors={statusColors}

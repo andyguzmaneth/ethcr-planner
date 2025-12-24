@@ -43,5 +43,18 @@
     "participantIds": [
       "user-alfredo"
     ]
+  },
+  {
+    "id": "1766595594356",
+    "name": "La Itaba",
+    "slug": "la-itaba",
+    "type": "Property",
+    "status": "Active",
+    "description": "Property management for La Itaba residential property",
+    "participantIds": [
+      "user-alfredo"
+    ],
+    "createdAt": "2025-12-24T16:59:54.356Z",
+    "updatedAt": "2025-12-24T16:59:54.361Z"
   }
 ]

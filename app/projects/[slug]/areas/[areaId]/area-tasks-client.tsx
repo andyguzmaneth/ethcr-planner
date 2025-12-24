@@ -14,8 +14,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Plus, List, LayoutGrid, Calendar as CalendarIcon, MoreVertical, Edit, Trash2, Table as TableIcon } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/useTranslation";
-import { NewTaskModal } from "@/components/events/new-task-modal";
-import { DeleteTaskDialog } from "@/components/events/delete-task-dialog";
+import { NewTaskModal } from "@/components/projects/new-task-modal";
+import { DeleteTaskDialog } from "@/components/projects/delete-task-dialog";
 import { useRouter } from "next/navigation";
 import { Task } from "@/lib/types";
 import {
@@ -36,8 +36,8 @@ interface TaskWithDetails extends Task {
 }
 
 interface AreaTasksClientProps {
-  eventId: string;
-  eventName: string;
+  projectId: string;
+  projectName: string;
   areaId: string;
   areaName: string;
   areas: Array<{ id: string; name: string }>;
@@ -46,8 +46,8 @@ interface AreaTasksClientProps {
 }
 
 export function AreaTasksClient({
-  eventId,
-  eventName,
+  projectId,
+  projectName,
   areaId,
   areaName,
   areas,
@@ -159,7 +159,7 @@ export function AreaTasksClient({
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Tareas</h2>
           <p className="text-muted-foreground mt-1">
-            Tareas filtradas para {areaName} en {eventName}
+            Tareas filtradas para {areaName} en {projectName}
           </p>
         </div>
         <Button onClick={() => setIsModalOpen(true)}>
@@ -602,9 +602,9 @@ export function AreaTasksClient({
         open={isModalOpen}
         onOpenChange={handleModalClose}
         task={editingTask || undefined}
-        eventId={eventId}
+        projectId={projectId}
         areaId={areaId}
-        eventName={eventName}
+        projectName={projectName}
         areaName={areaName}
         areas={areas}
         users={users}

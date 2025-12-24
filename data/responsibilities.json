@@ -46,9 +46,101 @@
     "description": "Estructura y timing de las presentaciones",
     "createdAt": "2025-01-02T00:00:00Z",
     "updatedAt": "2025-01-02T00:00:00Z"
+  },
+  {
+    "id": "resp-1766595594361-59votpccl",
+    "areaId": "area-1766595594361-i3ixq7az4",
+    "name": "Preventive Maintenance",
+    "description": null,
+    "createdAt": "2025-12-24T16:59:54.361Z",
+    "updatedAt": "2025-12-24T16:59:54.361Z"
+  },
+  {
+    "id": "resp-1766595594361-3wzq4uhpn",
+    "areaId": "area-1766595594361-i3ixq7az4",
+    "name": "Emergency Repairs",
+    "description": null,
+    "createdAt": "2025-12-24T16:59:54.361Z",
+    "updatedAt": "2025-12-24T16:59:54.361Z"
+  },
+  {
+    "id": "resp-1766595594361-m63f4js6u",
+    "areaId": "area-1766595594361-i3ixq7az4",
+    "name": "Vendor Management",
+    "description": null,
+    "createdAt": "2025-12-24T16:59:54.361Z",
+    "updatedAt": "2025-12-24T16:59:54.361Z"
+  },
+  {
+    "id": "resp-1766595594362-59l6xnrol",
+    "areaId": "area-1766595594362-g2hbseuy4",
+    "name": "Rent Collection",
+    "description": null,
+    "createdAt": "2025-12-24T16:59:54.362Z",
+    "updatedAt": "2025-12-24T16:59:54.362Z"
+  },
+  {
+    "id": "resp-1766595594362-9ryoamgnh",
+    "areaId": "area-1766595594362-g2hbseuy4",
+    "name": "Expense Tracking",
+    "description": null,
+    "createdAt": "2025-12-24T16:59:54.362Z",
+    "updatedAt": "2025-12-24T16:59:54.362Z"
+  },
+  {
+    "id": "resp-1766595594362-8jdano2hm",
+    "areaId": "area-1766595594362-g2hbseuy4",
+    "name": "Budget Planning",
+    "description": null,
+    "createdAt": "2025-12-24T16:59:54.362Z",
+    "updatedAt": "2025-12-24T16:59:54.362Z"
+  },
+  {
+    "id": "resp-1766595594362-bp1nn7o59",
+    "areaId": "area-1766595594362-d7fiz4bwi",
+    "name": "Lease Management",
+    "description": null,
+    "createdAt": "2025-12-24T16:59:54.362Z",
+    "updatedAt": "2025-12-24T16:59:54.362Z"
+  },
+  {
+    "id": "resp-1766595594362-e04ua2ydg",
+    "areaId": "area-1766595594362-d7fiz4bwi",
+    "name": "Tenant Communication",
+    "description": null,
+    "createdAt": "2025-12-24T16:59:54.362Z",
+    "updatedAt": "2025-12-24T16:59:54.362Z"
+  },
+  {
+    "id": "resp-1766595594362-m88edhrkf",
+    "areaId": "area-1766595594362-d7fiz4bwi",
+    "name": "Move-in/Move-out Process",
+    "description": null,
+    "createdAt": "2025-12-24T16:59:54.362Z",
+    "updatedAt": "2025-12-24T16:59:54.362Z"
+  },
+  {
+    "id": "resp-1766595594362-c8p9xuxin",
+    "areaId": "area-1766595594362-9gsf0l2v3",
+    "name": "Regulatory Compliance",
+    "description": null,
+    "createdAt": "2025-12-24T16:59:54.362Z",
+    "updatedAt": "2025-12-24T16:59:54.362Z"
+  },
+  {
+    "id": "resp-1766595594362-dgtx2istg",
+    "areaId": "area-1766595594362-9gsf0l2v3",
+    "name": "Insurance Management",
+    "description": null,
+    "createdAt": "2025-12-24T16:59:54.362Z",
+    "updatedAt": "2025-12-24T16:59:54.362Z"
+  },
+  {
+    "id": "resp-1766595594362-l9rfpgiwx",
+    "areaId": "area-1766595594362-9gsf0l2v3",
+    "name": "Documentation",
+    "description": null,
+    "createdAt": "2025-12-24T16:59:54.362Z",
+    "updatedAt": "2025-12-24T16:59:54.362Z"
   }
 ]
-
-
-
-

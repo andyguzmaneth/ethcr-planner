@@ -5,15 +5,15 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Plus, FileText } from "lucide-react";
 import Link from "next/link";
-import { getEventBySlug, getMeetingsByEventId, getMeetingNoteByMeetingId, getUserById } from "@/lib/data";
+import { getProjectBySlug, getMeetingsByProjectId, getMeetingNoteByMeetingId, getUserById } from "@/lib/data";
 import { createServerTranslationFunction, getLocaleFromCookies } from "@/lib/i18n";
 import { cookies } from "next/headers";
 
-interface EventMeetingsPageProps {
+interface ProjectMeetingsPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export default async function EventMeetingsPage({ params }: EventMeetingsPageProps) {
+export default async function ProjectMeetingsPage({ params }: ProjectMeetingsPageProps) {
   const { slug } = await params;
 
   const cookieStore = await cookies();
@@ -21,18 +21,18 @@ export default async function EventMeetingsPage({ params }: EventMeetingsPagePro
   const locale = getLocaleFromCookies(localeFromCookie);
   const t = createServerTranslationFunction(locale);
 
-  const event = getEventBySlug(slug);
-  if (!event) {
+  const project = getProjectBySlug(slug);
+  if (!project) {
     return (
       <MainLayout>
         <div className="container mx-auto p-6">
-          <p>Evento no encontrado</p>
+          <p>Proyecto no encontrado</p>
         </div>
       </MainLayout>
     );
   }
 
-  const meetings = getMeetingsByEventId(event.id);
+  const meetings = getMeetingsByProjectId(project.id);
 
   // Enrich meetings with notes and attendees
   const meetingsWithDetails = meetings.map((meeting) => {
@@ -53,10 +53,10 @@ export default async function EventMeetingsPage({ params }: EventMeetingsPagePro
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
-              Reuniones - {event.name}
+              Reuniones - {project.name}
             </h1>
             <p className="text-muted-foreground mt-2">
-              Ver y gestionar las notas de reuniones de este evento
+              Ver y gestionar las notas de reuniones de este proyecto
             </p>
           </div>
           <Button>
@@ -79,13 +79,13 @@ export default async function EventMeetingsPage({ params }: EventMeetingsPagePro
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {meetingsWithDetails.map((meeting) => (
-              <Link key={meeting.id} href={`/events/${event.slug}/meetings/${meeting.id}`}>
+              <Link key={meeting.id} href={`/projects/${project.slug}/meetings/${meeting.id}`}>
                 <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="space-y-1">
                         <CardTitle className="text-lg">{meeting.title}</CardTitle>
-                        <CardDescription>{event.name}</CardDescription>
+                        <CardDescription>{project.name}</CardDescription>
                       </div>
                       {meeting.hasNotes && (
                         <Badge variant="outline">

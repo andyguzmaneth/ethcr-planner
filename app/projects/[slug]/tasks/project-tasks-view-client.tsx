@@ -14,8 +14,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Plus, List, LayoutGrid, Calendar as CalendarIcon, MoreVertical, Edit, Trash2, Table as TableIcon } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/useTranslation";
-import { NewTaskModal } from "@/components/events/new-task-modal";
-import { DeleteTaskDialog } from "@/components/events/delete-task-dialog";
+import { NewTaskModal } from "@/components/projects/new-task-modal";
+import { DeleteTaskDialog } from "@/components/projects/delete-task-dialog";
 import { useRouter } from "next/navigation";
 import { Task } from "@/lib/types";
 import {
@@ -39,25 +39,25 @@ interface TaskWithDetails extends Task {
   } | null;
 }
 
-interface EventTasksViewClientProps {
+interface ProjectTasksViewClientProps {
   tasks: TaskWithDetails[];
-  eventId: string;
-  eventName: string;
+  projectId: string;
+  projectName: string;
   areas: Array<{ id: string; name: string }>;
   users: Array<{ id: string; name: string; initials: string; email?: string }>;
   statusColors: Record<string, string>;
   statusLabels: Record<string, string>;
 }
 
-export function EventTasksViewClient({
+export function ProjectTasksViewClient({
   tasks,
-  eventId,
-  eventName,
+  projectId,
+  projectName,
   areas,
   users,
   statusColors,
   statusLabels,
-}: EventTasksViewClientProps) {
+}: ProjectTasksViewClientProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -203,7 +203,7 @@ export function EventTasksViewClient({
                             <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
                               <span>{task.assignee?.name || "Sin asignar"}</span>
                               <span>•</span>
-                              <span>{eventName}</span>
+                              <span>{projectName}</span>
                               {task.deadline && (
                                 <>
                                   <span>•</span>
@@ -601,8 +601,8 @@ export function EventTasksViewClient({
         open={isModalOpen}
         onOpenChange={handleModalClose}
         task={editingTask || undefined}
-        eventId={eventId}
-        eventName={eventName}
+        projectId={projectId}
+        projectName={projectName}
         areas={areas}
         users={users}
         onSuccess={handleTaskCreated}

@@ -3,27 +3,27 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { NewTaskModal } from "@/components/events/new-task-modal";
+import { NewTaskModal } from "@/components/projects/new-task-modal";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 
-interface EventTasksClientProps {
-  eventId: string;
-  eventName: string;
+interface ProjectTasksClientProps {
+  projectId: string;
+  projectName: string;
   areaId?: string;
   areaName?: string;
   areas: Array<{ id: string; name: string }>;
   users: Array<{ id: string; name: string; initials: string; email?: string }>;
 }
 
-export function EventTasksClient({
-  eventId,
-  eventName,
+export function ProjectTasksClient({
+  projectId,
+  projectName,
   areaId,
   areaName,
   areas,
   users,
-}: EventTasksClientProps) {
+}: ProjectTasksClientProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,9 +41,9 @@ export function EventTasksClient({
       <NewTaskModal
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
-        eventId={eventId}
+        projectId={projectId}
         areaId={areaId}
-        eventName={eventName}
+        projectName={projectName}
         areaName={areaName}
         areas={areas}
         users={users}

@@ -137,5 +137,49 @@
     "createdAt": "2025-11-03T02:15:27.901Z",
     "updatedAt": "2025-11-03T02:21:13.005Z",
     "order": 1
+  },
+  {
+    "id": "area-1766595594361-i3ixq7az4",
+    "projectId": "1766595594356",
+    "name": "Maintenance & Repairs",
+    "description": null,
+    "leadId": "user-alfredo",
+    "participantIds": [],
+    "order": 1,
+    "createdAt": "2025-12-24T16:59:54.361Z",
+    "updatedAt": "2025-12-24T16:59:54.361Z"
+  },
+  {
+    "id": "area-1766595594362-g2hbseuy4",
+    "projectId": "1766595594356",
+    "name": "Financial Management",
+    "description": null,
+    "leadId": "user-alfredo",
+    "participantIds": [],
+    "order": 2,
+    "createdAt": "2025-12-24T16:59:54.362Z",
+    "updatedAt": "2025-12-24T16:59:54.362Z"
+  },
+  {
+    "id": "area-1766595594362-d7fiz4bwi",
+    "projectId": "1766595594356",
+    "name": "Tenant Relations",
+    "description": null,
+    "leadId": "user-alfredo",
+    "participantIds": [],
+    "order": 3,
+    "createdAt": "2025-12-24T16:59:54.362Z",
+    "updatedAt": "2025-12-24T16:59:54.362Z"
+  },
+  {
+    "id": "area-1766595594362-9gsf0l2v3",
+    "projectId": "1766595594356",
+    "name": "Legal & Compliance",
+    "description": null,
+    "leadId": "user-alfredo",
+    "participantIds": [],
+    "order": 4,
+    "createdAt": "2025-12-24T16:59:54.362Z",
+    "updatedAt": "2025-12-24T16:59:54.362Z"
   }
 ]

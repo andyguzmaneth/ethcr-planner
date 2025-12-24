@@ -5,8 +5,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Plus, MoreVertical, Edit, Trash2 } from "lucide-react";
-import { NewTaskModal } from "@/components/events/new-task-modal";
-import { DeleteTaskDialog } from "@/components/events/delete-task-dialog";
+import { NewTaskModal } from "@/components/projects/new-task-modal";
+import { DeleteTaskDialog } from "@/components/projects/delete-task-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,25 +34,25 @@ interface TaskWithDetails extends Task {
   } | null;
 }
 
-interface EventTasksListClientProps {
+interface ProjectTasksListClientProps {
   tasks: TaskWithDetails[];
-  eventId: string;
-  eventName: string;
+  projectId: string;
+  projectName: string;
   areas: Array<{ id: string; name: string }>;
   users: Array<{ id: string; name: string; initials: string; email?: string }>;
   statusColors: Record<string, string>;
   statusLabels: Record<string, string>;
 }
 
-export function EventTasksListClient({
+export function ProjectTasksListClient({
   tasks,
-  eventId,
-  eventName,
+  projectId,
+  projectName,
   areas,
   users,
   statusColors,
   statusLabels,
-}: EventTasksListClientProps) {
+}: ProjectTasksListClientProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -149,7 +149,7 @@ export function EventTasksListClient({
                         <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
                           <span>{task.assignee?.name || "Sin asignar"}</span>
                           <span>•</span>
-                          <span>{eventName}</span>
+                          <span>{projectName}</span>
                           {task.deadline && (
                             <>
                               <span>•</span>
@@ -203,8 +203,8 @@ export function EventTasksListClient({
         open={isModalOpen}
         onOpenChange={handleModalClose}
         task={editingTask || undefined}
-        eventId={eventId}
-        eventName={eventName}
+        projectId={projectId}
+        projectName={projectName}
         areas={areas}
         users={users}
         onSuccess={handleTaskCreated}

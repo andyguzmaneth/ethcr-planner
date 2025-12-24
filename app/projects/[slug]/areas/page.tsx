@@ -1,27 +1,27 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { EventAreasClient } from "./event-areas-client";
-import { getEventBySlug, getAreasByEventId, getTasksByEventId, getUserById, getUsers } from "@/lib/data";
+import { ProjectAreasClient } from "./project-areas-client";
+import { getProjectBySlug, getAreasByProjectId, getTasksByProjectId, getUserById, getUsers } from "@/lib/data";
 
-interface EventAreasPageProps {
+interface ProjectAreasPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export default async function EventAreasPage({ params }: EventAreasPageProps) {
+export default async function ProjectAreasPage({ params }: ProjectAreasPageProps) {
   const { slug } = await params;
 
-  const event = getEventBySlug(slug);
-  if (!event) {
+  const project = getProjectBySlug(slug);
+  if (!project) {
     return (
       <MainLayout>
         <div className="container mx-auto p-6">
-          <p>Evento no encontrado</p>
+          <p>Proyecto no encontrado</p>
         </div>
       </MainLayout>
     );
   }
 
-  const areas = getAreasByEventId(event.id);
-  const allTasks = getTasksByEventId(event.id);
+  const areas = getAreasByProjectId(project.id);
+  const allTasks = getTasksByProjectId(project.id);
 
   // Calculate stats for each area
   const areasWithStats = areas.map((area) => {
@@ -54,10 +54,10 @@ export default async function EventAreasPage({ params }: EventAreasPageProps) {
 
   return (
     <MainLayout>
-      <EventAreasClient
-        eventId={event.id}
-        eventSlug={slug}
-        eventName={event.name}
+      <ProjectAreasClient
+        projectId={project.id}
+        projectSlug={slug}
+        projectName={project.name}
         areasWithStats={areasWithStats}
         users={users}
       />

@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { NewTaskModal } from "@/components/events/new-task-modal";
+import { NewTaskModal } from "@/components/projects/new-task-modal";
 import { useRouter } from "next/navigation";
 import { Task } from "@/lib/types";
 import { useTranslation } from "@/lib/i18n/useTranslation";
