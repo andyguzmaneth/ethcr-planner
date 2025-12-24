@@ -1,8 +1,7 @@
 import { en } from "./locales/en";
 import { es } from "./locales/es";
-import { ko } from "./locales/ko";
 
-export type SupportedLocale = "en" | "es" | "ko";
+export type SupportedLocale = "en" | "es";
 
 export type TranslationKey = string;
 
@@ -110,7 +109,6 @@ export type Translations = {
 export const translations: Record<SupportedLocale, Translations> = {
   en,
   es,
-  ko,
 };
 
 // Default language (can be overridden via environment variable or user preference)
@@ -123,7 +121,7 @@ export function getLocale(): SupportedLocale {
   if (typeof window !== "undefined") {
     // Client-side: check localStorage
     const stored = localStorage.getItem("app_locale") as SupportedLocale | null;
-    if (stored && (stored === "en" || stored === "es" || stored === "ko")) {
+    if (stored && (stored === "en" || stored === "es")) {
       return stored;
     }
   }
@@ -139,7 +137,7 @@ export function getLocaleFromCookies(cookies: string | undefined): SupportedLoca
   const match = cookies.match(/(?:^|; )app_locale=([^;]*)/);
   if (match) {
     const locale = match[1] as SupportedLocale;
-    if (locale === "en" || locale === "es" || locale === "ko") {
+    if (locale === "en" || locale === "es") {
       return locale;
     }
   }
@@ -166,12 +164,18 @@ export function getTranslations(locale?: SupportedLocale): Translations {
 }
 
 /**
- * Type-safe helper to get nested translation values
- * Usage: t("nav.dashboard") => "Dashboard" or "Panel" depending on locale
+ * Server-side translation function (doesn't use localStorage)
  */
-export function createTranslationFunction(locale?: SupportedLocale) {
-  const t = (key: string, params?: Record<string, string | number>): string => {
-    const translations = getTranslations(locale);
+export function getServerTranslations(locale?: SupportedLocale): Translations {
+  const targetLocale = locale || (process.env.NEXT_PUBLIC_DEFAULT_LOCALE as SupportedLocale) || DEFAULT_LOCALE;
+  return translations[targetLocale] || translations[DEFAULT_LOCALE];
+}
+
+/**
+ * Create translation function helper (shared logic for client and server)
+ */
+function createTranslationFunctionHelper(translations: Translations) {
+  return (key: string, params?: Record<string, string | number>): string => {
     const keys = key.split(".");
     let value: unknown = translations;
 
@@ -211,16 +215,15 @@ export function createTranslationFunction(locale?: SupportedLocale) {
 
     return value;
   };
-
-  return t;
 }
 
 /**
- * Server-side translation function (doesn't use localStorage)
+ * Type-safe helper to get nested translation values
+ * Usage: t("nav.dashboard") => "Dashboard" or "Panel" depending on locale
  */
-export function getServerTranslations(locale?: SupportedLocale): Translations {
-  const targetLocale = locale || (process.env.NEXT_PUBLIC_DEFAULT_LOCALE as SupportedLocale) || DEFAULT_LOCALE;
-  return translations[targetLocale] || translations[DEFAULT_LOCALE];
+export function createTranslationFunction(locale?: SupportedLocale) {
+  const translations = getTranslations(locale);
+  return createTranslationFunctionHelper(translations);
 }
 
 /**
@@ -228,47 +231,6 @@ export function getServerTranslations(locale?: SupportedLocale): Translations {
  */
 export function createServerTranslationFunction(locale?: SupportedLocale) {
   const translations = getServerTranslations(locale);
-  
-  const t = (key: string, params?: Record<string, string | number>): string => {
-    const keys = key.split(".");
-    let value: unknown = translations;
-
-    for (const k of keys) {
-      if (typeof value === "object" && value !== null && k in value) {
-        value = (value as Record<string, unknown>)[k];
-      } else {
-        console.warn(`Translation key not found: ${key}`);
-        return key;
-      }
-    }
-
-    if (typeof value !== "string") {
-      console.warn(`Translation value is not a string for key: ${key}`);
-      return key;
-    }
-
-    // Simple parameter substitution
-    if (params) {
-      let result = value;
-      for (const [paramKey, paramValue] of Object.entries(params)) {
-        const regex = new RegExp(`\\{${paramKey}\\}`, "g");
-        result = result.replace(regex, String(paramValue));
-
-        // Handle pluralization
-        const pluralRegex = new RegExp(
-          `\\{${paramKey},\\s*plural,\\s*one\\s*\\{([^}]+)\\}\\s*other\\s*\\{([^}]+)\\}\\}`,
-          "g"
-        );
-        result = result.replace(pluralRegex, (_, one, other) => {
-          return paramValue === 1 ? one : other;
-        });
-      }
-      return result;
-    }
-
-    return value;
-  };
-
-  return t;
+  return createTranslationFunctionHelper(translations);
 }
 

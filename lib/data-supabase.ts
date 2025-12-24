@@ -314,7 +314,8 @@ export async function createProject(
   }
 
   const created = await getProjectById(result.data!.id);
-  return created || (await getProjectById(result.data!.id))!;
+  if (!created) throw new Error("Failed to retrieve created project");
+  return created;
 }
 
 export async function updateProject(id: string, updates: Partial<Project>): Promise<Project | null> {

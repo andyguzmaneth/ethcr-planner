@@ -15,7 +15,6 @@ import type { SupportedLocale } from "@/lib/i18n";
 const languageNames: Record<SupportedLocale, string> = {
   en: "English",
   es: "Español",
-  ko: "한국어",
 };
 
 export function LanguageSwitcher() {

@@ -1,13 +1,12 @@
 # Internationalization (i18n) System
 
-This directory contains the internationalization system for the ETHCR Planner application. The system supports multiple languages (English, Spanish, Korean) and makes it easy to add new languages or update translations.
+This directory contains the internationalization system for the ETHCR Planner application. The system supports multiple languages (English, Spanish) and makes it easy to add new languages or update translations.
 
 ## Structure
 
 - `locales/` - Translation files for each supported language
   - `en.ts` - English translations
-  - `es.ts` - Spanish translations  
-  - `ko.ts` - Korean translations
+  - `es.ts` - Spanish translations
 - `index.ts` - Core translation utilities and functions
 - `useTranslation.tsx` - React hook and context provider for client-side translations
 
@@ -78,7 +77,7 @@ Set the default language using the `NEXT_PUBLIC_DEFAULT_LOCALE` environment vari
 
 ```bash
 # .env.local
-NEXT_PUBLIC_DEFAULT_LOCALE=es  # Options: en, es, ko
+NEXT_PUBLIC_DEFAULT_LOCALE=es  # Options: en, es
 ```
 
 ### Changing Language
@@ -89,7 +88,6 @@ Users can change the language using the language switcher component in the heade
 
 - `en` - English
 - `es` - Spanish
-- `ko` - Korean
 
 ## Adding a New Language
 
@@ -115,12 +113,11 @@ export const fr = {
 
 ```typescript
 // lib/i18n/index.ts
-export type SupportedLocale = "en" | "es" | "ko" | "fr";  // Add "fr"
+export type SupportedLocale = "en" | "es" | "fr";  // Add "fr"
 
 export const translations: Record<SupportedLocale, Translations> = {
   en,
   es,
-  ko,
   fr,  // Add French translations
 };
 ```

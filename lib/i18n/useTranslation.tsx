@@ -25,7 +25,7 @@ export function TranslationProvider({ children, initialLocale }: TranslationProv
     // On mount, sync localStorage with cookie (in case they're out of sync)
     // The server already read from cookie, but we should ensure localStorage matches
     const storedInLocalStorage = localStorage.getItem("app_locale") as SupportedLocale | null;
-    if (storedInLocalStorage && storedInLocalStorage !== locale && (storedInLocalStorage === "en" || storedInLocalStorage === "es" || storedInLocalStorage === "ko")) {
+    if (storedInLocalStorage && storedInLocalStorage !== locale && (storedInLocalStorage === "en" || storedInLocalStorage === "es")) {
       // If localStorage has different value, sync cookie to match localStorage (user preference)
       document.cookie = `app_locale=${storedInLocalStorage}; path=/; max-age=31536000; SameSite=Lax`;
       setLocaleState(storedInLocalStorage);
