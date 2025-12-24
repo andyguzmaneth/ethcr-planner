@@ -1,19 +1,19 @@
 import type {
-  EventTemplate,
+  ProjectTemplate,
   TemplateArea,
   TemplateResponsibility,
   TemplateTask,
   RawTemplateArea,
   TaskStatus,
-  EventType,
-  Event,
+  ProjectType,
+  Project,
   Area,
   Responsibility,
   Task,
   User,
 } from "./types";
 import {
-  createEvent,
+  createProject,
   createArea,
   createResponsibility,
   createTask,
@@ -76,13 +76,13 @@ function findOrCreateUser(
 }
 
 /**
- * Converts raw JSON structure to EventTemplate format
+ * Converts raw JSON structure to ProjectTemplate format
  */
-export function convertRawTemplateToEventTemplate(
+export function convertRawTemplateToProjectTemplate(
   templateName: string,
-  eventType: EventType,
+  projectType: ProjectType,
   rawAreas: Record<string, RawTemplateArea>
-): EventTemplate {
+): ProjectTemplate {
   const areas: TemplateArea[] = Object.entries(rawAreas).map(
     ([areaName, areaData]) => {
       // Convert Responsabilidades array to TemplateResponsibility objects
@@ -131,20 +131,23 @@ export function convertRawTemplateToEventTemplate(
   return {
     id: `template-${Date.now()}`,
     name: templateName,
-    eventType,
+    projectType,
     areas,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
 }
 
+// Legacy alias
+export const convertRawTemplateToEventTemplate = convertRawTemplateToProjectTemplate;
+
 /**
- * Initializes an event from a template
- * Creates Event, Areas, Responsibilities, and Tasks
+ * Initializes a project from a template
+ * Creates Project, Areas, Responsibilities, and Tasks
  */
-export function initializeEventFromTemplate(
-  template: EventTemplate,
-  eventDetails: {
+export function initializeProjectFromTemplate(
+  template: ProjectTemplate,
+  projectDetails: {
     name: string;
     description?: string;
     startDate?: string;
@@ -155,21 +158,21 @@ export function initializeEventFromTemplate(
     defaultTaskStatus?: TaskStatus; // Override default status for tasks
   }
 ): {
-  event: Event;
+  project: Project;
   areas: Area[];
   responsibilities: Responsibility[];
   tasks: Task[];
 } {
   const { assignTeamMembers = true, defaultTaskStatus } = options || {};
 
-  // Create the event
-  const event = createEvent({
-    name: eventDetails.name,
-    type: template.eventType,
+  // Create the project
+  const project = createProject({
+    name: projectDetails.name,
+    type: template.projectType,
     status: "In Planning",
-    description: eventDetails.description,
-    startDate: eventDetails.startDate,
-    endDate: eventDetails.endDate,
+    description: projectDetails.description,
+    startDate: projectDetails.startDate,
+    endDate: projectDetails.endDate,
   });
 
   const allUsers = getUsers();
@@ -196,7 +199,7 @@ export function initializeEventFromTemplate(
 
     // Create the area
     const area = createArea({
-      eventId: event.id,
+      projectId: project.id,
       name: templateArea.name,
       description: templateArea.description,
       leadId: leadId || allUsers[0]?.id || "", // Fallback to first user or empty
@@ -228,7 +231,7 @@ export function initializeEventFromTemplate(
 
         const task = createTask({
           areaId: area.id,
-          eventId: event.id,
+          projectId: project.id,
           title: templateTask.title,
           description,
           status,
@@ -241,30 +244,33 @@ export function initializeEventFromTemplate(
   }
 
   return {
-    event,
+    project,
     areas,
     responsibilities,
     tasks,
   };
 }
 
+// Legacy alias
+export const initializeEventFromTemplate = initializeProjectFromTemplate;
+
 /**
  * Loads a template from a JSON file structure
- * Expected format: { "Event Name": { "Areas": { "Area Name": RawTemplateArea, ... } } }
+ * Expected format: { "Project Name": { "Areas": { "Area Name": RawTemplateArea, ... } } }
  */
 export function loadTemplateFromJson(
   jsonData: Record<string, { Areas?: Record<string, RawTemplateArea> }>,
-  eventType: EventType = "Conference"
-): EventTemplate[] {
-  const templates: EventTemplate[] = [];
+  projectType: ProjectType = "Conference"
+): ProjectTemplate[] {
+  const templates: ProjectTemplate[] = [];
 
-  for (const [eventName, eventData] of Object.entries(jsonData)) {
+  for (const [projectName, projectData] of Object.entries(jsonData)) {
     // Check if it has the nested "Areas" structure
-    const areas = eventData.Areas || (eventData as unknown as Record<string, RawTemplateArea>);
-    
-    const template = convertRawTemplateToEventTemplate(
-      eventName,
-      eventType,
+    const areas = projectData.Areas || (projectData as unknown as Record<string, RawTemplateArea>);
+
+    const template = convertRawTemplateToProjectTemplate(
+      projectName,
+      projectType,
       areas
     );
     templates.push(template);

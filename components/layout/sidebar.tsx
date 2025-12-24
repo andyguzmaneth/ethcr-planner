@@ -22,7 +22,7 @@ import {
 import { useTranslation } from "@/lib/i18n/useTranslation";
 
 interface SidebarProps {
-  events: Array<{ 
+  projects: Array<{ 
     id: string; 
     name: string; 
     slug: string;
@@ -30,7 +30,7 @@ interface SidebarProps {
   }>;
 }
 
-export function Sidebar({ events }: SidebarProps) {
+export function Sidebar({ projects }: SidebarProps) {
   const pathname = usePathname();
   const { t } = useTranslation();
 
@@ -41,25 +41,25 @@ export function Sidebar({ events }: SidebarProps) {
       icon: LayoutDashboard,
     },
     {
-      name: t("nav.events"),
-      href: "/events",
+      name: t("nav.projects"),
+      href: "/projects",
       icon: Calendar,
     },
   ];
 
   // Helper function to check if an area path is active
-  const isAreaPathActive = (eventSlug: string, areaId: string) => {
-    return pathname === `/events/${eventSlug}/areas/${areaId}`;
+  const isAreaPathActive = (projectSlug: string, areaId: string) => {
+    return pathname === `/projects/${projectSlug}/areas/${areaId}`;
   };
   
-  // Initialize open events based on current pathname
-  const initializeOpenEvents = (): Record<string, boolean> => {
+  // Initialize open projects based on current pathname
+  const initializeOpenProjects = (): Record<string, boolean> => {
     const initial: Record<string, boolean> = {};
-    events.forEach((event) => {
-      // Check if current path is under this event (but not just the event root)
-      const eventPath = `/events/${event.slug}`;
-      if (pathname.startsWith(eventPath) && pathname !== eventPath) {
-        initial[event.id] = true;
+    projects.forEach((project) => {
+      // Check if current path is under this project (but not just the project root)
+      const projectPath = `/projects/${project.slug}`;
+      if (pathname.startsWith(projectPath) && pathname !== projectPath) {
+        initial[project.id] = true;
       }
     });
     return initial;
@@ -68,32 +68,32 @@ export function Sidebar({ events }: SidebarProps) {
   // Initialize open areas based on current pathname
   const initializeOpenAreas = (): Record<string, boolean> => {
     const initial: Record<string, boolean> = {};
-    events.forEach((event) => {
-      if (event.areas) {
-        // Check if current path is an area detail page for this event
-        const hasActiveArea = event.areas.some((area) => 
-          isAreaPathActive(event.slug, area.id)
+    projects.forEach((project) => {
+      if (project.areas) {
+        // Check if current path is an area detail page for this project
+        const hasActiveArea = project.areas.some((area) => 
+          isAreaPathActive(project.slug, area.id)
         );
         if (hasActiveArea) {
-          initial[event.id] = true;
+          initial[project.id] = true;
         }
       }
     });
     return initial;
   };
 
-  const [openEvents, setOpenEvents] = useState<Record<string, boolean>>(initializeOpenEvents);
+  const [openProjects, setOpenProjects] = useState<Record<string, boolean>>(initializeOpenProjects);
   const [openAreas, setOpenAreas] = useState<Record<string, boolean>>(initializeOpenAreas);
 
-  // Update open events when pathname changes
+  // Update open projects when pathname changes
   useEffect(() => {
-    setOpenEvents((prev) => {
+    setOpenProjects((prev) => {
       const updated = { ...prev };
-      events.forEach((event) => {
-        const eventPath = `/events/${event.slug}`;
-        const shouldBeOpen = pathname.startsWith(eventPath) && pathname !== eventPath;
-        if (shouldBeOpen && !updated[event.id]) {
-          updated[event.id] = true;
+      projects.forEach((project) => {
+        const projectPath = `/projects/${project.slug}`;
+        const shouldBeOpen = pathname.startsWith(projectPath) && pathname !== projectPath;
+        if (shouldBeOpen && !updated[project.id]) {
+          updated[project.id] = true;
         }
       });
       return updated;
@@ -101,40 +101,40 @@ export function Sidebar({ events }: SidebarProps) {
 
     setOpenAreas((prev) => {
       const updated = { ...prev };
-      events.forEach((event) => {
-        if (event.areas) {
-          const hasActiveArea = event.areas.some((area) => 
-            isAreaPathActive(event.slug, area.id)
+      projects.forEach((project) => {
+        if (project.areas) {
+          const hasActiveArea = project.areas.some((area) => 
+            isAreaPathActive(project.slug, area.id)
           );
-          if (hasActiveArea && !updated[event.id]) {
-            updated[event.id] = true;
+          if (hasActiveArea && !updated[project.id]) {
+            updated[project.id] = true;
           }
         }
       });
       return updated;
     });
-  }, [pathname, events]);
+  }, [pathname, projects]);
 
-  const toggleEvent = (eventId: string) => {
-    setOpenEvents((prev) => ({
+  const toggleProject = (projectId: string) => {
+    setOpenProjects((prev) => ({
       ...prev,
-      [eventId]: !prev[eventId],
+      [projectId]: !prev[projectId],
     }));
   };
 
-  const toggleAreas = (eventId: string) => {
+  const toggleAreas = (projectId: string) => {
     setOpenAreas((prev) => ({
       ...prev,
-      [eventId]: !prev[eventId],
+      [projectId]: !prev[projectId],
     }));
   };
 
-  const isEventActive = (eventSlug: string) => {
-    return pathname.startsWith(`/events/${eventSlug}`);
+  const isProjectActive = (projectSlug: string) => {
+    return pathname.startsWith(`/projects/${projectSlug}`);
   };
 
-  const isEventPathActive = (eventSlug: string, path: string) => {
-    return pathname === `/events/${eventSlug}${path}`;
+  const isProjectPathActive = (projectSlug: string, path: string) => {
+    return pathname === `/projects/${projectSlug}${path}`;
   };
 
   return (
@@ -173,29 +173,29 @@ export function Sidebar({ events }: SidebarProps) {
           {/* Divider */}
           <div className="h-px bg-sidebar-border my-2" />
 
-          {/* Events Section */}
+          {/* Projects Section */}
           <div className="space-y-1">
-            {events.map((event) => {
-              const isExpanded = openEvents[event.id] ?? false;
-              const eventIsActive = isEventActive(event.slug);
+            {projects.map((project) => {
+              const isExpanded = openProjects[project.id] ?? false;
+              const projectIsActive = isProjectActive(project.slug);
 
               return (
                 <Collapsible
-                  key={event.id}
+                  key={project.id}
                   open={isExpanded}
-                  onOpenChange={() => toggleEvent(event.id)}
+                  onOpenChange={() => toggleProject(project.id)}
                 >
                   <div className="flex items-center">
                     <Link
-                      href={`/events/${event.slug}`}
+                      href={`/projects/${project.slug}`}
                       className={cn(
                         "flex-1 flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                        eventIsActive
+                        projectIsActive
                           ? "bg-sidebar-accent text-sidebar-accent-foreground"
                           : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                       )}
                     >
-                      <span className="flex-1 text-left truncate">{event.name}</span>
+                      <span className="flex-1 text-left truncate">{project.name}</span>
                     </Link>
                     <CollapsibleTrigger
                       className="p-2 rounded-md hover:bg-sidebar-accent transition-colors"
@@ -209,22 +209,22 @@ export function Sidebar({ events }: SidebarProps) {
                   </div>
 
                   <CollapsibleContent className="pl-6 pt-1 space-y-1">
-                    {event.areas && event.areas.length > 0 ? (
+                    {project.areas && project.areas.length > 0 ? (
                       <Collapsible
-                        open={openAreas[event.id] ?? false}
+                        open={openAreas[project.id] ?? false}
                         onOpenChange={(open) => {
                           setOpenAreas((prev) => ({
                             ...prev,
-                            [event.id]: open,
+                            [project.id]: open,
                           }));
                         }}
                       >
                         <div className="flex items-center">
                           <Link
-                            href={`/events/${event.slug}/areas`}
+                            href={`/projects/${project.slug}/areas`}
                             className={cn(
                               "flex-1 flex items-center px-3 py-1.5 text-sm rounded-md transition-colors",
-                              isEventPathActive(event.slug, "/areas") && !event.areas.some((area) => isAreaPathActive(event.slug, area.id))
+                              isProjectPathActive(project.slug, "/areas") && !project.areas.some((area) => isAreaPathActive(project.slug, area.id))
                                 ? "bg-sidebar-accent text-sidebar-accent-foreground"
                                 : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                             )}
@@ -235,7 +235,7 @@ export function Sidebar({ events }: SidebarProps) {
                           <CollapsibleTrigger
                             className="p-1 rounded-md hover:bg-sidebar-accent transition-colors"
                           >
-                            {openAreas[event.id] ? (
+                            {openAreas[project.id] ? (
                               <ChevronDown className="h-4 w-4" />
                             ) : (
                               <ChevronRight className="h-4 w-4" />
@@ -243,13 +243,13 @@ export function Sidebar({ events }: SidebarProps) {
                           </CollapsibleTrigger>
                         </div>
                         <CollapsibleContent className="pl-6 pt-1 space-y-1">
-                          {event.areas.map((area) => (
+                          {project.areas.map((area) => (
                             <Link
                               key={area.id}
-                              href={`/events/${event.slug}/areas/${area.id}`}
+                              href={`/projects/${project.slug}/areas/${area.id}`}
                               className={cn(
                                 "flex items-center px-3 py-1.5 text-sm rounded-md transition-colors",
-                                isAreaPathActive(event.slug, area.id)
+                                isAreaPathActive(project.slug, area.id)
                                   ? "bg-sidebar-accent text-sidebar-accent-foreground"
                                   : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                               )}
@@ -262,10 +262,10 @@ export function Sidebar({ events }: SidebarProps) {
                       </Collapsible>
                     ) : (
                       <Link
-                        href={`/events/${event.slug}/areas`}
+                        href={`/projects/${project.slug}/areas`}
                         className={cn(
                           "flex items-center px-3 py-1.5 text-sm rounded-md transition-colors",
-                          isEventPathActive(event.slug, "/areas")
+                          isProjectPathActive(project.slug, "/areas")
                             ? "bg-sidebar-accent text-sidebar-accent-foreground"
                             : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                         )}
@@ -275,10 +275,10 @@ export function Sidebar({ events }: SidebarProps) {
                       </Link>
                     )}
                     <Link
-                      href={`/events/${event.slug}/tasks`}
+                      href={`/projects/${project.slug}/tasks`}
                       className={cn(
                         "flex items-center px-3 py-1.5 text-sm rounded-md transition-colors",
-                        isEventPathActive(event.slug, "/tasks")
+                        isProjectPathActive(project.slug, "/tasks")
                           ? "bg-sidebar-accent text-sidebar-accent-foreground"
                           : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                       )}
@@ -287,10 +287,10 @@ export function Sidebar({ events }: SidebarProps) {
                       {t("nav.tasks")}
                     </Link>
                     <Link
-                      href={`/events/${event.slug}/meetings`}
+                      href={`/projects/${project.slug}/meetings`}
                       className={cn(
                         "flex items-center px-3 py-1.5 text-sm rounded-md transition-colors",
-                        isEventPathActive(event.slug, "/meetings")
+                        isProjectPathActive(project.slug, "/meetings")
                           ? "bg-sidebar-accent text-sidebar-accent-foreground"
                           : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                       )}

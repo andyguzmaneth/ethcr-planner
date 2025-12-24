@@ -1,29 +1,29 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { getEventBySlug, getAreasByEventId, getTasksByEventId, getUserById, getUsers } from "@/lib/data";
-import { EventDetailClient } from "./event-detail-client";
+import { getProjectBySlug, getAreasByProjectId, getTasksByProjectId, getUserById, getUsers } from "@/lib/data";
+import { ProjectDetailClient } from "./project-detail-client";
 import { createServerTranslationFunction } from "@/lib/i18n";
 
-interface EventDetailPageProps {
+interface ProjectDetailPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export default async function EventDetailPage({ params }: EventDetailPageProps) {
+export default async function ProjectDetailPage({ params }: ProjectDetailPageProps) {
   const { slug } = await params;
   const t = createServerTranslationFunction();
 
-  const event = getEventBySlug(slug);
-  if (!event) {
+  const project = getProjectBySlug(slug);
+  if (!project) {
     return (
       <MainLayout>
         <div className="container mx-auto p-6">
-          <p>{t("eventDetail.notFound")}</p>
+          <p>{t("projectDetail.notFound")}</p>
         </div>
       </MainLayout>
     );
   }
 
-  const areas = getAreasByEventId(event.id);
-  const allTasks = getTasksByEventId(event.id);
+  const areas = getAreasByProjectId(project.id);
+  const allTasks = getTasksByProjectId(project.id);
 
   // Calculate stats for areas
   const areasWithStats = areas.map((area) => {
@@ -54,12 +54,12 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
 
   return (
     <MainLayout>
-      <EventDetailClient
-        event={{
-          id: event.id,
-          name: event.name,
-          type: event.type,
-          status: event.status,
+      <ProjectDetailClient
+        project={{
+          id: project.id,
+          name: project.name,
+          type: project.type,
+          status: project.status,
         }}
         areasWithStats={areasWithStats}
         totalAreas={areas.length}

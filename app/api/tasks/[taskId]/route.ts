@@ -12,7 +12,7 @@ export async function PUT(
   try {
     const { taskId } = await params;
     const body = await request.json();
-    const { eventId, areaId, title, description, assigneeId, deadline, status, supportResources } = body;
+    const { projectId, eventId, areaId, title, description, assigneeId, deadline, status, supportResources, dependsOn, isRecurring, recurrence } = body;
 
     // Check if task exists
     const existingTask = getTaskById(taskId);
@@ -23,10 +23,13 @@ export async function PUT(
       );
     }
 
+    // Support both projectId and eventId for backward compatibility
+    const finalProjectId = projectId || eventId || existingTask.projectId || existingTask.eventId;
+
     // Validation
-    if (!eventId) {
+    if (!finalProjectId) {
       return NextResponse.json(
-        { error: "Event ID is required" },
+        { error: "Project ID is required" },
         { status: 400 }
       );
     }
@@ -51,7 +54,7 @@ export async function PUT(
 
     // Update task
     const updatedTask = updateTask(taskId, {
-      eventId,
+      projectId: finalProjectId,
       areaId: areaId || undefined,
       title: title.trim(),
       description: description?.trim() || undefined,
@@ -59,6 +62,9 @@ export async function PUT(
       deadline: deadline || undefined,
       status: status || existingTask.status,
       supportResources: parsedSupportResources.length > 0 ? parsedSupportResources : undefined,
+      dependsOn: dependsOn && Array.isArray(dependsOn) ? (dependsOn.length > 0 ? dependsOn : undefined) : undefined,
+      isRecurring: isRecurring !== undefined ? isRecurring : undefined,
+      recurrence: recurrence || undefined,
     });
 
     if (!updatedTask) {

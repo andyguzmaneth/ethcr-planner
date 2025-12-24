@@ -1,7 +1,7 @@
 [
   {
     "id": "area-coordinacion",
-    "projectId": "1",
+    "eventId": "1",
     "name": "Coordinación General",
     "description": "Coordinación general del evento ETH Pura Vida",
     "leadId": "user-alfredo",
@@ -15,7 +15,7 @@
   },
   {
     "id": "area-marketing",
-    "projectId": "1",
+    "eventId": "1",
     "name": "Marketing",
     "description": "Marketing y difusión del evento",
     "leadId": "user-beja",
@@ -28,7 +28,7 @@
   },
   {
     "id": "area-diseno",
-    "projectId": "1",
+    "eventId": "1",
     "name": "Diseño y Producción",
     "description": "Diseño gráfico y producción de material audiovisual",
     "leadId": "user-angie",
@@ -41,7 +41,7 @@
   },
   {
     "id": "area-hackathon",
-    "projectId": "1",
+    "eventId": "1",
     "name": "Hackathon Circuit",
     "description": "Organización y ejecución del Hackathon Circuit",
     "leadId": "user-alberto",
@@ -52,7 +52,7 @@
   },
   {
     "id": "area-lugar",
-    "projectId": "1",
+    "eventId": "1",
     "name": "Lugar y Logística",
     "description": "Gestión del lugar del evento y logística",
     "leadId": "user-maria",
@@ -63,7 +63,7 @@
   },
   {
     "id": "area-sponsors",
-    "projectId": "1",
+    "eventId": "1",
     "name": "Sponsors y Finanzas",
     "description": "Gestión de sponsors y control financiero",
     "leadId": "user-andy",
@@ -74,7 +74,7 @@
   },
   {
     "id": "area-agenda",
-    "projectId": "1",
+    "eventId": "1",
     "name": "Agenda y Charlistas",
     "description": "Coordinación de agenda y speakers",
     "leadId": "user-jose-pablo",
@@ -85,7 +85,7 @@
   },
   {
     "id": "area-website",
-    "projectId": "1",
+    "eventId": "1",
     "name": "Website",
     "description": "Desarrollo y mantenimiento del sitio web",
     "leadId": "user-robert",
@@ -98,7 +98,7 @@
   },
   {
     "id": "area-universidades",
-    "projectId": "1",
+    "eventId": "1",
     "name": "Universidades",
     "description": "Coordinación con universidades",
     "leadId": "user-robert",
@@ -108,7 +108,7 @@
     "order": 10
   },
   {
-    "projectId": "1",
+    "eventId": "1",
     "name": "🚨 Pendientes Para Terminar",
     "description": "Tareas pendientes para cerrar el evento 2025",
     "leadId": "user-andy",
@@ -119,7 +119,7 @@
     "order": 1
   },
   {
-    "projectId": "2",
+    "eventId": "2",
     "name": "Logistica",
     "leadId": "user-maria",
     "participantIds": [],
@@ -129,7 +129,7 @@
     "order": 1
   },
   {
-    "projectId": "3",
+    "eventId": "3",
     "name": "Logistica",
     "leadId": "user-maria",
     "participantIds": [],

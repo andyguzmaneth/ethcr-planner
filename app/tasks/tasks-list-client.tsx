@@ -74,7 +74,7 @@ export function TasksListClient({
                 <p className="text-muted-foreground mb-4">No se encontraron tareas</p>
                 <Button onClick={() => setIsModalOpen(true)}>
                   <Plus className="mr-2 h-4 w-4" />
-                  {t("eventDetail.createFirstTask")}
+                  {t("projectDetail.createFirstTask")}
                 </Button>
               </div>
             ) : (

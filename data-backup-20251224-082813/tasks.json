@@ -2,7 +2,7 @@
   {
     "id": "task-1",
     "areaId": "area-lugar",
-    "projectId": "1",
+    "eventId": "1",
     "title": "Reservar venue para meetup",
     "description": "Contactar y reservar el venue para el evento principal",
     "assigneeId": "user-maria",
@@ -15,7 +15,7 @@
   {
     "id": "task-2",
     "areaId": "area-agenda",
-    "projectId": "1",
+    "eventId": "1",
     "title": "Contactar speakers",
     "description": "Revisar lista de posibles speakers y hacer invitaciones iniciales",
     "assigneeId": "user-3",
@@ -30,7 +30,7 @@
   {
     "id": "task-4",
     "areaId": "area-lugar",
-    "projectId": "1",
+    "eventId": "1",
     "title": "Configurar sistema de tickets",
     "description": "Integrar plataforma de ticketing con el sitio web",
     "assigneeId": "user-4",
@@ -45,7 +45,7 @@
   {
     "id": "task-5",
     "areaId": "area-marketing",
-    "projectId": "1",
+    "eventId": "1",
     "title": "Crear contenido para Instagram",
     "description": "Preparar posts semanales sobre el evento",
     "assigneeId": "user-1",
@@ -56,7 +56,7 @@
     "updatedAt": "2025-01-10T00:00:00Z"
   },
   {
-    "projectId": "1",
+    "eventId": "1",
     "areaId": "area-coordinacion",
     "title": "Testing Task",
     "assigneeId": "user-alfredo",
@@ -70,7 +70,7 @@
     "updatedAt": "2025-11-03T01:44:59.976Z"
   },
   {
-    "projectId": "1",
+    "eventId": "1",
     "areaId": "area-1762133593744",
     "title": "Crear video final",
     "assigneeId": "user-alberto",
@@ -81,7 +81,7 @@
     "updatedAt": "2025-11-03T01:45:40.015Z"
   },
   {
-    "projectId": "1",
+    "eventId": "1",
     "areaId": "area-1762133593744",
     "title": "Publicar por correos y whatsapp video y agradecimientos",
     "description": "Diego",
@@ -93,7 +93,7 @@
     "updatedAt": "2025-11-03T01:46:03.740Z"
   },
   {
-    "projectId": "1",
+    "eventId": "1",
     "areaId": "area-1762133593744",
     "title": "Retrospective del Evento",
     "assigneeId": "user-andy",
@@ -104,7 +104,7 @@
     "updatedAt": "2025-11-03T01:53:11.336Z"
   },
   {
-    "projectId": "1",
+    "eventId": "1",
     "areaId": "area-1762133593744",
     "title": "Organizar Cena",
     "assigneeId": "user-alberto",
@@ -115,7 +115,7 @@
     "updatedAt": "2025-11-03T02:19:39.405Z"
   },
   {
-    "projectId": "1",
+    "eventId": "1",
     "areaId": "area-hackathon",
     "title": "Invite People",
     "assigneeId": "user-andy",
@@ -126,7 +126,7 @@
     "updatedAt": "2025-11-03T01:53:43.135Z"
   },
   {
-    "projectId": "1",
+    "eventId": "1",
     "areaId": "area-hackathon",
     "title": "Define date",
     "assigneeId": "user-andy",
@@ -137,7 +137,7 @@
     "updatedAt": "2025-11-03T01:54:16.447Z"
   },
   {
-    "projectId": "1",
+    "eventId": "1",
     "areaId": "area-hackathon",
     "title": "Prepare Bounties",
     "assigneeId": "user-andy",
@@ -148,7 +148,7 @@
     "updatedAt": "2025-11-03T01:54:40.832Z"
   },
   {
-    "projectId": "3",
+    "eventId": "3",
     "areaId": "area-1762136127900",
     "title": "Encontrar Lugar",
     "status": "pending",
@@ -157,7 +157,7 @@
     "updatedAt": "2025-11-03T02:15:51.633Z"
   },
   {
-    "projectId": "1",
+    "eventId": "1",
     "areaId": "area-1762133593744",
     "title": "Agregar todas las fotos y videos a carpeta drive",
     "assigneeId": "user-maria",

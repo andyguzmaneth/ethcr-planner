@@ -1,0 +1,127 @@
+{
+  "Commercial Property Management": {
+    "Areas": {
+      "Property Operations": {
+        "Equipo": [],
+        "Responsabilidades": [
+          "Building Maintenance",
+          "Security Management",
+          "Facility Operations"
+        ],
+        "Tareas": [
+          {
+            "tarea": "Schedule regular building inspections",
+            "estado": "Not Started",
+            "etapa": "> 1 mes"
+          },
+          {
+            "tarea": "Maintain common areas and facilities",
+            "estado": "Not Started",
+            "etapa": "< 1 semana"
+          },
+          {
+            "tarea": "Coordinate with security services",
+            "estado": "Not Started",
+            "etapa": "< 1 semana"
+          },
+          {
+            "tarea": "Manage parking facilities",
+            "estado": "Not Started",
+            "etapa": "< 1 semana"
+          }
+        ]
+      },
+      "Lease Management": {
+        "Equipo": [],
+        "Responsabilidades": [
+          "Lease Negotiations",
+          "Tenant Relations",
+          "Lease Renewals"
+        ],
+        "Tareas": [
+          {
+            "tarea": "Negotiate new commercial leases",
+            "estado": "Not Started",
+            "etapa": "< 2 semanas"
+          },
+          {
+            "tarea": "Review lease terms and conditions",
+            "estado": "Not Started",
+            "etapa": "< 1 semana"
+          },
+          {
+            "tarea": "Process lease renewals",
+            "estado": "Not Started",
+            "etapa": "> 1 mes"
+          },
+          {
+            "tarea": "Handle tenant complaints and requests",
+            "estado": "Not Started",
+            "etapa": "< 1 semana"
+          }
+        ]
+      },
+      "Financial Operations": {
+        "Equipo": [],
+        "Responsabilidades": [
+          "Rent Collection",
+          "Financial Reporting",
+          "Budget Management"
+        ],
+        "Tareas": [
+          {
+            "tarea": "Collect monthly rent from tenants",
+            "estado": "Not Started",
+            "etapa": "< 1 semana"
+          },
+          {
+            "tarea": "Track operating expenses",
+            "estado": "Not Started",
+            "etapa": "< 1 semana"
+          },
+          {
+            "tarea": "Prepare financial reports quarterly",
+            "estado": "Not Started",
+            "etapa": "> 1 mes"
+          },
+          {
+            "tarea": "Manage property budget",
+            "estado": "Not Started",
+            "etapa": "< 1 semana"
+          }
+        ]
+      },
+      "Compliance & Legal": {
+        "Equipo": [],
+        "Responsabilidades": [
+          "Regulatory Compliance",
+          "Insurance",
+          "Legal Documentation"
+        ],
+        "Tareas": [
+          {
+            "tarea": "Ensure ADA compliance",
+            "estado": "Not Started",
+            "etapa": "> 1 mes"
+          },
+          {
+            "tarea": "Maintain property insurance",
+            "estado": "Not Started",
+            "etapa": "> 2 meses"
+          },
+          {
+            "tarea": "Comply with local building codes",
+            "estado": "Not Started",
+            "etapa": "> 1 mes"
+          },
+          {
+            "tarea": "Update legal documentation",
+            "estado": "Not Started",
+            "etapa": "> 3 meses"
+          }
+        ]
+      }
+    }
+  }
+}
+

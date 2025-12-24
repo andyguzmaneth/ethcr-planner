@@ -36,7 +36,7 @@ export function EventTasksClient({
     <>
       <Button onClick={() => setIsModalOpen(true)}>
         <Plus className="mr-2 h-4 w-4" />
-        {t("eventDetail.newTask")}
+        {t("projectDetail.newTask")}
       </Button>
       <NewTaskModal
         open={isModalOpen}

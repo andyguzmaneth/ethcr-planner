@@ -30,7 +30,7 @@ interface NewAreaModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   area?: Area; // Optional area for edit mode
-  eventId: string;
+  projectId: string;
   users: User[];
   onSuccess?: () => void;
 }
@@ -39,7 +39,7 @@ export function NewAreaModal({
   open,
   onOpenChange,
   area: editingArea,
-  eventId,
+  projectId,
   users,
   onSuccess,
 }: NewAreaModalProps) {
@@ -128,7 +128,7 @@ export function NewAreaModal({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          eventId: isEditMode ? editingArea.eventId : eventId,
+          projectId: isEditMode ? (editingArea.projectId || editingArea.eventId) : projectId,
           name: areaName.trim(),
           description: description.trim() || undefined,
           leadId: selectedLeadId || undefined,

@@ -14,8 +14,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Plus, List, LayoutGrid, Calendar as CalendarIcon, MoreVertical, Edit, Trash2, Table as TableIcon } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/useTranslation";
-import { NewTaskModal } from "@/components/events/new-task-modal";
-import { DeleteTaskDialog } from "@/components/events/delete-task-dialog";
+import { NewTaskModal } from "@/components/projects/new-task-modal";
+import { DeleteTaskDialog } from "@/components/projects/delete-task-dialog";
 import { useRouter } from "next/navigation";
 import { Task } from "@/lib/types";
 import {
@@ -37,7 +37,7 @@ interface TaskWithDetails extends Task {
     id: string;
     name: string;
   } | null;
-  event?: {
+  project?: {
     id: string;
     name: string;
   } | null;
@@ -45,8 +45,8 @@ interface TaskWithDetails extends Task {
 
 interface TasksViewClientProps {
   tasks: TaskWithDetails[];
-  events: Array<{ id: string; name: string }>;
-  areas: Array<{ id: string; name: string; eventId: string }>;
+  projects: Array<{ id: string; name: string }>;
+  areas: Array<{ id: string; name: string; projectId?: string }>;
   users: Array<{ id: string; name: string; initials: string; email?: string }>;
   statusColors: Record<string, string>;
   statusLabels: Record<string, string>;
@@ -54,7 +54,7 @@ interface TasksViewClientProps {
 
 export function TasksViewClient({
   tasks,
-  events,
+  projects,
   areas,
   users,
   statusColors,
@@ -178,7 +178,7 @@ export function TasksViewClient({
                     <p className="text-muted-foreground mb-4">No se encontraron tareas</p>
                     <Button onClick={() => setIsModalOpen(true)}>
                       <Plus className="mr-2 h-4 w-4" />
-                      {t("eventDetail.createFirstTask")}
+                      {t("projectDetail.createFirstTask")}
                     </Button>
                   </div>
                 ) : (
@@ -205,7 +205,7 @@ export function TasksViewClient({
                             <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
                               <span>{task.assignee?.name || "Sin asignar"}</span>
                               <span>•</span>
-                              <span>{task.event?.name || "Evento desconocido"}</span>
+                              <span>{task.project?.name || "Proyecto desconocido"}</span>
                               {task.deadline && (
                                 <>
                                   <span>•</span>
@@ -327,9 +327,9 @@ export function TasksViewClient({
                                     {task.area.name}
                                   </Badge>
                                 )}
-                                {task.event && (
+                                {task.project && (
                                   <div className="text-xs text-muted-foreground">
-                                    {task.event.name}
+                                    {task.project.name}
                                   </div>
                                 )}
                               </div>
@@ -355,7 +355,7 @@ export function TasksViewClient({
                     <p className="text-muted-foreground mb-4">No se encontraron tareas</p>
                     <Button onClick={() => setIsModalOpen(true)}>
                       <Plus className="mr-2 h-4 w-4" />
-                      {t("eventDetail.createFirstTask")}
+                      {t("projectDetail.createFirstTask")}
                     </Button>
                   </div>
                 ) : (
@@ -510,7 +510,7 @@ export function TasksViewClient({
                   <p className="text-muted-foreground mb-4">No se encontraron tareas</p>
                   <Button onClick={() => setIsModalOpen(true)}>
                     <Plus className="mr-2 h-4 w-4" />
-                    {t("eventDetail.createFirstTask")}
+                    {t("projectDetail.createFirstTask")}
                   </Button>
                 </div>
               ) : (
@@ -614,7 +614,7 @@ export function TasksViewClient({
         open={isModalOpen}
         onOpenChange={handleModalClose}
         task={editingTask || undefined}
-        events={events}
+        projects={projects}
         areas={areas}
         users={users}
         onSuccess={handleTaskCreated}

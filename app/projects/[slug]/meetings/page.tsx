@@ -61,7 +61,7 @@ export default async function EventMeetingsPage({ params }: EventMeetingsPagePro
           </div>
           <Button>
             <Plus className="mr-2 h-4 w-4" />
-            {t("eventDetail.scheduleMeeting")}
+            {t("projectDetail.scheduleMeeting")}
           </Button>
         </div>
 
@@ -72,7 +72,7 @@ export default async function EventMeetingsPage({ params }: EventMeetingsPagePro
               <p className="text-muted-foreground mb-4">No hay reuniones programadas</p>
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
-                {t("eventDetail.createFirstMeeting")}
+                {t("projectDetail.createFirstMeeting")}
               </Button>
             </CardContent>
           </Card>

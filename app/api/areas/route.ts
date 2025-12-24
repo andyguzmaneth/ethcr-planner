@@ -4,12 +4,15 @@ import { createArea, reorderAreas } from "@/lib/data";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { eventId, name, description, leadId } = body;
+    const { projectId, eventId, name, description, leadId } = body;
+
+    // Support both projectId and eventId for backward compatibility
+    const finalProjectId = projectId || eventId;
 
     // Validation
-    if (!eventId) {
+    if (!finalProjectId) {
       return NextResponse.json(
-        { error: "Event ID is required" },
+        { error: "Project ID is required" },
         { status: 400 }
       );
     }
@@ -23,7 +26,7 @@ export async function POST(request: NextRequest) {
 
     // Create area
     const area = createArea({
-      eventId,
+      projectId: finalProjectId,
       name: name.trim(),
       description: description?.trim() || undefined,
       leadId: leadId || "",
@@ -43,12 +46,15 @@ export async function POST(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json();
-    const { eventId, areaOrders } = body;
+    const { projectId, eventId, areaOrders } = body;
+
+    // Support both projectId and eventId for backward compatibility
+    const finalProjectId = projectId || eventId;
 
     // Validation
-    if (!eventId) {
+    if (!finalProjectId) {
       return NextResponse.json(
-        { error: "Event ID is required" },
+        { error: "Project ID is required" },
         { status: 400 }
       );
     }
@@ -77,7 +83,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Reorder areas
-    const success = reorderAreas(eventId, areaOrders);
+    const success = reorderAreas(finalProjectId, areaOrders);
     if (!success) {
       return NextResponse.json(
         { error: "Failed to reorder areas" },

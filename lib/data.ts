@@ -4,12 +4,14 @@ import path from "path";
 import type {
   User,
   Event,
+  Project,
   Area,
   Responsibility,
   Task,
   Meeting,
   MeetingNote,
   EventTemplate,
+  ProjectTemplate,
 } from "./types";
 import { generateSlug } from "./utils";
 
@@ -60,121 +62,138 @@ export function createUser(user: Omit<User, "id" | "createdAt" | "updatedAt">): 
   return newUser;
 }
 
-// Event operations
-export function getEvents(): Event[] {
-  return readJsonFile<Event>("events.json");
+// Project operations (formerly Event operations)
+export function getProjects(): Project[] {
+  return readJsonFile<Project>("projects.json");
 }
 
-export function getEventById(id: string): Event | undefined {
-  return getEvents().find((event) => event.id === id);
+export function getProjectById(id: string): Project | undefined {
+  return getProjects().find((project) => project.id === id);
 }
 
-export function getEventBySlug(slug: string): Event | undefined {
-  return getEvents().find((event) => event.slug === slug);
+export function getProjectBySlug(slug: string): Project | undefined {
+  return getProjects().find((project) => project.slug === slug);
 }
 
-export function createEvent(event: Omit<Event, "id" | "slug" | "createdAt" | "updatedAt"> & { slug?: string }): Event {
-  const events = getEvents();
-  const slug = event.slug || generateSlug(event.name);
-  
+// Legacy aliases for backward compatibility
+export const getEvents = getProjects;
+export const getEventById = getProjectById;
+export const getEventBySlug = getProjectBySlug;
+
+export function createProject(project: Omit<Project, "id" | "slug" | "createdAt" | "updatedAt"> & { slug?: string }): Project {
+  const projects = getProjects();
+  const slug = project.slug || generateSlug(project.name);
+
   // Ensure slug is unique
   let uniqueSlug = slug;
   let counter = 1;
-  while (events.some((e) => e.slug === uniqueSlug)) {
+  while (projects.some((p) => p.slug === uniqueSlug)) {
     uniqueSlug = `${slug}-${counter}`;
     counter++;
   }
-  
-  const newEvent: Event = {
-    ...event,
+
+  const newProject: Project = {
+    ...project,
     slug: uniqueSlug,
     id: `${Date.now()}`,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
-  events.push(newEvent);
-  writeJsonFile("events.json", events);
-  return newEvent;
+  projects.push(newProject);
+  writeJsonFile("projects.json", projects);
+  return newProject;
 }
 
-export function updateEvent(id: string, updates: Partial<Event>): Event | null {
-  const events = getEvents();
-  const index = events.findIndex((e) => e.id === id);
+// Legacy alias
+export const createEvent = createProject;
+
+export function updateProject(id: string, updates: Partial<Project>): Project | null {
+  const projects = getProjects();
+  const index = projects.findIndex((p) => p.id === id);
   if (index === -1) return null;
 
   // If name is being updated and no slug provided, regenerate slug
   if (updates.name && !updates.slug) {
     updates.slug = generateSlug(updates.name);
-    
-    // Ensure slug is unique (excluding current event)
+
+    // Ensure slug is unique (excluding current project)
     let uniqueSlug = updates.slug;
     let counter = 1;
-    while (events.some((e) => e.id !== id && e.slug === uniqueSlug)) {
+    while (projects.some((p) => p.id !== id && p.slug === uniqueSlug)) {
       uniqueSlug = `${updates.slug}-${counter}`;
       counter++;
     }
     updates.slug = uniqueSlug;
   }
 
-  events[index] = {
-    ...events[index],
+  projects[index] = {
+    ...projects[index],
     ...updates,
     updatedAt: new Date().toISOString(),
   };
-  writeJsonFile("events.json", events);
-  return events[index];
+  writeJsonFile("projects.json", projects);
+  return projects[index];
 }
 
-export function joinEvent(eventId: string, userId: string): Event | null {
-  const event = getEventById(eventId);
-  if (!event) return null;
+// Legacy alias
+export const updateEvent = updateProject;
 
-  const participantIds = event.participantIds || [];
+export function joinProject(projectId: string, userId: string): Project | null {
+  const project = getProjectById(projectId);
+  if (!project) return null;
+
+  const participantIds = project.participantIds || [];
   if (participantIds.includes(userId)) {
     // Already joined
-    return event;
+    return project;
   }
 
-  return updateEvent(eventId, {
+  return updateProject(projectId, {
     participantIds: [...participantIds, userId],
   });
 }
 
-export function leaveEvent(eventId: string, userId: string): Event | null {
-  const event = getEventById(eventId);
-  if (!event) return null;
+export function leaveProject(projectId: string, userId: string): Project | null {
+  const project = getProjectById(projectId);
+  if (!project) return null;
 
-  const participantIds = event.participantIds || [];
+  const participantIds = project.participantIds || [];
   if (!participantIds.includes(userId)) {
     // Not joined
-    return event;
+    return project;
   }
 
-  return updateEvent(eventId, {
+  return updateProject(projectId, {
     participantIds: participantIds.filter((id) => id !== userId),
   });
 }
 
-export function getUserJoinedEvents(userId: string): Event[] {
-  return getEvents().filter(
-    (event) => event.participantIds && event.participantIds.includes(userId)
+export function getUserJoinedProjects(userId: string): Project[] {
+  return getProjects().filter(
+    (project) => project.participantIds && project.participantIds.includes(userId)
   );
 }
 
-export function isUserJoinedEvent(eventId: string, userId: string): boolean {
-  const event = getEventById(eventId);
-  if (!event || !event.participantIds) return false;
-  return event.participantIds.includes(userId);
+export function isUserJoinedProject(projectId: string, userId: string): boolean {
+  const project = getProjectById(projectId);
+  if (!project || !project.participantIds) return false;
+  return project.participantIds.includes(userId);
 }
+
+// Legacy aliases
+export const joinEvent = joinProject;
+export const leaveEvent = leaveProject;
+export const getUserJoinedEvents = getUserJoinedProjects;
+export const isUserJoinedEvent = isUserJoinedProject;
 
 // Area operations
 export function getAreas(): Area[] {
   return readJsonFile<Area>("areas.json");
 }
 
-export function getAreasByEventId(eventId: string): Area[] {
+export function getAreasByProjectId(projectId: string): Area[] {
   const allAreas = getAreas();
-  let areas = allAreas.filter((area) => area.eventId === eventId);
+  let areas = allAreas.filter((area) => area.projectId === projectId || area.eventId === projectId); // Support both for migration
   
   // Migrate areas without order values
   let needsUpdate = false;
@@ -210,7 +229,7 @@ export function getAreasByEventId(eventId: string): Area[] {
     writeJsonFile("areas.json", allAreas);
     // Reload to get updated data
     const updatedAreas = getAreas();
-    areas = updatedAreas.filter((area) => area.eventId === eventId);
+    areas = updatedAreas.filter((area) => area.projectId === projectId || area.eventId === projectId);
   }
   
   // Sort by order, then by createdAt for areas without order (shouldn't happen after migration)
@@ -225,14 +244,18 @@ export function getAreasByEventId(eventId: string): Area[] {
   });
 }
 
+// Legacy alias
+export const getAreasByEventId = getAreasByProjectId;
+
 export function getAreaById(id: string): Area | undefined {
   return getAreas().find((area) => area.id === id);
 }
 
 export function createArea(area: Omit<Area, "id" | "createdAt" | "updatedAt">): Area {
   const areas = getAreas();
-  const eventAreas = areas.filter((a) => a.eventId === area.eventId);
-  const maxOrder = eventAreas.reduce((max, a) => Math.max(max, a.order ?? 0), 0);
+  const projectId = area.projectId || (area as any).eventId; // Support both during migration
+  const projectAreas = areas.filter((a) => a.projectId === projectId || a.eventId === projectId);
+  const maxOrder = projectAreas.reduce((max, a) => Math.max(max, a.order ?? 0), 0);
   
   const newArea: Area = {
     ...area,
@@ -281,16 +304,16 @@ export function deleteArea(id: string): boolean {
   return true;
 }
 
-export function reorderAreas(eventId: string, areaOrders: { id: string; order: number }[]): boolean {
+export function reorderAreas(projectId: string, areaOrders: { id: string; order: number }[]): boolean {
   const areas = getAreas();
-  const eventAreas = areas.filter((a) => a.eventId === eventId);
+  const projectAreas = areas.filter((a) => a.projectId === projectId || a.eventId === projectId);
   
   // Create a map of new orders
   const orderMap = new Map(areaOrders.map((ao) => [ao.id, ao.order]));
   
-  // Update all event areas
+  // Update all project areas
   let updated = false;
-  for (const area of eventAreas) {
+  for (const area of projectAreas) {
     const newOrder = orderMap.get(area.id);
     if (newOrder !== undefined && area.order !== newOrder) {
       area.order = newOrder;
@@ -339,9 +362,12 @@ export function getTasks(): Task[] {
   return readJsonFile<Task>("tasks.json");
 }
 
-export function getTasksByEventId(eventId: string): Task[] {
-  return getTasks().filter((task) => task.eventId === eventId);
+export function getTasksByProjectId(projectId: string): Task[] {
+  return getTasks().filter((task) => task.projectId === projectId || task.eventId === projectId);
 }
+
+// Legacy alias
+export const getTasksByEventId = getTasksByProjectId;
 
 export function getTasksByAreaId(areaId: string): Task[] {
   return getTasks().filter((task) => task.areaId === areaId);
@@ -400,9 +426,12 @@ export function getMeetings(): Meeting[] {
   return readJsonFile<Meeting>("meetings.json");
 }
 
-export function getMeetingsByEventId(eventId: string): Meeting[] {
-  return getMeetings().filter((meeting) => meeting.eventId === eventId);
+export function getMeetingsByProjectId(projectId: string): Meeting[] {
+  return getMeetings().filter((meeting) => meeting.projectId === projectId || meeting.eventId === projectId);
 }
+
+// Legacy alias
+export const getMeetingsByEventId = getMeetingsByProjectId;
 
 export function getMeetingById(id: string): Meeting | undefined {
   return getMeetings().find((meeting) => meeting.id === id);
@@ -463,23 +492,23 @@ export function updateMeetingNote(
 }
 
 // Template operations
-export function getTemplates(): EventTemplate[] {
-  return readJsonFile<EventTemplate>("templates.json");
+export function getTemplates(): ProjectTemplate[] {
+  return readJsonFile<ProjectTemplate>("templates.json");
 }
 
-export function getTemplateById(id: string): EventTemplate | undefined {
+export function getTemplateById(id: string): ProjectTemplate | undefined {
   return getTemplates().find((template) => template.id === id);
 }
 
-export function getTemplateByName(name: string): EventTemplate | undefined {
+export function getTemplateByName(name: string): ProjectTemplate | undefined {
   return getTemplates().find((template) => template.name === name);
 }
 
 export function createTemplate(
-  template: Omit<EventTemplate, "id" | "createdAt" | "updatedAt">
-): EventTemplate {
+  template: Omit<ProjectTemplate, "id" | "createdAt" | "updatedAt">
+): ProjectTemplate {
   const templates = getTemplates();
-  const newTemplate: EventTemplate = {
+  const newTemplate: ProjectTemplate = {
     ...template,
     id: `template-${Date.now()}`,
     createdAt: new Date().toISOString(),
@@ -492,8 +521,8 @@ export function createTemplate(
 
 export function updateTemplate(
   id: string,
-  updates: Partial<EventTemplate>
-): EventTemplate | null {
+  updates: Partial<ProjectTemplate>
+): ProjectTemplate | null {
   const templates = getTemplates();
   const index = templates.findIndex((t) => t.id === id);
   if (index === -1) return null;

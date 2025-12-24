@@ -10,17 +10,17 @@ import { useTranslation } from "@/lib/i18n/useTranslation";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 
 interface HeaderProps {
-  events: Array<{ id: string; name: string; slug: string }>;
+  projects: Array<{ id: string; name: string; slug: string }>;
 }
 
-export function Header({ events }: HeaderProps) {
+export function Header({ projects }: HeaderProps) {
   const { t } = useTranslation();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center px-4">
         {/* Mobile menu button */}
-        <MobileSidebar events={events} />
+        <MobileSidebar projects={projects} />
 
         {/* Logo */}
         <Link href="/" className="mr-6 flex items-center">

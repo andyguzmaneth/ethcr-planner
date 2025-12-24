@@ -1,8 +1,13 @@
 // Type definitions for all entities
 
 export type TaskStatus = "pending" | "in_progress" | "blocked" | "completed";
-export type EventType = "Meetup" | "Conference" | "Custom";
-export type EventStatus = "In Planning" | "Active" | "Completed" | "Cancelled";
+export type ProjectType = "Meetup" | "Conference" | "Property" | "Custom";
+export type ProjectStatus = "In Planning" | "Active" | "Completed" | "Cancelled";
+export type RecurrenceFrequency = "daily" | "weekly" | "monthly" | "quarterly" | "yearly";
+
+// Legacy aliases for backward compatibility
+export type EventType = ProjectType;
+export type EventStatus = ProjectStatus;
 
 export interface User {
   id: string;
@@ -16,23 +21,26 @@ export interface User {
   updatedAt: string;
 }
 
-export interface Event {
+export interface Project {
   id: string;
   name: string;
   slug: string; // URL-friendly version of the name
-  type: EventType;
-  status: EventStatus;
+  type: ProjectType;
+  status: ProjectStatus;
   description?: string;
   startDate?: string;
-  endDate?: string;
-  participantIds?: string[]; // User IDs who have joined this event
+  endDate?: string; // Optional: Events have end dates, Properties typically don't
+  participantIds?: string[]; // User IDs who have joined this project
   createdAt: string;
   updatedAt: string;
 }
 
+// Legacy alias for backward compatibility
+export type Event = Project;
+
 export interface Area {
   id: string;
-  eventId: string;
+  projectId: string;
   name: string;
   description?: string;
   leadId: string; // User ID
@@ -40,6 +48,7 @@ export interface Area {
   order?: number; // Display order (lower numbers appear first)
   createdAt: string;
   updatedAt: string;
+  eventId?: string; // Deprecated: for backward compatibility during migration
 }
 
 export interface Responsibility {
@@ -54,7 +63,7 @@ export interface Responsibility {
 export interface Task {
   id: string;
   areaId?: string; // Optional - can be empty temporarily
-  eventId: string;
+  projectId: string;
   title: string;
   description?: string;
   assigneeId?: string; // User ID
@@ -62,20 +71,34 @@ export interface Task {
   status: TaskStatus;
   supportResources?: string[]; // URLs or text notes
   templateId?: string; // If created from a template
+
+  // Task dependencies
+  dependsOn?: string[]; // Array of task IDs this task depends on (blocking tasks)
+
+  // Recurring task support
+  isRecurring?: boolean;
+  recurrence?: {
+    frequency: RecurrenceFrequency;
+    interval: number; // Repeat every X days/weeks/months
+    endDate?: string; // Optional end date for recurrence
+  };
+
   createdAt: string;
   updatedAt: string;
   completedAt?: string;
+  eventId?: string; // Deprecated: for backward compatibility during migration
 }
 
 export interface Meeting {
   id: string;
-  eventId: string;
+  projectId: string;
   title: string;
   date: string; // ISO date string
   time: string; // Time string (e.g., "14:00")
   attendeeIds: string[]; // User IDs
   createdAt: string;
   updatedAt: string;
+  eventId?: string; // Deprecated: for backward compatibility during migration
 }
 
 export interface MeetingNote {
@@ -105,15 +128,18 @@ export type TaskEtapa =
   | "última semana"
   | string; // Allow custom stages
 
-export interface EventTemplate {
+export interface ProjectTemplate {
   id: string;
   name: string;
-  eventType: EventType;
+  projectType: ProjectType;
   description?: string;
   areas: TemplateArea[];
   createdAt: string;
   updatedAt: string;
 }
+
+// Legacy alias for backward compatibility
+export type EventTemplate = ProjectTemplate;
 
 export interface TemplateArea {
   name: string;

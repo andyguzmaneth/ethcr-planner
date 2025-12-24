@@ -18,7 +18,7 @@ interface DashboardClientProps {
   }>;
   areasWithProgress: Array<{
     name: string;
-    eventName: string;
+    projectName: string;
     progress: number;
     completed: number;
     total: number;
@@ -151,7 +151,7 @@ export function DashboardClient({
               {areasWithProgress.slice(0, 5).map((area, idx) => (
                 <div key={idx} className="space-y-1">
                   <p className="text-sm font-medium">{area.name}</p>
-                  <p className="text-xs text-muted-foreground">{area.eventName}</p>
+                  <p className="text-xs text-muted-foreground">{area.projectName}</p>
                   <div className="w-full bg-secondary rounded-full h-2 mt-2">
                     <div
                       className="bg-primary h-2 rounded-full"

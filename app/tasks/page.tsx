@@ -1,5 +1,5 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { getTasks, getUserById, getEventById, getAreaById, getEvents, getUsers, getAreas } from "@/lib/data";
+import { getTasks, getUserById, getProjectById, getAreaById, getProjects, getUsers, getAreas } from "@/lib/data";
 import { createServerTranslationFunction, getLocaleFromCookies } from "@/lib/i18n";
 import { cookies } from "next/headers";
 import { TasksPageClient } from "./tasks-page-client";
@@ -12,7 +12,7 @@ export default async function TasksPage() {
   const t = createServerTranslationFunction(locale);
 
   const tasks = getTasks();
-  const events = getEvents();
+  const projects = getProjects();
   const users = getUsers();
   const allAreas = getAreas();
 
@@ -33,13 +33,13 @@ export default async function TasksPage() {
   // Enrich tasks with details
   const tasksWithDetails = tasks.map((task) => {
     const assignee = task.assigneeId ? getUserById(task.assigneeId) : null;
-    const event = getEventById(task.eventId);
+    const project = getProjectById(task.projectId || task.eventId);
     const area = task.areaId ? getAreaById(task.areaId) : null;
 
     return {
       ...task,
       assignee,
-      event,
+      project,
       area,
     };
   });
@@ -52,12 +52,12 @@ export default async function TasksPage() {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Tareas</h1>
             <p className="text-muted-foreground mt-2">
-              Gestiona y rastrea todas las tareas entre eventos
+              Gestiona y rastrea todas las tareas entre proyectos
             </p>
           </div>
           <TasksPageClient
-            events={events.map(e => ({ id: e.id, name: e.name }))}
-            areas={allAreas.map(a => ({ id: a.id, name: a.name, eventId: a.eventId }))}
+            projects={projects.map(p => ({ id: p.id, name: p.name }))}
+            areas={allAreas.map(a => ({ id: a.id, name: a.name, projectId: a.projectId || a.eventId }))}
             users={users.map(u => ({ id: u.id, name: u.name, initials: u.initials, email: u.email }))}
           />
         </div>
@@ -65,8 +65,8 @@ export default async function TasksPage() {
         {/* Tasks Views (List, Kanban, Calendar, Table) */}
         <TasksViewClient
           tasks={tasksWithDetails}
-          events={events.map(e => ({ id: e.id, name: e.name }))}
-          areas={allAreas.map(a => ({ id: a.id, name: a.name, eventId: a.eventId }))}
+          projects={projects.map(p => ({ id: p.id, name: p.name }))}
+          areas={allAreas.map(a => ({ id: a.id, name: a.name, projectId: a.projectId || a.eventId }))}
           users={users.map(u => ({ id: u.id, name: u.name, initials: u.initials, email: u.email }))}
           statusColors={statusColors}
           statusLabels={statusLabels}

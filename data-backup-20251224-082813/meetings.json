@@ -1,7 +1,7 @@
 [
   {
     "id": "meeting-1",
-    "projectId": "1",
+    "eventId": "1",
     "title": "Reunión Semanal de Planificación",
     "date": "2025-01-15",
     "time": "14:00",
@@ -11,7 +11,7 @@
   },
   {
     "id": "meeting-2",
-    "projectId": "2",
+    "eventId": "2",
     "title": "Sincronización de Líderes de Tracks",
     "date": "2025-01-10",
     "time": "10:00",
@@ -21,7 +21,7 @@
   },
   {
     "id": "meeting-3",
-    "projectId": "1",
+    "eventId": "1",
     "title": "Revisión de Progreso",
     "date": "2025-01-20",
     "time": "16:00",

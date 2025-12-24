@@ -15,9 +15,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Check, ChevronsUpDown, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Task } from "@/lib/types";
+import { Task, RecurrenceFrequency } from "@/lib/types";
 
 interface User {
   id: string;
@@ -29,10 +30,10 @@ interface User {
 interface Area {
   id: string;
   name: string;
-  eventId?: string; // Optional for filtering when event is selected
+  projectId?: string; // Optional for filtering when project is selected
 }
 
-interface Event {
+interface Project {
   id: string;
   name: string;
 }
@@ -41,12 +42,13 @@ interface NewTaskModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   task?: Task; // Optional task for edit mode
-  eventId?: string; // Auto-filled from URL
+  projectId?: string; // Auto-filled from URL
   areaId?: string; // Auto-filled from URL
-  eventName?: string; // For display
+  projectName?: string; // For display
   areaName?: string; // For display
-  events?: Event[]; // For dropdown when eventId is not provided
-  areas?: Area[]; // Areas for the event (filtered by eventId if provided)
+  projects?: Project[]; // For dropdown when projectId is not provided
+  areas?: Area[]; // Areas for the project (filtered by projectId if provided)
+  tasks?: Task[]; // All tasks from the project (for dependencies)
   users: User[];
   onSuccess?: () => void;
 }
@@ -55,12 +57,13 @@ export function NewTaskModal({
   open,
   onOpenChange,
   task: editingTask,
-  eventId: initialEventId,
+  projectId: initialProjectId,
   areaId: initialAreaId,
-  eventName,
+  projectName,
   areaName,
-  events = [],
+  projects = [],
   areas = [],
+  tasks = [],
   users,
   onSuccess,
 }: NewTaskModalProps) {
@@ -70,38 +73,62 @@ export function NewTaskModal({
   // Initialize form with task data if editing
   const [title, setTitle] = useState(editingTask?.title || "");
   const [description, setDescription] = useState(editingTask?.description || "");
-  const [selectedEventId, setSelectedEventId] = useState<string | null>(editingTask?.eventId || initialEventId || null);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(editingTask?.projectId || initialProjectId || null);
   const [selectedAreaId, setSelectedAreaId] = useState<string | null>(editingTask?.areaId || initialAreaId || null);
   const [selectedAssigneeId, setSelectedAssigneeId] = useState<string | null>(editingTask?.assigneeId || null);
   const [deadline, setDeadline] = useState(editingTask?.deadline ? editingTask.deadline.split("T")[0] : "");
   const [status, setStatus] = useState<"pending" | "in_progress" | "blocked" | "completed">(editingTask?.status || "pending");
   const [supportResources, setSupportResources] = useState(editingTask?.supportResources?.join("\n") || "");
+  
+  // Task dependencies
+  const [selectedDependencies, setSelectedDependencies] = useState<string[]>(editingTask?.dependsOn || []);
+  
+  // Recurring tasks
+  const [isRecurring, setIsRecurring] = useState(editingTask?.isRecurring || false);
+  const [recurrenceFrequency, setRecurrenceFrequency] = useState<RecurrenceFrequency>(editingTask?.recurrence?.frequency || "monthly");
+  const [recurrenceInterval, setRecurrenceInterval] = useState(editingTask?.recurrence?.interval || 1);
+  const [recurrenceEndDate, setRecurrenceEndDate] = useState(editingTask?.recurrence?.endDate ? editingTask.recurrence.endDate.split("T")[0] : "");
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  const [isEventDropdownOpen, setIsEventDropdownOpen] = useState(false);
+  const [isProjectDropdownOpen, setIsProjectDropdownOpen] = useState(false);
   const [isAreaDropdownOpen, setIsAreaDropdownOpen] = useState(false);
   const [isAssigneeDropdownOpen, setIsAssigneeDropdownOpen] = useState(false);
-  const [eventSearchQuery, setEventSearchQuery] = useState("");
+  const [isDependenciesDropdownOpen, setIsDependenciesDropdownOpen] = useState(false);
+  const [projectSearchQuery, setProjectSearchQuery] = useState("");
   const [areaSearchQuery, setAreaSearchQuery] = useState("");
   const [assigneeSearchQuery, setAssigneeSearchQuery] = useState("");
+  const [dependenciesSearchQuery, setDependenciesSearchQuery] = useState("");
   
-  const eventDropdownRef = useRef<HTMLDivElement>(null);
+  const projectDropdownRef = useRef<HTMLDivElement>(null);
   const areaDropdownRef = useRef<HTMLDivElement>(null);
   const assigneeDropdownRef = useRef<HTMLDivElement>(null);
+  const dependenciesDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Filter areas based on selected event
+  // Get available tasks for dependencies (exclude current task if editing, filter by project)
+  const availableDependencyTasks = useMemo(() => {
+    if (!selectedProjectId) return [];
+    return tasks.filter((t) => {
+      // Exclude current task if editing
+      if (editingTask && t.id === editingTask.id) return false;
+      // Only include tasks from the same project
+      return t.projectId === selectedProjectId || t.eventId === selectedProjectId;
+    });
+  }, [tasks, selectedProjectId, editingTask]);
+
+  // Filter areas based on selected project
   const filteredAreas = useMemo(() => {
-    if (!selectedEventId) return [];
-    // If areas have eventId, filter by it. Otherwise, assume they're already filtered by parent.
+    if (!selectedProjectId) return [];
+    // If areas have projectId, filter by it. Otherwise, assume they're already filtered by parent.
     return areas.filter((area) => {
-      if (area.eventId) {
-        return area.eventId === selectedEventId;
+      if (area.projectId) {
+        return area.projectId === selectedProjectId;
       }
-      // If no eventId in area, assume parent already filtered them
+      // If no projectId in area, assume parent already filtered them
       return true;
     });
-  }, [areas, selectedEventId]);
+  }, [areas, selectedProjectId]);
 
   // Filter users
   const filteredUsers = useMemo(() => {
@@ -115,16 +142,16 @@ export function NewTaskModal({
     );
   }, [users, assigneeSearchQuery]);
 
-  // Filter events
-  const filteredEvents = useMemo(() => {
-    if (!eventSearchQuery) return events;
-    const query = eventSearchQuery.toLowerCase();
-    return events.filter(
-      (event) =>
-        event.name.toLowerCase().includes(query) ||
-        event.id.toLowerCase().includes(query)
+  // Filter projects
+  const filteredProjects = useMemo(() => {
+    if (!projectSearchQuery) return projects;
+    const query = projectSearchQuery.toLowerCase();
+    return projects.filter(
+      (project) =>
+        project.name.toLowerCase().includes(query) ||
+        project.id.toLowerCase().includes(query)
     );
-  }, [events, eventSearchQuery]);
+  }, [projects, projectSearchQuery]);
 
   // Filter areas by search
   const filteredAreasBySearch = useMemo(() => {
@@ -137,8 +164,19 @@ export function NewTaskModal({
     );
   }, [filteredAreas, areaSearchQuery]);
 
-  const selectedEvent = events.find((e) => e.id === selectedEventId) || 
-    (initialEventId && eventName ? { id: initialEventId, name: eventName } : null);
+  // Filter dependency tasks by search
+  const filteredDependencyTasks = useMemo(() => {
+    if (!dependenciesSearchQuery) return availableDependencyTasks;
+    const query = dependenciesSearchQuery.toLowerCase();
+    return availableDependencyTasks.filter(
+      (task) =>
+        task.title.toLowerCase().includes(query) ||
+        task.id.toLowerCase().includes(query)
+    );
+  }, [availableDependencyTasks, dependenciesSearchQuery]);
+
+  const selectedProject = projects.find((p) => p.id === selectedProjectId) || 
+    (initialProjectId && projectName ? { id: initialProjectId, name: projectName } : null);
   const selectedArea = filteredAreas.find((a) => a.id === selectedAreaId) ||
     (initialAreaId && areaName ? { id: initialAreaId, name: areaName } : null);
   const selectedAssignee = users.find((u) => u.id === selectedAssigneeId) || null;
@@ -146,8 +184,8 @@ export function NewTaskModal({
   // Close dropdowns when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (eventDropdownRef.current && !eventDropdownRef.current.contains(event.target as Node)) {
-        setIsEventDropdownOpen(false);
+      if (projectDropdownRef.current && !projectDropdownRef.current.contains(event.target as Node)) {
+        setIsProjectDropdownOpen(false);
       }
       if (areaDropdownRef.current && !areaDropdownRef.current.contains(event.target as Node)) {
         setIsAreaDropdownOpen(false);
@@ -155,23 +193,26 @@ export function NewTaskModal({
       if (assigneeDropdownRef.current && !assigneeDropdownRef.current.contains(event.target as Node)) {
         setIsAssigneeDropdownOpen(false);
       }
+      if (dependenciesDropdownRef.current && !dependenciesDropdownRef.current.contains(event.target as Node)) {
+        setIsDependenciesDropdownOpen(false);
+      }
     }
 
-    if (isEventDropdownOpen || isAreaDropdownOpen || isAssigneeDropdownOpen) {
+    if (isProjectDropdownOpen || isAreaDropdownOpen || isAssigneeDropdownOpen || isDependenciesDropdownOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isEventDropdownOpen, isAreaDropdownOpen, isAssigneeDropdownOpen]);
+  }, [isProjectDropdownOpen, isAreaDropdownOpen, isAssigneeDropdownOpen, isDependenciesDropdownOpen]);
 
-  // Update selectedEventId when initialEventId changes
+  // Update selectedProjectId when initialProjectId changes
   useEffect(() => {
-    if (initialEventId) {
-      setSelectedEventId(initialEventId);
+    if (initialProjectId) {
+      setSelectedProjectId(initialProjectId);
     }
-  }, [initialEventId]);
+  }, [initialProjectId]);
 
   // Update selectedAreaId when initialAreaId changes
   useEffect(() => {
@@ -185,26 +226,36 @@ export function NewTaskModal({
     if (open && editingTask) {
       setTitle(editingTask.title || "");
       setDescription(editingTask.description || "");
-      setSelectedEventId(editingTask.eventId);
+      setSelectedProjectId(editingTask.projectId || editingTask.eventId || initialProjectId || null);
       setSelectedAreaId(editingTask.areaId || initialAreaId || null);
       setSelectedAssigneeId(editingTask.assigneeId || null);
       setDeadline(editingTask.deadline ? editingTask.deadline.split("T")[0] : "");
       setStatus(editingTask.status || "pending");
       setSupportResources(editingTask.supportResources?.join("\n") || "");
+      setSelectedDependencies(editingTask.dependsOn || []);
+      setIsRecurring(editingTask.isRecurring || false);
+      setRecurrenceFrequency(editingTask.recurrence?.frequency || "monthly");
+      setRecurrenceInterval(editingTask.recurrence?.interval || 1);
+      setRecurrenceEndDate(editingTask.recurrence?.endDate ? editingTask.recurrence.endDate.split("T")[0] : "");
       setError(null);
     } else if (open && !editingTask) {
       // Reset to defaults when creating new task
       setTitle("");
       setDescription("");
-      setSelectedEventId(initialEventId || null);
+      setSelectedProjectId(initialProjectId || null);
       setSelectedAreaId(initialAreaId || null);
       setSelectedAssigneeId(null);
       setDeadline("");
       setStatus("pending");
       setSupportResources("");
+      setSelectedDependencies([]);
+      setIsRecurring(false);
+      setRecurrenceFrequency("monthly");
+      setRecurrenceInterval(1);
+      setRecurrenceEndDate("");
       setError(null);
     }
-  }, [open, editingTask, initialEventId, initialAreaId]);
+  }, [open, editingTask, initialProjectId, initialAreaId]);
 
   const handleSubmit = async () => {
     if (!title.trim()) {
@@ -212,9 +263,9 @@ export function NewTaskModal({
       return;
     }
 
-    const finalEventId = selectedEventId || initialEventId;
-    if (!finalEventId) {
-      setError(t("newTaskModal.errors.eventRequired"));
+    const finalProjectId = selectedProjectId || initialProjectId;
+    if (!finalProjectId) {
+      setError(t("newTaskModal.errors.projectRequired"));
       return;
     }
 
@@ -234,13 +285,20 @@ export function NewTaskModal({
           .filter((line) => line.length > 0);
       }
 
+      // Build recurrence object if recurring
+      const recurrence = isRecurring ? {
+        frequency: recurrenceFrequency,
+        interval: recurrenceInterval,
+        endDate: recurrenceEndDate || undefined,
+      } : undefined;
+
       const response = await fetch(url, {
         method,
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          eventId: finalEventId,
+          projectId: finalProjectId,
           areaId: selectedAreaId || undefined,
           title: title.trim(),
           description: description.trim() || undefined,
@@ -248,6 +306,9 @@ export function NewTaskModal({
           deadline: deadline || undefined,
           status,
           supportResources: parsedSupportResources.length > 0 ? parsedSupportResources : undefined,
+          dependsOn: selectedDependencies.length > 0 ? selectedDependencies : undefined,
+          isRecurring: isRecurring || undefined,
+          recurrence,
         }),
       });
 
@@ -264,12 +325,19 @@ export function NewTaskModal({
       setDeadline("");
       setStatus("pending");
       setSupportResources("");
-      setEventSearchQuery("");
+      setSelectedDependencies([]);
+      setIsRecurring(false);
+      setRecurrenceFrequency("monthly");
+      setRecurrenceInterval(1);
+      setRecurrenceEndDate("");
+      setProjectSearchQuery("");
       setAreaSearchQuery("");
       setAssigneeSearchQuery("");
-      setIsEventDropdownOpen(false);
+      setDependenciesSearchQuery("");
+      setIsProjectDropdownOpen(false);
       setIsAreaDropdownOpen(false);
       setIsAssigneeDropdownOpen(false);
+      setIsDependenciesDropdownOpen(false);
       onOpenChange(false);
       onSuccess?.();
     } catch (err) {
@@ -286,20 +354,37 @@ export function NewTaskModal({
   const handleCancel = () => {
     setTitle("");
     setDescription("");
-    setSelectedEventId(initialEventId || null);
+    setSelectedProjectId(initialProjectId || null);
     setSelectedAreaId(initialAreaId || null);
     setSelectedAssigneeId(null);
     setDeadline("");
     setStatus("pending");
     setSupportResources("");
-    setEventSearchQuery("");
+    setSelectedDependencies([]);
+    setIsRecurring(false);
+    setRecurrenceFrequency("monthly");
+    setRecurrenceInterval(1);
+    setRecurrenceEndDate("");
+    setProjectSearchQuery("");
     setAreaSearchQuery("");
     setAssigneeSearchQuery("");
-    setIsEventDropdownOpen(false);
+    setDependenciesSearchQuery("");
+    setIsProjectDropdownOpen(false);
     setIsAreaDropdownOpen(false);
     setIsAssigneeDropdownOpen(false);
+    setIsDependenciesDropdownOpen(false);
     setError(null);
     onOpenChange(false);
+  };
+
+  const toggleDependency = (taskId: string) => {
+    setSelectedDependencies((prev) => {
+      if (prev.includes(taskId)) {
+        return prev.filter((id) => id !== taskId);
+      } else {
+        return [...prev, taskId];
+      }
+    });
   };
 
   return (
@@ -313,70 +398,70 @@ export function NewTaskModal({
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          {/* Event (required, auto-filled or dropdown) */}
-          {!initialEventId && events.length > 0 ? (
+          {/* Project (required, auto-filled or dropdown) */}
+          {!initialProjectId && projects.length > 0 ? (
             <div className="space-y-2">
               <Label>
-                {t("newTaskModal.event")} <span className="text-destructive">*</span>
+                {t("newTaskModal.project")} <span className="text-destructive">*</span>
               </Label>
-              <div className="relative" ref={eventDropdownRef}>
+              <div className="relative" ref={projectDropdownRef}>
                 <button
                   type="button"
-                  onClick={() => setIsEventDropdownOpen(!isEventDropdownOpen)}
+                  onClick={() => setIsProjectDropdownOpen(!isProjectDropdownOpen)}
                   disabled={isSubmitting}
                   className={cn(
                     "w-full h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-between",
-                    !selectedEvent && "text-muted-foreground"
+                    !selectedProject && "text-muted-foreground"
                   )}
                 >
                   <span className="truncate">
-                    {selectedEvent ? selectedEvent.name : t("newTaskModal.eventPlaceholder")}
+                    {selectedProject ? selectedProject.name : t("newTaskModal.projectPlaceholder")}
                   </span>
                   <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
                 </button>
 
-                {isEventDropdownOpen && (
+                {isProjectDropdownOpen && (
                   <div className="absolute z-50 w-full mt-1 bg-popover border border-input rounded-md shadow-md max-h-[300px] overflow-hidden">
                     <div className="p-2 border-b">
                       <div className="relative">
                         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
-                          placeholder={t("newTaskModal.searchEvent")}
-                          value={eventSearchQuery}
-                          onChange={(e) => setEventSearchQuery(e.target.value)}
+                          placeholder={t("newTaskModal.searchProject")}
+                          value={projectSearchQuery}
+                          onChange={(e) => setProjectSearchQuery(e.target.value)}
                           className="pl-8 h-8"
                           autoFocus
                         />
                       </div>
                     </div>
                     <div className="overflow-y-auto max-h-[240px]">
-                      {filteredEvents.length === 0 ? (
+                      {filteredProjects.length === 0 ? (
                         <div className="px-3 py-2 text-sm text-muted-foreground text-center">
-                          {t("newTaskModal.noEventsFound")}
+                          {t("newTaskModal.noProjectsFound")}
                         </div>
                       ) : (
-                        filteredEvents.map((event) => (
+                        filteredProjects.map((project) => (
                           <button
-                            key={event.id}
+                            key={project.id}
                             type="button"
                             onClick={() => {
-                              setSelectedEventId(event.id);
-                              setIsEventDropdownOpen(false);
-                              setEventSearchQuery("");
-                              // Reset area when event changes
+                              setSelectedProjectId(project.id);
+                              setIsProjectDropdownOpen(false);
+                              setProjectSearchQuery("");
+                              // Reset area when project changes
                               setSelectedAreaId(null);
                             }}
                             className={cn(
                               "w-full px-3 py-2 text-sm text-left hover:bg-accent hover:text-accent-foreground flex items-center gap-2",
-                              selectedEventId === event.id && "bg-accent"
+                              selectedProjectId === project.id && "bg-accent"
                             )}
                           >
                             <div className="h-5 w-5 flex items-center justify-center">
-                              {selectedEventId === event.id && (
+                              {selectedProjectId === project.id && (
                                 <Check className="h-4 w-4" />
                               )}
                             </div>
-                            <span>{event.name}</span>
+                            <span>{project.name}</span>
                           </button>
                         ))
                       )}
@@ -385,11 +470,11 @@ export function NewTaskModal({
                 )}
               </div>
             </div>
-          ) : initialEventId && eventName ? (
+          ) : initialProjectId && projectName ? (
             <div className="space-y-2">
-              <Label>{t("newTaskModal.event")}</Label>
+              <Label>{t("newTaskModal.project")}</Label>
               <Input
-                value={eventName}
+                value={projectName}
                 disabled
                 className="bg-muted"
               />
@@ -410,7 +495,7 @@ export function NewTaskModal({
                 <button
                   type="button"
                   onClick={() => setIsAreaDropdownOpen(!isAreaDropdownOpen)}
-                  disabled={isSubmitting || !selectedEventId}
+                  disabled={isSubmitting || !selectedProjectId}
                   className={cn(
                     "w-full h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-between",
                     !selectedArea && "text-muted-foreground"
@@ -520,6 +605,160 @@ export function NewTaskModal({
               disabled={isSubmitting}
               rows={3}
             />
+          </div>
+
+          {/* Task Dependencies */}
+          {selectedProjectId && availableDependencyTasks.length > 0 && (
+            <div className="space-y-2">
+              <Label>{t("taskDependencies.blockingTasks")}</Label>
+              <div className="relative" ref={dependenciesDropdownRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsDependenciesDropdownOpen(!isDependenciesDropdownOpen)}
+                  disabled={isSubmitting}
+                  className={cn(
+                    "w-full h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-between",
+                    selectedDependencies.length === 0 && "text-muted-foreground"
+                  )}
+                >
+                  <span className="truncate">
+                    {selectedDependencies.length === 0
+                      ? t("taskDependencies.selectBlocking")
+                      : `${selectedDependencies.length} ${t("taskDependencies.blockingTasks").toLowerCase()}`}
+                  </span>
+                  <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
+                </button>
+
+                {isDependenciesDropdownOpen && (
+                  <div className="absolute z-50 w-full mt-1 bg-popover border border-input rounded-md shadow-md max-h-[300px] overflow-hidden">
+                    <div className="p-2 border-b">
+                      <div className="relative">
+                        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          placeholder={t("taskDependencies.selectBlocking")}
+                          value={dependenciesSearchQuery}
+                          onChange={(e) => setDependenciesSearchQuery(e.target.value)}
+                          className="pl-8 h-8"
+                          autoFocus
+                        />
+                      </div>
+                    </div>
+                    <div className="overflow-y-auto max-h-[240px]">
+                      {filteredDependencyTasks.length === 0 ? (
+                        <div className="px-3 py-2 text-sm text-muted-foreground text-center">
+                          {t("taskDependencies.noDependencies")}
+                        </div>
+                      ) : (
+                        filteredDependencyTasks.map((task) => (
+                          <button
+                            key={task.id}
+                            type="button"
+                            onClick={() => toggleDependency(task.id)}
+                            className={cn(
+                              "w-full px-3 py-2 text-sm text-left hover:bg-accent hover:text-accent-foreground flex items-center gap-2",
+                              selectedDependencies.includes(task.id) && "bg-accent"
+                            )}
+                          >
+                            <div className="h-5 w-5 flex items-center justify-center">
+                              {selectedDependencies.includes(task.id) && (
+                                <Check className="h-4 w-4" />
+                              )}
+                            </div>
+                            <span>{task.title}</span>
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+              {selectedDependencies.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {selectedDependencies.map((taskId) => {
+                    const task = availableDependencyTasks.find((t) => t.id === taskId);
+                    return task ? (
+                      <Badge key={taskId} variant="secondary" className="text-xs">
+                        {task.title}
+                        <button
+                          type="button"
+                          onClick={() => toggleDependency(taskId)}
+                          className="ml-1 hover:text-destructive"
+                        >
+                          ×
+                        </button>
+                      </Badge>
+                    ) : null;
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Recurring Tasks */}
+          <div className="space-y-3 border-t pt-4">
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="is-recurring"
+                checked={isRecurring}
+                onChange={(e) => setIsRecurring(e.target.checked)}
+                disabled={isSubmitting}
+                className="h-4 w-4 rounded border-gray-300"
+              />
+              <Label htmlFor="is-recurring" className="font-normal cursor-pointer">
+                {t("recurringTasks.makeRecurring")}
+              </Label>
+            </div>
+
+            {isRecurring && (
+              <div className="space-y-3 pl-6">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="recurrence-frequency">
+                      {t("recurringTasks.frequency")}
+                    </Label>
+                    <select
+                      id="recurrence-frequency"
+                      value={recurrenceFrequency}
+                      onChange={(e) => setRecurrenceFrequency(e.target.value as RecurrenceFrequency)}
+                      disabled={isSubmitting}
+                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <option value="daily">{t("recurringTasks.daily")}</option>
+                      <option value="weekly">{t("recurringTasks.weekly")}</option>
+                      <option value="monthly">{t("recurringTasks.monthly")}</option>
+                      <option value="quarterly">{t("recurringTasks.quarterly")}</option>
+                      <option value="yearly">{t("recurringTasks.yearly")}</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="recurrence-interval">
+                      {t("recurringTasks.interval")}
+                    </Label>
+                    <Input
+                      id="recurrence-interval"
+                      type="number"
+                      min="1"
+                      value={recurrenceInterval}
+                      onChange={(e) => setRecurrenceInterval(parseInt(e.target.value) || 1)}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="recurrence-end-date">
+                    {t("recurringTasks.endDate")}
+                  </Label>
+                  <Input
+                    id="recurrence-end-date"
+                    type="date"
+                    value={recurrenceEndDate}
+                    onChange={(e) => setRecurrenceEndDate(e.target.value)}
+                    disabled={isSubmitting}
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Assignee (optional) */}
@@ -705,4 +944,3 @@ export function NewTaskModal({
     </Dialog>
   );
 }
-

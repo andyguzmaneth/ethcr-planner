@@ -26,10 +26,10 @@ import {
 import { useTranslation } from "@/lib/i18n/useTranslation";
 
 interface MobileSidebarProps {
-  events: Array<{ id: string; name: string; slug: string }>;
+  projects: Array<{ id: string; name: string; slug: string }>;
 }
 
-export function MobileSidebar({ events }: MobileSidebarProps) {
+export function MobileSidebar({ projects }: MobileSidebarProps) {
   const pathname = usePathname();
   const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
@@ -45,55 +45,55 @@ export function MobileSidebar({ events }: MobileSidebarProps) {
       icon: LayoutDashboard,
     },
     {
-      name: t("nav.events"),
-      href: "/events",
+      name: t("nav.projects"),
+      href: "/projects",
       icon: Calendar,
     },
   ];
   
-  // Initialize open events based on current pathname
-  const initializeOpenEvents = (): Record<string, boolean> => {
+  // Initialize open projects based on current pathname
+  const initializeOpenProjects = (): Record<string, boolean> => {
     const initial: Record<string, boolean> = {};
-    events.forEach((event) => {
-      // Check if current path is under this event (but not just the event root)
-      const eventPath = `/events/${event.slug}`;
-      if (pathname.startsWith(eventPath) && pathname !== eventPath) {
-        initial[event.id] = true;
+    projects.forEach((project) => {
+      // Check if current path is under this project (but not just the project root)
+      const projectPath = `/projects/${project.slug}`;
+      if (pathname.startsWith(projectPath) && pathname !== projectPath) {
+        initial[project.id] = true;
       }
     });
     return initial;
   };
 
-  const [openEvents, setOpenEvents] = useState<Record<string, boolean>>(initializeOpenEvents);
+  const [openProjects, setOpenProjects] = useState<Record<string, boolean>>(initializeOpenProjects);
 
-  // Update open events when pathname changes
+  // Update open projects when pathname changes
   useEffect(() => {
-    setOpenEvents((prev) => {
+    setOpenProjects((prev) => {
       const updated = { ...prev };
-      events.forEach((event) => {
-        const eventPath = `/events/${event.slug}`;
-        const shouldBeOpen = pathname.startsWith(eventPath) && pathname !== eventPath;
-        if (shouldBeOpen && !updated[event.id]) {
-          updated[event.id] = true;
+      projects.forEach((project) => {
+        const projectPath = `/projects/${project.slug}`;
+        const shouldBeOpen = pathname.startsWith(projectPath) && pathname !== projectPath;
+        if (shouldBeOpen && !updated[project.id]) {
+          updated[project.id] = true;
         }
       });
       return updated;
     });
-  }, [pathname, events]);
+  }, [pathname, projects]);
 
-  const toggleEvent = (eventId: string) => {
-    setOpenEvents((prev) => ({
+  const toggleProject = (projectId: string) => {
+    setOpenProjects((prev) => ({
       ...prev,
-      [eventId]: !prev[eventId],
+      [projectId]: !prev[projectId],
     }));
   };
 
-  const isEventActive = (eventSlug: string) => {
-    return pathname.startsWith(`/events/${eventSlug}`);
+  const isProjectActive = (projectSlug: string) => {
+    return pathname.startsWith(`/projects/${projectSlug}`);
   };
 
-  const isEventPathActive = (eventSlug: string, path: string) => {
-    return pathname === `/events/${eventSlug}${path}`;
+  const isProjectPathActive = (projectSlug: string, path: string) => {
+    return pathname === `/projects/${projectSlug}${path}`;
   };
 
   if (!mounted) {
@@ -155,29 +155,29 @@ export function MobileSidebar({ events }: MobileSidebarProps) {
             {/* Divider */}
             <div className="h-px bg-border my-2" />
 
-            {/* Events Section */}
+            {/* Projects Section */}
             <div className="space-y-1">
-              {events.map((event) => {
-                const isExpanded = openEvents[event.id] ?? false;
-                const eventIsActive = isEventActive(event.slug);
+              {projects.map((project) => {
+                const isExpanded = openProjects[project.id] ?? false;
+                const projectIsActive = isProjectActive(project.slug);
 
                 return (
                   <Collapsible
-                    key={event.id}
+                    key={project.id}
                     open={isExpanded}
-                    onOpenChange={() => toggleEvent(event.id)}
+                    onOpenChange={() => toggleProject(project.id)}
                   >
                     <div className="flex items-center">
                       <Link
-                        href={`/events/${event.slug}`}
+                        href={`/projects/${project.slug}`}
                         className={cn(
                           "flex-1 flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                          eventIsActive
+                          projectIsActive
                             ? "bg-accent text-accent-foreground"
                             : "text-foreground/60 hover:bg-accent hover:text-accent-foreground"
                         )}
                       >
-                        <span className="flex-1 text-left truncate">{event.name}</span>
+                        <span className="flex-1 text-left truncate">{project.name}</span>
                       </Link>
                       <CollapsibleTrigger
                         className="p-2 rounded-md hover:bg-accent transition-colors"
@@ -192,22 +192,22 @@ export function MobileSidebar({ events }: MobileSidebarProps) {
 
                     <CollapsibleContent className="pl-6 pt-1 space-y-1">
                       <Link
-                      href={`/events/${event.slug}/tracks`}
+                      href={`/projects/${project.slug}/areas`}
                       className={cn(
                         "flex items-center px-3 py-1.5 text-sm rounded-md transition-colors",
-                        isEventPathActive(event.slug, "/tracks")
+                        isProjectPathActive(project.slug, "/areas")
                           ? "bg-accent text-accent-foreground"
                           : "text-foreground/60 hover:bg-accent hover:text-accent-foreground"
                       )}
                     >
                       <GitBranch className="mr-2 h-4 w-4" />
-                      {t("nav.tracks")}
+                      {t("nav.areas")}
                     </Link>
                     <Link
-                      href={`/events/${event.slug}/tasks`}
+                      href={`/projects/${project.slug}/tasks`}
                       className={cn(
                         "flex items-center px-3 py-1.5 text-sm rounded-md transition-colors",
-                        isEventPathActive(event.slug, "/tasks")
+                        isProjectPathActive(project.slug, "/tasks")
                           ? "bg-accent text-accent-foreground"
                           : "text-foreground/60 hover:bg-accent hover:text-accent-foreground"
                       )}
@@ -216,10 +216,10 @@ export function MobileSidebar({ events }: MobileSidebarProps) {
                       {t("nav.tasks")}
                     </Link>
                     <Link
-                      href={`/events/${event.slug}/meetings`}
+                      href={`/projects/${project.slug}/meetings`}
                       className={cn(
                         "flex items-center px-3 py-1.5 text-sm rounded-md transition-colors",
-                        isEventPathActive(event.slug, "/meetings")
+                        isProjectPathActive(project.slug, "/meetings")
                           ? "bg-accent text-accent-foreground"
                           : "text-foreground/60 hover:bg-accent hover:text-accent-foreground"
                       )}

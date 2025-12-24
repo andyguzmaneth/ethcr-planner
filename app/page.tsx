@@ -1,5 +1,5 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { getTasks, getAreas, getUserById, getEvents } from "@/lib/data";
+import { getTasks, getAreas, getUserById, getProjects } from "@/lib/data";
 import { DashboardClient } from "./dashboard-client";
 
 export default function DashboardPage() {
@@ -44,11 +44,11 @@ export default function DashboardPage() {
     const total = areaTasks.length;
     const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
 
-    const event = getEvents().find((e) => e.id === area.eventId);
+    const project = getProjects().find((p) => p.id === area.projectId || p.id === area.eventId);
 
     return {
       name: area.name,
-      eventName: event?.name || "Unknown Event",
+      projectName: project?.name || "Unknown Project",
       progress,
       completed,
       total,

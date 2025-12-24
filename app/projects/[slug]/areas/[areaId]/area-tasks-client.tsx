@@ -164,7 +164,7 @@ export function AreaTasksClient({
         </div>
         <Button onClick={() => setIsModalOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
-          {t("eventDetail.newTask")}
+          {t("projectDetail.newTask")}
         </Button>
       </div>
 
@@ -199,7 +199,7 @@ export function AreaTasksClient({
                     <p className="text-muted-foreground mb-4">No se encontraron tareas</p>
                     <Button onClick={() => setIsModalOpen(true)}>
                       <Plus className="mr-2 h-4 w-4" />
-                      {t("eventDetail.createFirstTask")}
+                      {t("projectDetail.createFirstTask")}
                     </Button>
                   </div>
                 ) : (
@@ -359,7 +359,7 @@ export function AreaTasksClient({
                     <p className="text-muted-foreground mb-4">No se encontraron tareas</p>
                     <Button onClick={() => setIsModalOpen(true)}>
                       <Plus className="mr-2 h-4 w-4" />
-                      {t("eventDetail.createFirstTask")}
+                      {t("projectDetail.createFirstTask")}
                     </Button>
                   </div>
                 ) : (
@@ -514,7 +514,7 @@ export function AreaTasksClient({
                   <p className="text-muted-foreground mb-4">No se encontraron tareas</p>
                   <Button onClick={() => setIsModalOpen(true)}>
                     <Plus className="mr-2 h-4 w-4" />
-                    {t("eventDetail.createFirstTask")}
+                    {t("projectDetail.createFirstTask")}
                   </Button>
                 </div>
               ) : (

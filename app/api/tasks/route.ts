@@ -4,12 +4,15 @@ import { createTask } from "@/lib/data";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { eventId, areaId, title, description, assigneeId, deadline, status, supportResources } = body;
+    const { projectId, eventId, areaId, title, description, assigneeId, deadline, status, supportResources, dependsOn, isRecurring, recurrence } = body;
+
+    // Support both projectId and eventId for backward compatibility
+    const finalProjectId = projectId || eventId;
 
     // Validation
-    if (!eventId) {
+    if (!finalProjectId) {
       return NextResponse.json(
-        { error: "Event ID is required" },
+        { error: "Project ID is required" },
         { status: 400 }
       );
     }
@@ -34,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     // Create task
     const task = createTask({
-      eventId,
+      projectId: finalProjectId,
       areaId: areaId || undefined,
       title: title.trim(),
       description: description?.trim() || undefined,
@@ -42,6 +45,9 @@ export async function POST(request: NextRequest) {
       deadline: deadline || undefined,
       status: status || "pending",
       supportResources: parsedSupportResources.length > 0 ? parsedSupportResources : undefined,
+      dependsOn: dependsOn && Array.isArray(dependsOn) && dependsOn.length > 0 ? dependsOn : undefined,
+      isRecurring: isRecurring || undefined,
+      recurrence: recurrence || undefined,
     });
 
     return NextResponse.json(task, { status: 201 });

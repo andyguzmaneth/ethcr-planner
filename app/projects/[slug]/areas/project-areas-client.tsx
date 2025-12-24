@@ -327,7 +327,7 @@ export function EventAreasClient({
         </div>
         <Button onClick={() => setIsAreaModalOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
-          {t("eventDetail.addArea")}
+          {t("projectDetail.addArea")}
         </Button>
       </div>
 

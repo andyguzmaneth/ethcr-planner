@@ -6,16 +6,16 @@
 import "server-only";
 import fs from "fs";
 import path from "path";
-import { loadTemplateFromJson, initializeEventFromTemplate } from "./templates";
+import { loadTemplateFromJson, initializeProjectFromTemplate } from "./templates";
 import { createTemplate, getTemplateByName, updateTemplate, getTemplates, getTemplateById } from "./data";
-import type { EventTemplate } from "./types";
+import type { ProjectTemplate } from "./types";
 
 const dataDir = path.join(process.cwd(), "data");
 
 /**
  * Initialize ETH Pura Vida template from JSON file
  */
-export function initEthPuraVidaTemplate(): EventTemplate {
+export function initEthPuraVidaTemplate(): ProjectTemplate {
   const jsonFilePath = path.join(dataDir, "ETH_Pura_Vida_Project_Structure_v2.json");
   
   if (!fs.existsSync(jsonFilePath)) {
@@ -36,7 +36,7 @@ export function initEthPuraVidaTemplate(): EventTemplate {
   // Check if template already exists
   const existingTemplate = getTemplateByName(template.name);
   
-  let savedTemplate: EventTemplate;
+  let savedTemplate: ProjectTemplate;
   if (existingTemplate) {
     // Update existing template
     const updated = updateTemplate(existingTemplate.id, {
@@ -52,7 +52,7 @@ export function initEthPuraVidaTemplate(): EventTemplate {
     // Create new template
     savedTemplate = createTemplate({
       name: template.name,
-      eventType: template.eventType,
+      projectType: template.projectType,
       description: template.description,
       areas: template.areas,
     });
@@ -73,9 +73,9 @@ export function initEthPuraVidaTemplate(): EventTemplate {
 }
 
 /**
- * Initialize an event from the ETH Pura Vida template
+ * Initialize a project from the ETH Pura Vida template
  */
-export function initEventFromEthPuraVidaTemplate(eventDetails: {
+export function initProjectFromEthPuraVidaTemplate(projectDetails: {
   name: string;
   description?: string;
   startDate?: string;
@@ -87,17 +87,20 @@ export function initEventFromEthPuraVidaTemplate(eventDetails: {
     template = initEthPuraVidaTemplate();
   }
   
-  const result = initializeEventFromTemplate(template, eventDetails, {
+  const result = initializeProjectFromTemplate(template, projectDetails, {
     assignTeamMembers: true,
   });
 
-  console.log(`✅ Event "${result.event.name}" created with ID: ${result.event.id}`);
+  console.log(`✅ Project "${result.project.name}" created with ID: ${result.project.id}`);
   console.log(`  - Areas: ${result.areas.length}`);
   console.log(`  - Responsibilities: ${result.responsibilities.length}`);
   console.log(`  - Tasks: ${result.tasks.length}`);
 
   return result;
 }
+
+// Legacy alias for backward compatibility
+export const initEventFromEthPuraVidaTemplate = initProjectFromEthPuraVidaTemplate;
 
 // If run directly, initialize the template
 if (require.main === module) {

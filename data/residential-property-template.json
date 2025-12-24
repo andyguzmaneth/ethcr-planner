@@ -1,0 +1,147 @@
+{
+  "Residential Property Management": {
+    "Areas": {
+      "Maintenance & Repairs": {
+        "Equipo": [],
+        "Responsabilidades": [
+          "Preventive Maintenance",
+          "Emergency Repairs",
+          "Vendor Management"
+        ],
+        "Tareas": [
+          {
+            "tarea": "Schedule quarterly HVAC inspection",
+            "estado": "Not Started",
+            "etapa": "> 1 mes"
+          },
+          {
+            "tarea": "Inspect plumbing systems monthly",
+            "estado": "Not Started",
+            "etapa": "< 1 semana"
+          },
+          {
+            "tarea": "Replace air filters every 3 months",
+            "estado": "Not Started",
+            "etapa": "> 1 mes"
+          },
+          {
+            "tarea": "Check smoke detectors quarterly",
+            "estado": "Not Started",
+            "etapa": "> 1 mes"
+          },
+          {
+            "tarea": "Maintain landscaping and exterior",
+            "estado": "Not Started",
+            "etapa": "< 1 semana"
+          }
+        ]
+      },
+      "Financial Management": {
+        "Equipo": [],
+        "Responsabilidades": [
+          "Rent Collection",
+          "Expense Tracking",
+          "Budget Planning"
+        ],
+        "Tareas": [
+          {
+            "tarea": "Collect monthly rent payments",
+            "estado": "Not Started",
+            "etapa": "< 1 semana"
+          },
+          {
+            "tarea": "Track property expenses",
+            "estado": "Not Started",
+            "etapa": "< 1 semana"
+          },
+          {
+            "tarea": "Prepare annual budget",
+            "estado": "Not Started",
+            "etapa": "> 3 meses"
+          },
+          {
+            "tarea": "Review property tax assessments",
+            "estado": "Not Started",
+            "etapa": "> 2 meses"
+          },
+          {
+            "tarea": "Reconcile bank statements monthly",
+            "estado": "Not Started",
+            "etapa": "< 1 semana"
+          }
+        ]
+      },
+      "Tenant Relations": {
+        "Equipo": [],
+        "Responsabilidades": [
+          "Lease Management",
+          "Tenant Communication",
+          "Move-in/Move-out Process"
+        ],
+        "Tareas": [
+          {
+            "tarea": "Screen new tenant applications",
+            "estado": "Not Started",
+            "etapa": "< 2 semanas"
+          },
+          {
+            "tarea": "Conduct move-in inspection",
+            "estado": "Not Started",
+            "etapa": "< 1 semana"
+          },
+          {
+            "tarea": "Respond to tenant maintenance requests",
+            "estado": "Not Started",
+            "etapa": "< 1 semana"
+          },
+          {
+            "tarea": "Schedule annual lease renewal review",
+            "estado": "Not Started",
+            "etapa": "> 1 mes"
+          },
+          {
+            "tarea": "Conduct move-out inspection",
+            "estado": "Not Started",
+            "etapa": "< 1 semana"
+          }
+        ]
+      },
+      "Legal & Compliance": {
+        "Equipo": [],
+        "Responsabilidades": [
+          "Regulatory Compliance",
+          "Insurance Management",
+          "Documentation"
+        ],
+        "Tareas": [
+          {
+            "tarea": "Review and update lease agreements",
+            "estado": "Not Started",
+            "etapa": "> 3 meses"
+          },
+          {
+            "tarea": "Ensure compliance with local housing codes",
+            "estado": "Not Started",
+            "etapa": "> 1 mes"
+          },
+          {
+            "tarea": "Renew property insurance annually",
+            "estado": "Not Started",
+            "etapa": "> 2 meses"
+          },
+          {
+            "tarea": "Maintain property records and documentation",
+            "estado": "Not Started",
+            "etapa": "< 1 semana"
+          },
+          {
+            "tarea": "Conduct annual safety inspection",
+            "estado": "Not Started",
+            "etapa": "> 3 meses"
+          }
+        ]
+      }
+    }
+  }
+}
+

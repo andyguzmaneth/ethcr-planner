@@ -14,9 +14,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Plus, Settings, MoreVertical, Edit, Trash2 } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/useTranslation";
-import { NewAreaModal } from "@/components/events/new-area-modal";
-import { NewTaskModal } from "@/components/events/new-task-modal";
-import { DeleteAreaDialog } from "@/components/events/delete-area-dialog";
+import { NewAreaModal } from "@/components/projects/new-area-modal";
+import { NewTaskModal } from "@/components/projects/new-task-modal";
+import { DeleteAreaDialog } from "@/components/projects/delete-area-dialog";
 import { useRouter } from "next/navigation";
 import { Area } from "@/lib/types";
 
@@ -36,8 +36,8 @@ interface User {
   email?: string;
 }
 
-interface EventDetailClientProps {
-  event: {
+interface ProjectDetailClientProps {
+  project: {
     id: string;
     name: string;
     type: string;
@@ -51,15 +51,15 @@ interface EventDetailClientProps {
   areas: Array<{ id: string; name: string }>;
 }
 
-export function EventDetailClient({
-  event,
+export function ProjectDetailClient({
+  project,
   areasWithStats,
   totalAreas,
   totalTasks,
   completionPercentage,
   users,
   areas,
-}: EventDetailClientProps) {
+}: ProjectDetailClientProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const [isAreaModalOpen, setIsAreaModalOpen] = useState(false);
@@ -129,22 +129,22 @@ export function EventDetailClient({
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      {/* Event Header */}
+      {/* Project Header */}
       <div className="flex items-start justify-between">
         <div className="space-y-2">
           <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-bold tracking-tight">{event.name}</h1>
-            <Badge variant="secondary">{event.type}</Badge>
-            <Badge>{event.status}</Badge>
+            <h1 className="text-3xl font-bold tracking-tight">{project.name}</h1>
+            <Badge variant="secondary">{project.type}</Badge>
+            <Badge>{project.status}</Badge>
           </div>
           <p className="text-muted-foreground">
-            {t("eventDetail.eventPlanningPanel")}
+            {t("projectDetail.projectPlanningPanel")}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline">
             <Settings className="mr-2 h-4 w-4" />
-            {t("eventDetail.editEvent")}
+            {t("projectDetail.editProject")}
           </Button>
         </div>
       </div>
@@ -152,7 +152,7 @@ export function EventDetailClient({
       {/* Tabs */}
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="overview">{t("eventDetail.overview")}</TabsTrigger>
+          <TabsTrigger value="overview">{t("projectDetail.overview")}</TabsTrigger>
           <TabsTrigger value="areas">{t("nav.areas")}</TabsTrigger>
           <TabsTrigger value="tasks">{t("nav.tasks")}</TabsTrigger>
           <TabsTrigger value="meetings">{t("nav.meetings")}</TabsTrigger>
@@ -162,7 +162,7 @@ export function EventDetailClient({
           <div className="grid gap-4 md:grid-cols-3">
             <Card>
               <CardHeader>
-                <CardTitle className="text-sm font-medium">{t("eventDetail.totalAreas")}</CardTitle>
+                <CardTitle className="text-sm font-medium">{t("projectDetail.totalAreas")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{totalAreas}</div>
@@ -170,7 +170,7 @@ export function EventDetailClient({
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle className="text-sm font-medium">{t("eventDetail.totalTasks")}</CardTitle>
+                <CardTitle className="text-sm font-medium">{t("projectDetail.totalTasks")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{totalTasks}</div>
@@ -178,7 +178,7 @@ export function EventDetailClient({
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle className="text-sm font-medium">{t("eventDetail.completion")}</CardTitle>
+                <CardTitle className="text-sm font-medium">{t("projectDetail.completion")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{completionPercentage}%</div>
@@ -192,7 +192,7 @@ export function EventDetailClient({
             <h2 className="text-2xl font-bold">{t("nav.areas")}</h2>
             <Button onClick={() => setIsAreaModalOpen(true)}>
               <Plus className="mr-2 h-4 w-4" />
-              {t("eventDetail.addArea")}
+              {t("projectDetail.addArea")}
             </Button>
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -208,7 +208,7 @@ export function EventDetailClient({
                       <div className="flex-1">
                         <CardTitle className="text-lg">{area.name}</CardTitle>
                         <CardDescription>
-                          {t("eventDetail.leader")}: {area.leadName || t("eventDetail.unassigned")}
+                          {t("projectDetail.leader")}: {area.leadName || t("projectDetail.unassigned")}
                         </CardDescription>
                       </div>
                       <DropdownMenu>
@@ -244,7 +244,7 @@ export function EventDetailClient({
                     <div className="space-y-4">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-muted-foreground">
-                          {area.completed}/{area.taskCount} {t("events.tasks")}
+                          {area.completed}/{area.taskCount} {t("projects.tasks")}
                         </span>
                       </div>
                       <div className="w-full bg-secondary rounded-full h-2">
@@ -266,13 +266,13 @@ export function EventDetailClient({
             <h2 className="text-2xl font-bold">{t("nav.tasks")}</h2>
             <Button onClick={() => setIsTaskModalOpen(true)}>
               <Plus className="mr-2 h-4 w-4" />
-              {t("eventDetail.addTask")}
+              {t("projectDetail.addTask")}
             </Button>
           </div>
           <Card>
             <CardContent className="pt-6">
               <p className="text-muted-foreground text-center py-8">
-                {t("eventDetail.tasksListDescription")}
+                {t("projectDetail.tasksListDescription")}
               </p>
             </CardContent>
           </Card>
@@ -283,13 +283,13 @@ export function EventDetailClient({
             <h2 className="text-2xl font-bold">{t("nav.meetings")}</h2>
             <Button>
               <Plus className="mr-2 h-4 w-4" />
-              {t("eventDetail.scheduleMeeting")}
+              {t("projectDetail.scheduleMeeting")}
             </Button>
           </div>
           <Card>
             <CardContent className="pt-6">
               <p className="text-muted-foreground text-center py-8">
-                {t("eventDetail.meetingsListDescription")}
+                {t("projectDetail.meetingsListDescription")}
               </p>
             </CardContent>
           </Card>
@@ -300,15 +300,15 @@ export function EventDetailClient({
         open={isAreaModalOpen}
         onOpenChange={handleModalClose}
         area={editingArea || undefined}
-        eventId={event.id}
+        projectId={project.id}
         users={users}
         onSuccess={handleAreaCreated}
       />
       <NewTaskModal
         open={isTaskModalOpen}
         onOpenChange={setIsTaskModalOpen}
-        eventId={event.id}
-        eventName={event.name}
+        projectId={project.id}
+        projectName={project.name}
         areas={areas}
         users={users}
         onSuccess={() => router.refresh()}
