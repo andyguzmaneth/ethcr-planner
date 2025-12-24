@@ -1,5 +1,5 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { getProjectBySlug, getTasksByProjectId, getUserById, getAreaById, getAreasByProjectId, getUsers } from "@/lib/data";
+import { getProjectBySlug, getTasksByProjectId, getUserById, getAreaById, getAreasByProjectId, getUsers } from "@/lib/data-supabase";
 import { createServerTranslationFunction, getLocaleFromCookies } from "@/lib/i18n";
 import { cookies } from "next/headers";
 import { ProjectTasksClient } from "./project-tasks-client";
@@ -17,7 +17,7 @@ export default async function ProjectTasksPage({ params }: ProjectTasksPageProps
   const locale = getLocaleFromCookies(localeFromCookie);
   const t = createServerTranslationFunction(locale);
 
-  const project = getProjectBySlug(slug);
+  const project = await getProjectBySlug(slug);
   if (!project) {
     return (
       <MainLayout>
@@ -28,9 +28,9 @@ export default async function ProjectTasksPage({ params }: ProjectTasksPageProps
     );
   }
 
-  const tasks = getTasksByProjectId(project.id);
-  const areas = getAreasByProjectId(project.id);
-  const users = getUsers();
+  const tasks = await getTasksByProjectId(project.id);
+  const areas = await getAreasByProjectId(project.id);
+  const users = await getUsers();
 
   const statusColors = {
     pending: "bg-gray-500",
@@ -47,16 +47,18 @@ export default async function ProjectTasksPage({ params }: ProjectTasksPageProps
   };
 
   // Enrich tasks with user and area info
-  const tasksWithDetails = tasks.map((task) => {
-    const assignee = task.assigneeId ? getUserById(task.assigneeId) : null;
-    const area = task.areaId ? getAreaById(task.areaId) : null;
+  const tasksWithDetails = await Promise.all(
+    tasks.map(async (task) => {
+      const assignee = task.assigneeId ? await getUserById(task.assigneeId) : null;
+      const area = task.areaId ? await getAreaById(task.areaId) : null;
 
-    return {
-      ...task,
-      assignee,
-      area,
-    };
-  });
+      return {
+        ...task,
+        assignee: assignee ? { id: assignee.id, name: assignee.name, initials: assignee.initials } : null,
+        area: area ? { id: area.id, name: area.name } : null,
+      };
+    })
+  );
 
   return (
     <MainLayout>

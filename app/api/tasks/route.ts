@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createTask } from "@/lib/data-supabase";
-import { parseSupportResources } from "./utils";
+import { parseSupportResources, validateUUID } from "./utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -8,8 +8,18 @@ export async function POST(request: NextRequest) {
     const { projectId, eventId, areaId, title, description, assigneeId, deadline, status, supportResources, dependsOn, isRecurring, recurrence } = body;
 
     const finalProjectId = projectId || eventId;
-    if (!finalProjectId) {
+    if (!finalProjectId?.trim()) {
       return NextResponse.json({ error: "Project ID is required" }, { status: 400 });
+    }
+
+    // Validate UUIDs (projectId is required, areaId and assigneeId are optional)
+    // validateUUID throws if invalid, returns undefined if null/undefined/empty
+    const validProjectId = validateUUID(finalProjectId.trim(), "projectId");
+    const validAreaId = validateUUID(areaId, "areaId");
+    const validAssigneeId = validateUUID(assigneeId, "assigneeId");
+
+    if (!validProjectId) {
+      return NextResponse.json({ error: "Invalid projectId: must be a valid UUID" }, { status: 400 });
     }
 
     if (!title?.trim()) {
@@ -17,11 +27,11 @@ export async function POST(request: NextRequest) {
     }
 
     const task = await createTask({
-      projectId: finalProjectId,
-      areaId: areaId || undefined,
+      projectId: validProjectId,
+      areaId: validAreaId,
       title: title.trim(),
       description: description?.trim() || undefined,
-      assigneeId: assigneeId || undefined,
+      assigneeId: validAssigneeId,
       deadline: deadline || undefined,
       status: status || "pending",
       supportResources: parseSupportResources(supportResources),
@@ -34,7 +44,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Error creating task:", error);
     const errorMessage = error instanceof Error ? error.message : "Failed to create task";
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    const statusCode = errorMessage.includes("Invalid") ? 400 : 500;
+    return NextResponse.json({ error: errorMessage }, { status: statusCode });
   }
 }
 

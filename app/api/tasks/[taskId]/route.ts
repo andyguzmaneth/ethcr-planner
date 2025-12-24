@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { updateTask, getTaskById, deleteTask } from "@/lib/data-supabase";
 import type { Task } from "@/lib/types";
-import { parseSupportResources } from "../utils";
+import { parseSupportResources, validateUUID } from "../utils";
 
 interface RouteParams {
   params: Promise<{ taskId: string }>;
@@ -25,10 +25,13 @@ export async function PUT(
       return NextResponse.json({ error: "Task title is required" }, { status: 400 });
     }
 
+    // Validate UUIDs if provided
+    const validAssigneeId = assigneeId !== undefined ? validateUUID(assigneeId, "assigneeId") : undefined;
+
     const updatePayload: Partial<Task> = {
       title: title.trim(),
       ...(description !== undefined && { description: description.trim() || undefined }),
-      ...(assigneeId !== undefined && { assigneeId: assigneeId || undefined }),
+      ...(validAssigneeId !== undefined && { assigneeId: validAssigneeId }),
       ...(deadline !== undefined && { deadline: deadline || undefined }),
       ...(status && { status }),
       ...(supportResources !== undefined && { supportResources: parseSupportResources(supportResources) }),
