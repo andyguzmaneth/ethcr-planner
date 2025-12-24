@@ -2,7 +2,7 @@ import { MainLayout } from "@/components/layout/main-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
-import { getAreas, getTasksByAreaId, getUserById, getEventById } from "@/lib/data";
+import { getAreas, getTasksByAreaId, getUserById, getProjectById } from "@/lib/data";
 
 export default function AreasPage() {
   const areas = getAreas();
@@ -10,7 +10,8 @@ export default function AreasPage() {
   // Enrich areas with details
   const areasWithDetails = areas.map((area) => {
     const lead = getUserById(area.leadId);
-    const event = getEventById(area.eventId);
+    const projectId = area.projectId || area.eventId;
+    const project = projectId ? getProjectById(projectId) : undefined;
     const areaTasks = getTasksByAreaId(area.id);
     const completed = areaTasks.filter((t) => t.status === "completed").length;
     const participants = area.participantIds.map((id) => getUserById(id)).filter(Boolean);
@@ -18,7 +19,7 @@ export default function AreasPage() {
     return {
       ...area,
       lead,
-      event,
+      project,
       tasks: areaTasks.length,
       completed,
       participants,
@@ -55,7 +56,7 @@ export default function AreasPage() {
                   <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                     <CardHeader>
                       <CardTitle className="text-xl">{area.name}</CardTitle>
-                      <CardDescription>{area.event?.name || "Evento desconocido"}</CardDescription>
+                      <CardDescription>{area.project?.name || "Proyecto desconocido"}</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">

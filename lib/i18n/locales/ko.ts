@@ -2,7 +2,7 @@ export const ko = {
   // Navigation
   nav: {
     dashboard: "대시보드",
-    events: "이벤트",
+    projects: "프로젝트",
     areas: "영역",
     tasks: "작업",
     meetings: "회의",
@@ -77,14 +77,14 @@ export const ko = {
     leader: "리더",
     unassigned: "할당되지 않음",
   },
-  // New Event Modal
+  // Legacy alias for backward compatibility
   newEventModal: {
-    title: "새 이벤트 만들기",
-    description: "시작하려면 템플릿을 선택하세요. 이벤트를 만든 후 사용자 정의할 수 있습니다.",
-    meetupTemplate: "밋업 템플릿",
-    meetupDescription: "정기 커뮤니티 이벤트에 이상적입니다. 장소, 연사, 마케팅 등의 기본 영역을 포함합니다.",
-    ethPuraVidaTemplate: "ETH Pura Vida 템플릿",
-    ethPuraVidaDescription: "대규모 컨퍼런스를 위한 완전한 구조. 대규모 이벤트에 필요한 모든 영역을 포함합니다.",
+    title: "새 프로젝트 만들기",
+    description: "시작하려면 프로젝트 유형을 선택하세요.",
+    selectTemplate: "템플릿 선택",
+    templateDescription: "템플릿을 선택하거나 처음부터 시작하세요. 프로젝트를 만든 후 사용자 정의할 수 있습니다.",
+    noTemplatesAvailable: "이 프로젝트 유형에 사용할 수 있는 템플릿이 없습니다.",
+    startFromScratch: "처음부터 시작 (템플릿 없음)",
     cancel: "취소",
     continue: "계속",
   },

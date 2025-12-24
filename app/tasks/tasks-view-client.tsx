@@ -520,7 +520,7 @@ export function TasksViewClient({
                       <TableHead>Estado</TableHead>
                       <TableHead>Tarea</TableHead>
                       <TableHead>Área</TableHead>
-                      <TableHead>Evento</TableHead>
+                      <TableHead>Proyecto</TableHead>
                       <TableHead>Asignado a</TableHead>
                       <TableHead>Fecha límite</TableHead>
                       <TableHead>Acciones</TableHead>
@@ -555,7 +555,7 @@ export function TasksViewClient({
                         </TableCell>
                         <TableCell>
                           <span className="text-sm">
-                            {task.event?.name || "Evento desconocido"}
+                            {task.project?.name || "Proyecto desconocido"}
                           </span>
                         </TableCell>
                         <TableCell>

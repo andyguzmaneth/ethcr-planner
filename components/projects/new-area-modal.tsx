@@ -128,7 +128,7 @@ export function NewAreaModal({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          projectId: isEditMode ? (editingArea.projectId || editingArea.eventId) : projectId,
+          projectId: isEditMode ? (editingArea.projectId || editingArea.eventId || "") : projectId,
           name: areaName.trim(),
           description: description.trim() || undefined,
           leadId: selectedLeadId || undefined,

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Plus, FileText } from "lucide-react";
 import Link from "next/link";
-import { getMeetings, getMeetingNoteByMeetingId, getUserById, getEventById } from "@/lib/data";
+import { getMeetings, getMeetingNoteByMeetingId, getUserById, getProjectById } from "@/lib/data";
 import { createServerTranslationFunction, getLocaleFromCookies } from "@/lib/i18n";
 import { cookies } from "next/headers";
 
@@ -21,13 +21,14 @@ export default async function MeetingsPage() {
   const meetingsWithDetails = meetings.map((meeting) => {
     const notes = getMeetingNoteByMeetingId(meeting.id);
     const attendees = meeting.attendeeIds.map((id) => getUserById(id)).filter(Boolean);
-    const event = getEventById(meeting.eventId);
+    const projectId = meeting.projectId || meeting.eventId;
+    const project = projectId ? getProjectById(projectId) : undefined;
 
     return {
       ...meeting,
       hasNotes: !!notes,
       attendees,
-      event,
+      project,
     };
   });
 
@@ -68,7 +69,7 @@ export default async function MeetingsPage() {
                     <div className="flex items-start justify-between">
                       <div className="space-y-1">
                         <CardTitle className="text-lg">{meeting.title}</CardTitle>
-                        <CardDescription>{meeting.event?.name || "Evento desconocido"}</CardDescription>
+                        <CardDescription>{meeting.project?.name || "Proyecto desconocido"}</CardDescription>
                       </div>
                       {meeting.hasNotes && (
                         <Badge variant="outline">

@@ -9,7 +9,7 @@ import { Plus, UserPlus, Check } from "lucide-react";
 import Link from "next/link";
 import { NewProjectModal } from "@/components/projects/new-project-modal";
 import { useTranslation } from "@/lib/i18n/useTranslation";
-import type { Project } from "@/lib/types";
+import type { Project, ProjectType } from "@/lib/types";
 
 interface ProjectsClientProps {
   projects: Array<
@@ -31,9 +31,9 @@ export function ProjectsClient({ projects }: ProjectsClientProps) {
   );
   const router = useRouter();
 
-  const handleContinue = (template: "meetup" | "eth-pura-vida") => {
+  const handleContinue = (projectType: ProjectType, templateId?: string) => {
     // Here the logic for creating the project with the selected template will be implemented
-    console.log("Create project with template:", template);
+    console.log("Create project with type:", projectType, "template:", templateId);
     // TODO: Implement project creation
   };
 

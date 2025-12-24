@@ -44,7 +44,7 @@ export default function DashboardPage() {
     const total = areaTasks.length;
     const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
 
-    const project = getProjects().find((p) => p.id === area.projectId || p.id === area.eventId);
+    const project = getProjects().find((p) => p.id === area.projectId || (area.eventId && p.id === area.eventId));
 
     return {
       name: area.name,

@@ -20,7 +20,7 @@ interface TaskWithDetails extends Task {
     id: string;
     name: string;
   } | null;
-  event?: {
+  project?: {
     id: string;
     name: string;
   } | null;
@@ -28,8 +28,8 @@ interface TaskWithDetails extends Task {
 
 interface TasksListClientProps {
   tasks: TaskWithDetails[];
-  events: Array<{ id: string; name: string }>;
-  areas: Array<{ id: string; name: string; eventId: string }>;
+  projects: Array<{ id: string; name: string }>;
+  areas: Array<{ id: string; name: string; projectId: string }>;
   users: Array<{ id: string; name: string; initials: string; email?: string }>;
   statusColors: Record<string, string>;
   statusLabels: Record<string, string>;
@@ -37,7 +37,7 @@ interface TasksListClientProps {
 
 export function TasksListClient({
   tasks,
-  events,
+  projects,
   areas,
   users,
   statusColors,
@@ -101,7 +101,7 @@ export function TasksListClient({
                         <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
                           <span>{task.assignee?.name || "Sin asignar"}</span>
                           <span>•</span>
-                          <span>{task.event?.name || "Evento desconocido"}</span>
+                          <span>{task.project?.name || "Proyecto desconocido"}</span>
                           {task.deadline && (
                             <>
                               <span>•</span>
@@ -126,7 +126,7 @@ export function TasksListClient({
         open={isModalOpen}
         onOpenChange={handleModalClose}
         task={editingTask || undefined}
-        events={events}
+        projects={projects}
         areas={areas}
         users={users}
         onSuccess={handleTaskCreated}

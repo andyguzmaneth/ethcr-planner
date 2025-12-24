@@ -113,7 +113,7 @@ export function NewTaskModal({
       // Exclude current task if editing
       if (editingTask && t.id === editingTask.id) return false;
       // Only include tasks from the same project
-      return t.projectId === selectedProjectId || t.eventId === selectedProjectId;
+      return t.projectId === selectedProjectId || (t.eventId && t.eventId === selectedProjectId);
     });
   }, [tasks, selectedProjectId, editingTask]);
 
@@ -226,7 +226,7 @@ export function NewTaskModal({
     if (open && editingTask) {
       setTitle(editingTask.title || "");
       setDescription(editingTask.description || "");
-      setSelectedProjectId(editingTask.projectId || editingTask.eventId || initialProjectId || null);
+      setSelectedProjectId(editingTask.projectId || (editingTask.eventId ? editingTask.eventId : null) || initialProjectId || null);
       setSelectedAreaId(editingTask.areaId || initialAreaId || null);
       setSelectedAssigneeId(editingTask.assigneeId || null);
       setDeadline(editingTask.deadline ? editingTask.deadline.split("T")[0] : "");

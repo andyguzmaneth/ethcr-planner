@@ -10,7 +10,7 @@ export type TranslationKey = string;
 export type Translations = {
   readonly nav: {
     readonly dashboard: string;
-    readonly events: string;
+    readonly projects: string;
     readonly areas: string;
     readonly tasks: string;
     readonly meetings: string;
@@ -83,10 +83,10 @@ export type Translations = {
   readonly newEventModal: {
     readonly title: string;
     readonly description: string;
-    readonly meetupTemplate: string;
-    readonly meetupDescription: string;
-    readonly ethPuraVidaTemplate: string;
-    readonly ethPuraVidaDescription: string;
+    readonly selectTemplate: string;
+    readonly templateDescription: string;
+    readonly noTemplatesAvailable: string;
+    readonly startFromScratch: string;
     readonly cancel: string;
     readonly continue: string;
   };

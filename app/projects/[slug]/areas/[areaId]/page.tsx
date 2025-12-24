@@ -28,7 +28,7 @@ export default async function AreaDetailPage({ params }: AreaDetailPageProps) {
   }
 
   const area = getAreaById(areaId);
-  if (!area || (area.projectId !== project.id && area.eventId !== project.id)) {
+  if (!area || (area.projectId !== project.id && (!area.eventId || area.eventId !== project.id))) {
     return (
       <MainLayout>
         <div className="container mx-auto p-6">

@@ -12,8 +12,8 @@ export default function ProjectsPage() {
 
   // Calculate stats for each project
   const projectsWithStats = projects.map((project) => {
-    const projectAreas = allAreas.filter((a) => a.projectId === project.id || a.eventId === project.id);
-    const projectTasks = allTasks.filter((t) => t.projectId === project.id || t.eventId === project.id);
+    const projectAreas = allAreas.filter((a) => a.projectId === project.id || (a.eventId && a.eventId === project.id));
+    const projectTasks = allTasks.filter((t) => t.projectId === project.id || (t.eventId && t.eventId === project.id));
     const completedTasks = projectTasks.filter((t) => t.status === "completed").length;
     const isJoined = isUserJoinedProject(project.id, CURRENT_USER_ID);
 

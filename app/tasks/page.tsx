@@ -33,7 +33,8 @@ export default async function TasksPage() {
   // Enrich tasks with details
   const tasksWithDetails = tasks.map((task) => {
     const assignee = task.assigneeId ? getUserById(task.assigneeId) : null;
-    const project = getProjectById(task.projectId || task.eventId);
+    const projectId = task.projectId || task.eventId;
+    const project = projectId ? getProjectById(projectId) : undefined;
     const area = task.areaId ? getAreaById(task.areaId) : null;
 
     return {
@@ -57,7 +58,7 @@ export default async function TasksPage() {
           </div>
           <TasksPageClient
             projects={projects.map(p => ({ id: p.id, name: p.name }))}
-            areas={allAreas.map(a => ({ id: a.id, name: a.name, projectId: a.projectId || a.eventId }))}
+            areas={allAreas.map(a => ({ id: a.id, name: a.name, projectId: a.projectId || a.eventId || "" }))}
             users={users.map(u => ({ id: u.id, name: u.name, initials: u.initials, email: u.email }))}
           />
         </div>
@@ -66,7 +67,7 @@ export default async function TasksPage() {
         <TasksViewClient
           tasks={tasksWithDetails}
           projects={projects.map(p => ({ id: p.id, name: p.name }))}
-          areas={allAreas.map(a => ({ id: a.id, name: a.name, projectId: a.projectId || a.eventId }))}
+          areas={allAreas.map(a => ({ id: a.id, name: a.name, projectId: a.projectId || a.eventId || "" }))}
           users={users.map(u => ({ id: u.id, name: u.name, initials: u.initials, email: u.email }))}
           statusColors={statusColors}
           statusLabels={statusLabels}
