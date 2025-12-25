@@ -2,29 +2,34 @@ import { MainLayout } from "@/components/layout/main-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
-import { getAreas, getTasksByAreaId, getUserById, getProjectById } from "@/lib/data";
+import { getAreas, getTasksByAreaId, getUserById, getProjectById } from "@/lib/data-supabase";
 
-export default function AreasPage() {
-  const areas = getAreas();
+export default async function AreasPage() {
+  const areas = await getAreas();
 
   // Enrich areas with details
-  const areasWithDetails = areas.map((area) => {
-    const lead = getUserById(area.leadId);
-    const projectId = area.projectId || area.eventId;
-    const project = projectId ? getProjectById(projectId) : undefined;
-    const areaTasks = getTasksByAreaId(area.id);
-    const completed = areaTasks.filter((t) => t.status === "completed").length;
-    const participants = area.participantIds.map((id) => getUserById(id)).filter(Boolean);
+  const areasWithDetails = await Promise.all(
+    areas.map(async (area) => {
+      const [lead, project, areaTasks] = await Promise.all([
+        area.leadId ? getUserById(area.leadId) : Promise.resolve(undefined),
+        area.projectId ? getProjectById(area.projectId) : Promise.resolve(undefined),
+        getTasksByAreaId(area.id),
+      ]);
+      const completed = areaTasks.filter((t) => t.status === "completed").length;
+      const participants = await Promise.all(
+        area.participantIds.map((id) => getUserById(id))
+      );
 
-    return {
-      ...area,
-      lead,
-      project,
-      tasks: areaTasks.length,
-      completed,
-      participants,
-    };
-  });
+      return {
+        ...area,
+        lead,
+        project,
+        tasks: areaTasks.length,
+        completed,
+        participants: participants.filter(Boolean),
+      };
+    })
+  );
 
   return (
     <MainLayout>

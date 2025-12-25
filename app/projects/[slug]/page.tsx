@@ -1,5 +1,5 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { getProjectBySlug, getAreasByProjectId, getTasksByProjectId, getUserById, getUsers } from "@/lib/data";
+import { getProjectBySlug, getAreasByProjectId, getTasksByProjectId, getUserById, getUsers } from "@/lib/data-supabase";
 import { ProjectDetailClient } from "./project-detail-client";
 import { createServerTranslationFunction } from "@/lib/i18n";
 
@@ -11,7 +11,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
   const { slug } = await params;
   const t = createServerTranslationFunction();
 
-  const project = getProjectBySlug(slug);
+  const project = await getProjectBySlug(slug);
   if (!project) {
     return (
       <MainLayout>
@@ -22,30 +22,35 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     );
   }
 
-  const areas = getAreasByProjectId(project.id);
-  const allTasks = getTasksByProjectId(project.id);
+  const [areas, allTasks, usersList] = await Promise.all([
+    getAreasByProjectId(project.id),
+    getTasksByProjectId(project.id),
+    getUsers(),
+  ]);
 
   // Calculate stats for areas
-  const areasWithStats = areas.map((area) => {
-    const areaTasks = allTasks.filter((t) => t.areaId === area.id);
-    const completed = areaTasks.filter((t) => t.status === "completed").length;
-    const lead = getUserById(area.leadId);
-    return {
-      id: area.id,
-      name: area.name,
-      leadId: area.leadId,
-      leadName: lead?.name || null,
-      taskCount: areaTasks.length,
-      completed,
-    };
-  });
+  const areasWithStats = await Promise.all(
+    areas.map(async (area) => {
+      const areaTasks = allTasks.filter((t) => t.areaId === area.id);
+      const completed = areaTasks.filter((t) => t.status === "completed").length;
+      const lead = area.leadId ? await getUserById(area.leadId) : undefined;
+      return {
+        id: area.id,
+        name: area.name,
+        leadId: area.leadId,
+        leadName: lead?.name || null,
+        taskCount: areaTasks.length,
+        completed,
+      };
+    })
+  );
 
   const totalTasks = allTasks.length;
   const totalCompleted = allTasks.filter((t) => t.status === "completed").length;
   const completionPercentage =
     totalTasks > 0 ? Math.round((totalCompleted / totalTasks) * 100) : 0;
 
-  const users = getUsers().map((user) => ({
+  const users = usersList.map((user) => ({
     id: user.id,
     name: user.name,
     initials: user.initials,

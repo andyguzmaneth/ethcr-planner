@@ -7,7 +7,7 @@ import {
   getUserById,
   getAreasByProjectId,
   getUsers
-} from "@/lib/data";
+} from "@/lib/data-supabase";
 
 interface AreaDetailPageProps {
   params: Promise<{ slug: string; areaId: string }>;
@@ -16,7 +16,7 @@ interface AreaDetailPageProps {
 export default async function AreaDetailPage({ params }: AreaDetailPageProps) {
   const { slug, areaId } = await params;
 
-  const project = getProjectBySlug(slug);
+  const project = await getProjectBySlug(slug);
   if (!project) {
     return (
       <MainLayout>
@@ -27,8 +27,8 @@ export default async function AreaDetailPage({ params }: AreaDetailPageProps) {
     );
   }
 
-  const area = getAreaById(areaId);
-  if (!area || (area.projectId !== project.id && (!area.eventId || area.eventId !== project.id))) {
+  const area = await getAreaById(areaId);
+  if (!area || area.projectId !== project.id) {
     return (
       <MainLayout>
         <div className="container mx-auto p-6">
@@ -38,21 +38,27 @@ export default async function AreaDetailPage({ params }: AreaDetailPageProps) {
     );
   }
 
-  const tasks = getTasksByAreaId(areaId);
-  const lead = getUserById(area.leadId);
-  const areas = getAreasByProjectId(project.id);
-  const users = getUsers();
+  const [tasks, lead, areas, usersList] = await Promise.all([
+    getTasksByAreaId(areaId),
+    area.leadId ? getUserById(area.leadId) : Promise.resolve(undefined),
+    getAreasByProjectId(project.id),
+    getUsers(),
+  ]);
 
   // Enrich tasks with details
-  const tasksWithDetails = tasks.map((task) => {
-    const user = task.assigneeId ? getUserById(task.assigneeId) : undefined;
-    const assignee = user ? { id: user.id, name: user.name, initials: user.initials } : null;
+  const tasksWithDetails = await Promise.all(
+    tasks.map(async (task) => {
+      const user = task.assigneeId ? await getUserById(task.assigneeId) : undefined;
+      const assignee = user ? { id: user.id, name: user.name, initials: user.initials } : null;
 
-    return {
-      ...task,
-      assignee,
-    };
-  });
+      return {
+        ...task,
+        assignee,
+      };
+    })
+  );
+
+  const users = usersList.map((u) => ({ id: u.id, name: u.name, initials: u.initials, email: u.email }));
 
   return (
     <MainLayout>
@@ -78,7 +84,7 @@ export default async function AreaDetailPage({ params }: AreaDetailPageProps) {
           areaId={area.id}
           areaName={area.name}
           areas={areas.map(a => ({ id: a.id, name: a.name }))}
-          users={users.map(u => ({ id: u.id, name: u.name, initials: u.initials, email: u.email }))}
+          users={users}
           tasks={tasksWithDetails}
         />
       </div>

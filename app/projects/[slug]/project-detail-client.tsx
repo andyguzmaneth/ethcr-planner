@@ -23,7 +23,7 @@ import { Area } from "@/lib/types";
 interface AreaWithStats {
   id: string;
   name: string;
-  leadId: string;
+  leadId?: string;
   leadName: string | null;
   taskCount: number;
   completed: number;

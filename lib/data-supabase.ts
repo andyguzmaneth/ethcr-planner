@@ -880,6 +880,22 @@ export async function getTemplateById(id: string): Promise<ProjectTemplate | und
   };
 }
 
+export async function getTemplateByName(name: string): Promise<ProjectTemplate | undefined> {
+  const { data, error } = await supabaseAdmin.from("project_templates").select("*").eq("name", name).single();
+  if (error || !data) return undefined;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const d = data as any;
+  return {
+    id: d.id,
+    name: d.name,
+    projectType: d.project_type,
+    description: d.description,
+    areas: d.template_data.areas,
+    createdAt: d.created_at,
+    updatedAt: d.updated_at,
+  };
+}
+
 export async function createTemplate(
   template: Omit<ProjectTemplate, "id" | "createdAt" | "updatedAt">
 ): Promise<ProjectTemplate> {
@@ -906,4 +922,22 @@ export async function createTemplate(
     createdAt: result.data.created_at,
     updatedAt: result.data.updated_at,
   };
+}
+
+export async function updateTemplate(
+  id: string,
+  updates: Partial<Omit<ProjectTemplate, "id" | "createdAt" | "updatedAt">>
+): Promise<ProjectTemplate | null> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const updateData: any = {};
+  if (updates.name) updateData.name = updates.name;
+  if (updates.projectType) updateData.project_type = updates.projectType;
+  if (updates.description !== undefined) updateData.description = updates.description;
+  if (updates.areas) updateData.template_data = { areas: updates.areas };
+
+  const { error } = await (supabaseAdmin.from("project_templates").update(updateData as never).eq("id", id) as unknown as Promise<{ error: { message: string; code?: string } | null }>);
+  if (error) throw error;
+
+  const updated = await getTemplateById(id);
+  return updated || null;
 }

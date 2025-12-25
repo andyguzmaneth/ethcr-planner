@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { loadTemplateFromJson, initializeProjectFromTemplate } from "../templates";
-import { createTemplate, getTemplateByName } from "../data";
+import { createTemplate, getTemplateByName } from "../data-supabase";
 
 /**
  * Script to initialize a Property project from the residential property template
@@ -12,7 +12,7 @@ import { createTemplate, getTemplateByName } from "../data";
 const dataDir = path.join(process.cwd(), "data");
 const jsonFilePath = path.join(dataDir, "residential-property-template.json");
 
-function initResidentialPropertyTemplate() {
+async function initResidentialPropertyTemplate() {
   console.log("Loading Residential Property template from JSON...");
 
   if (!fs.existsSync(jsonFilePath)) {
@@ -43,7 +43,7 @@ function initResidentialPropertyTemplate() {
   console.log(`  - Total Tasks: ${totalTasks}`);
 
   // Check if template already exists
-  const existingTemplate = getTemplateByName(template.name);
+  const existingTemplate = await getTemplateByName(template.name);
 
   let savedTemplate;
   if (existingTemplate) {
@@ -51,7 +51,7 @@ function initResidentialPropertyTemplate() {
     savedTemplate = existingTemplate;
   } else {
     // Create new template
-    savedTemplate = createTemplate({
+    savedTemplate = await createTemplate({
       name: template.name,
       projectType: template.projectType,
       description: template.description,
@@ -63,17 +63,17 @@ function initResidentialPropertyTemplate() {
   return savedTemplate;
 }
 
-function createLaItabaProject() {
+async function createLaItabaProject() {
   console.log("\nCreating 'La Itaba' Property Management project...");
 
   // Ensure template exists
-  let template = getTemplateByName("Residential Property Management");
+  let template = await getTemplateByName("Residential Property Management");
   if (!template) {
-    template = initResidentialPropertyTemplate();
+    template = await initResidentialPropertyTemplate();
   }
 
   // Create the project
-  const result = initializeProjectFromTemplate(
+  const result = await initializeProjectFromTemplate(
     template,
     {
       name: "La Itaba",
@@ -100,9 +100,9 @@ function createLaItabaProject() {
   return result;
 }
 
-function main() {
+async function main() {
   try {
-    createLaItabaProject();
+    await createLaItabaProject();
     console.log("\n✅ Property project 'La Itaba' successfully created!");
   } catch (error) {
     console.error("Error creating property project:", error);

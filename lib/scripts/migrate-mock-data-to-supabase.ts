@@ -132,7 +132,7 @@ async function migrateAreas() {
         projectId,
         name: area.name,
         description: area.description,
-        leadId: leadId || undefined,
+        leadId: leadId ?? undefined,
         order: area.order,
         participantIds,
       });

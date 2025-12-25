@@ -7,7 +7,7 @@ import "server-only";
 import fs from "fs";
 import path from "path";
 import { loadTemplateFromJson, initializeProjectFromTemplate } from "./templates";
-import { createTemplate, getTemplateByName, updateTemplate, getTemplates, getTemplateById } from "./data";
+import { createTemplate, getTemplateByName, getTemplates, getTemplateById, updateTemplate } from "./data-supabase";
 import type { ProjectTemplate } from "./types";
 
 const dataDir = path.join(process.cwd(), "data");
@@ -15,7 +15,7 @@ const dataDir = path.join(process.cwd(), "data");
 /**
  * Initialize ETH Pura Vida template from JSON file
  */
-export function initEthPuraVidaTemplate(): ProjectTemplate {
+export async function initEthPuraVidaTemplate(): Promise<ProjectTemplate> {
   const jsonFilePath = path.join(dataDir, "ETH_Pura_Vida_Project_Structure_v2.json");
   
   if (!fs.existsSync(jsonFilePath)) {
@@ -34,12 +34,12 @@ export function initEthPuraVidaTemplate(): ProjectTemplate {
   const template = templates[0];
   
   // Check if template already exists
-  const existingTemplate = getTemplateByName(template.name);
+  const existingTemplate = await getTemplateByName(template.name);
   
   let savedTemplate: ProjectTemplate;
   if (existingTemplate) {
     // Update existing template
-    const updated = updateTemplate(existingTemplate.id, {
+    const updated = await updateTemplate(existingTemplate.id, {
       areas: template.areas,
       description: template.description,
     });
@@ -50,7 +50,7 @@ export function initEthPuraVidaTemplate(): ProjectTemplate {
     console.log(`✅ Template "${savedTemplate.name}" updated with ID: ${savedTemplate.id}`);
   } else {
     // Create new template
-    savedTemplate = createTemplate({
+    savedTemplate = await createTemplate({
       name: template.name,
       projectType: template.projectType,
       description: template.description,
@@ -75,19 +75,19 @@ export function initEthPuraVidaTemplate(): ProjectTemplate {
 /**
  * Initialize a project from the ETH Pura Vida template
  */
-export function initProjectFromEthPuraVidaTemplate(projectDetails: {
+export async function initProjectFromEthPuraVidaTemplate(projectDetails: {
   name: string;
   description?: string;
   startDate?: string;
   endDate?: string;
 }) {
   // Ensure template exists
-  let template = getTemplateByName("ETH Pura Vida");
+  let template = await getTemplateByName("ETH Pura Vida");
   if (!template) {
-    template = initEthPuraVidaTemplate();
+    template = await initEthPuraVidaTemplate();
   }
   
-  const result = initializeProjectFromTemplate(template, projectDetails, {
+  const result = await initializeProjectFromTemplate(template, projectDetails, {
     assignTeamMembers: true,
   });
 
@@ -103,12 +103,10 @@ export function initProjectFromEthPuraVidaTemplate(projectDetails: {
 export const initEventFromEthPuraVidaTemplate = initProjectFromEthPuraVidaTemplate;
 
 // If run directly, initialize the template
-if (require.main === module) {
-  try {
-    initEthPuraVidaTemplate();
-  } catch (error) {
+if (typeof require !== "undefined" && require.main === module) {
+  initEthPuraVidaTemplate().catch((error) => {
     console.error("Error initializing template:", error);
     process.exit(1);
-  }
+  });
 }
 

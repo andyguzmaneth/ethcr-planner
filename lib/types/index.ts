@@ -43,7 +43,7 @@ export interface Area {
   projectId: string;
   name: string;
   description?: string;
-  leadId: string; // User ID
+  leadId?: string; // User ID (optional - can be null in database)
   participantIds: string[]; // User IDs
   order?: number; // Display order (lower numbers appear first)
   createdAt: string;

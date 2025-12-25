@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 import { loadTemplateFromJson, initializeProjectFromTemplate } from "@/lib/templates";
-import { createTemplate, getTemplateByName, getProjectBySlug } from "@/lib/data";
+import { createTemplate, getTemplateByName, getProjectBySlug } from "@/lib/data-supabase";
 
 export async function POST() {
   try {
@@ -10,7 +10,7 @@ export async function POST() {
     const jsonFilePath = path.join(dataDir, "residential-property-template.json");
 
     // Check if project already exists
-    const existingProject = getProjectBySlug("la-itaba");
+    const existingProject = await getProjectBySlug("la-itaba");
     if (existingProject) {
       return NextResponse.json(
         { 
@@ -44,9 +44,9 @@ export async function POST() {
     const template = templates[0];
 
     // Ensure template exists in database
-    let savedTemplate = getTemplateByName(template.name);
+    let savedTemplate = await getTemplateByName(template.name);
     if (!savedTemplate) {
-      savedTemplate = createTemplate({
+      savedTemplate = await createTemplate({
         name: template.name,
         projectType: template.projectType,
         description: template.description,
@@ -55,7 +55,7 @@ export async function POST() {
     }
 
     // Create the project
-    const result = initializeProjectFromTemplate(
+    const result = await initializeProjectFromTemplate(
       savedTemplate,
       {
         name: "La Itaba",

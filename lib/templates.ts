@@ -19,7 +19,7 @@ import {
   createTask,
   getUsers,
   createUser
-} from "./data";
+} from "./data-supabase";
 
 /**
  * Maps template estado to TaskStatus
@@ -40,10 +40,10 @@ function mapEstadoToStatus(estado?: string): TaskStatus {
  * Finds or creates a user from a template team member
  * Returns the user ID or undefined if name doesn't match
  */
-function findOrCreateUser(
+async function findOrCreateUser(
   teamMember: { name: string; email?: string; handle?: string; wallet?: string },
   existingUsers: User[]
-): string {
+): Promise<string> {
   // Try to find by email first
   if (teamMember.email) {
     const byEmail = existingUsers.find((u) => u.email === teamMember.email);
@@ -64,7 +64,7 @@ function findOrCreateUser(
     .toUpperCase()
     .slice(0, 2);
 
-  const newUser = createUser({
+  const newUser = await createUser({
     name: teamMember.name,
     email: teamMember.email || `${teamMember.name.toLowerCase().replace(/\s+/g, ".")}@example.com`,
     initials,
@@ -145,7 +145,7 @@ export const convertRawTemplateToEventTemplate = convertRawTemplateToProjectTemp
  * Initializes a project from a template
  * Creates Project, Areas, Responsibilities, and Tasks
  */
-export function initializeProjectFromTemplate(
+export async function initializeProjectFromTemplate(
   template: ProjectTemplate,
   projectDetails: {
     name: string;
@@ -157,16 +157,16 @@ export function initializeProjectFromTemplate(
     assignTeamMembers?: boolean; // Whether to assign team members to areas
     defaultTaskStatus?: TaskStatus; // Override default status for tasks
   }
-): {
+): Promise<{
   project: Project;
   areas: Area[];
   responsibilities: Responsibility[];
   tasks: Task[];
-} {
+}> {
   const { assignTeamMembers = true, defaultTaskStatus } = options || {};
 
   // Create the project
-  const project = createProject({
+  const project = await createProject({
     name: projectDetails.name,
     type: template.projectType,
     status: "In Planning",
@@ -175,7 +175,7 @@ export function initializeProjectFromTemplate(
     endDate: projectDetails.endDate,
   });
 
-  const allUsers = getUsers();
+  const allUsers = await getUsers();
   const areas: Area[] = [];
   const responsibilities: Responsibility[] = [];
   const tasks: Task[] = [];
@@ -188,28 +188,28 @@ export function initializeProjectFromTemplate(
 
     if (assignTeamMembers && templateArea.team && templateArea.team.length > 0) {
       // First team member becomes the lead
-      leadId = findOrCreateUser(templateArea.team[0], allUsers);
+      leadId = await findOrCreateUser(templateArea.team[0], allUsers);
 
       // Rest become participants
       for (let i = 1; i < templateArea.team.length; i++) {
-        const participantId = findOrCreateUser(templateArea.team[i], allUsers);
+        const participantId = await findOrCreateUser(templateArea.team[i], allUsers);
         participantIds.push(participantId);
       }
     }
 
     // Create the area
-    const area = createArea({
+    const area = await createArea({
       projectId: project.id,
       name: templateArea.name,
       description: templateArea.description,
-      leadId: leadId || allUsers[0]?.id || "", // Fallback to first user or empty
+      leadId: leadId || allUsers[0]?.id || undefined, // Fallback to first user or undefined
       participantIds,
     });
     areas.push(area);
 
     // Process responsibilities and tasks
     for (const templateResponsibility of templateArea.responsibilities) {
-      const responsibility = createResponsibility({
+      const responsibility = await createResponsibility({
         areaId: area.id,
         name: templateResponsibility.name,
         description: templateResponsibility.description,
@@ -229,7 +229,7 @@ export function initializeProjectFromTemplate(
             : templateTask.description
           : templateTask.notes || undefined;
 
-        const task = createTask({
+        const task = await createTask({
           areaId: area.id,
           projectId: project.id,
           title: templateTask.title,

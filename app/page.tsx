@@ -1,13 +1,12 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { getTasks, getAreas, getUserById, getProjects } from "@/lib/data";
+import { getTasks, getAreas, getUserById, getProjects } from "@/lib/data-supabase";
 import { DashboardClient } from "./dashboard-client";
 
-export default function DashboardPage() {
-  const allTasks = getTasks();
-  const allAreas = getAreas();
+export default async function DashboardPage() {
+  const [allTasks, allAreas] = await Promise.all([getTasks(), getAreas()]);
 
   // Calculate stats (assuming current user ID - in real app, get from auth)
-  const currentUserId = "user-alfredo"; // TODO: Get from auth session
+  const currentUserId = "00000000-0000-0000-0000-000000000001"; // Example UUID
   const myTasks = allTasks.filter((t) => t.assigneeId === currentUserId);
   const activeTasks = myTasks.filter((t) => t.status !== "completed");
   const overdueTasks = myTasks.filter(
@@ -37,43 +36,49 @@ export default function DashboardPage() {
     (a) => a.leadId === currentUserId || a.participantIds.includes(currentUserId)
   );
 
+  const projects = await getProjects();
+
   // Calculate progress for my areas
-  const areasWithProgress = myAreas.map((area) => {
-    const areaTasks = allTasks.filter((t) => t.areaId === area.id);
-    const completed = areaTasks.filter((t) => t.status === "completed").length;
-    const total = areaTasks.length;
-    const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
+  const areasWithProgress = await Promise.all(
+    myAreas.map(async (area) => {
+      const areaTasks = allTasks.filter((t) => t.areaId === area.id);
+      const completed = areaTasks.filter((t) => t.status === "completed").length;
+      const total = areaTasks.length;
+      const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
 
-    const project = getProjects().find((p) => p.id === area.projectId || (area.eventId && p.id === area.eventId));
+      const project = projects.find((p) => p.id === area.projectId);
 
-    return {
-      name: area.name,
-      projectName: project?.name || "Unknown Project",
-      progress,
-      completed,
-      total,
-    };
-  });
+      return {
+        name: area.name,
+        projectName: project?.name || "Unknown Project",
+        progress,
+        completed,
+        total,
+      };
+    })
+  );
 
   // Prepare recent tasks
-  const recentTasks = allTasks
-    .filter((t) => t.status === "completed" && t.completedAt)
-    .sort((a, b) => {
-      const dateA = new Date(a.completedAt || 0).getTime();
-      const dateB = new Date(b.completedAt || 0).getTime();
-      return dateB - dateA;
-    })
-    .slice(0, 5)
-    .map((task) => {
-      const assignee = getUserById(task.assigneeId || "");
-      return {
-        id: task.id,
-        title: task.title,
-        assigneeId: task.assigneeId || null,
-        assigneeName: assignee?.name || null,
-        completedAt: task.completedAt || "",
-      };
-    });
+  const recentTasks = await Promise.all(
+    allTasks
+      .filter((t) => t.status === "completed" && t.completedAt)
+      .sort((a, b) => {
+        const dateA = new Date(a.completedAt || 0).getTime();
+        const dateB = new Date(b.completedAt || 0).getTime();
+        return dateB - dateA;
+      })
+      .slice(0, 5)
+      .map(async (task) => {
+        const assignee = task.assigneeId ? await getUserById(task.assigneeId) : undefined;
+        return {
+          id: task.id,
+          title: task.title,
+          assigneeId: task.assigneeId || null,
+          assigneeName: assignee?.name || null,
+          completedAt: task.completedAt || "",
+        };
+      })
+  );
 
   return (
     <MainLayout>

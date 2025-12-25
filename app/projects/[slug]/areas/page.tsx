@@ -1,6 +1,6 @@
 import { MainLayout } from "@/components/layout/main-layout";
 import { ProjectAreasClient } from "./project-areas-client";
-import { getProjectBySlug, getAreasByProjectId, getTasksByProjectId, getUserById, getUsers } from "@/lib/data";
+import { getProjectBySlug, getAreasByProjectId, getTasksByProjectId, getUserById, getUsers } from "@/lib/data-supabase";
 
 interface ProjectAreasPageProps {
   params: Promise<{ slug: string }>;
@@ -9,7 +9,7 @@ interface ProjectAreasPageProps {
 export default async function ProjectAreasPage({ params }: ProjectAreasPageProps) {
   const { slug } = await params;
 
-  const project = getProjectBySlug(slug);
+  const project = await getProjectBySlug(slug);
   if (!project) {
     return (
       <MainLayout>
@@ -20,32 +20,37 @@ export default async function ProjectAreasPage({ params }: ProjectAreasPageProps
     );
   }
 
-  const areas = getAreasByProjectId(project.id);
-  const allTasks = getTasksByProjectId(project.id);
+  const [areas, allTasks, usersList] = await Promise.all([
+    getAreasByProjectId(project.id),
+    getTasksByProjectId(project.id),
+    getUsers(),
+  ]);
 
   // Calculate stats for each area
-  const areasWithStats = areas.map((area) => {
-    const areaTasks = allTasks.filter((t) => t.areaId === area.id);
-    const completed = areaTasks.filter((t) => t.status === "completed").length;
-    const progress = areaTasks.length > 0 ? Math.round((completed / areaTasks.length) * 100) : 0;
-    const leadUser = getUserById(area.leadId);
+  const areasWithStats = await Promise.all(
+    areas.map(async (area) => {
+      const areaTasks = allTasks.filter((t) => t.areaId === area.id);
+      const completed = areaTasks.filter((t) => t.status === "completed").length;
+      const progress = areaTasks.length > 0 ? Math.round((completed / areaTasks.length) * 100) : 0;
+      const leadUser = area.leadId ? await getUserById(area.leadId) : undefined;
 
-    return {
-      ...area,
-      taskCount: areaTasks.length,
-      completed,
-      progress,
-      lead: leadUser
-        ? {
-            id: leadUser.id,
-            name: leadUser.name,
-            initials: leadUser.initials,
-          }
-        : null,
-    };
-  });
+      return {
+        ...area,
+        taskCount: areaTasks.length,
+        completed,
+        progress,
+        lead: leadUser
+          ? {
+              id: leadUser.id,
+              name: leadUser.name,
+              initials: leadUser.initials,
+            }
+          : null,
+      };
+    })
+  );
 
-  const users = getUsers().map((user) => ({
+  const users = usersList.map((user) => ({
     id: user.id,
     name: user.name,
     initials: user.initials,

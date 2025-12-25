@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { loadTemplateFromJson } from "../templates";
-import { createTemplate } from "../data";
+import { createTemplate } from "../data-supabase";
 
 /**
  * Script to initialize the ETH Pura Vida template from the JSON file

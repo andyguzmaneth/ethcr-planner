@@ -1,5 +1,5 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { getTasks, getUserById, getProjectById, getAreaById, getProjects, getUsers, getAreas } from "@/lib/data";
+import { getTasks, getUserById, getProjectById, getAreaById, getProjects, getUsers, getAreas } from "@/lib/data-supabase";
 import { createServerTranslationFunction, getLocaleFromCookies } from "@/lib/i18n";
 import { cookies } from "next/headers";
 import { TasksPageClient } from "./tasks-page-client";
@@ -11,10 +11,12 @@ export default async function TasksPage() {
   const locale = getLocaleFromCookies(localeFromCookie);
   const t = createServerTranslationFunction(locale);
 
-  const tasks = getTasks();
-  const projects = getProjects();
-  const users = getUsers();
-  const allAreas = getAreas();
+  const [tasks, projects, users, allAreas] = await Promise.all([
+    getTasks(),
+    getProjects(),
+    getUsers(),
+    getAreas(),
+  ]);
 
   const statusColors = {
     pending: "bg-gray-500",
@@ -31,19 +33,21 @@ export default async function TasksPage() {
   };
 
   // Enrich tasks with details
-  const tasksWithDetails = tasks.map((task) => {
-    const assignee = task.assigneeId ? getUserById(task.assigneeId) : null;
-    const projectId = task.projectId || task.eventId;
-    const project = projectId ? getProjectById(projectId) : undefined;
-    const area = task.areaId ? getAreaById(task.areaId) : null;
+  const tasksWithDetails = await Promise.all(
+    tasks.map(async (task) => {
+      const assignee = task.assigneeId ? await getUserById(task.assigneeId) : null;
+      const projectId = task.projectId;
+      const project = projectId ? await getProjectById(projectId) : undefined;
+      const area = task.areaId ? await getAreaById(task.areaId) : null;
 
-    return {
-      ...task,
-      assignee,
-      project,
-      area,
-    };
-  });
+      return {
+        ...task,
+        assignee,
+        project,
+        area,
+      };
+    })
+  );
 
   return (
     <MainLayout>
@@ -58,7 +62,7 @@ export default async function TasksPage() {
           </div>
           <TasksPageClient
             projects={projects.map(p => ({ id: p.id, name: p.name }))}
-            areas={allAreas.map(a => ({ id: a.id, name: a.name, projectId: a.projectId || a.eventId || "" }))}
+            areas={allAreas.map(a => ({ id: a.id, name: a.name, projectId: a.projectId || "" }))}
             users={users.map(u => ({ id: u.id, name: u.name, initials: u.initials, email: u.email }))}
           />
         </div>
@@ -67,7 +71,7 @@ export default async function TasksPage() {
         <TasksViewClient
           tasks={tasksWithDetails}
           projects={projects.map(p => ({ id: p.id, name: p.name }))}
-          areas={allAreas.map(a => ({ id: a.id, name: a.name, projectId: a.projectId || a.eventId || "" }))}
+          areas={allAreas.map(a => ({ id: a.id, name: a.name, projectId: a.projectId || "" }))}
           users={users.map(u => ({ id: u.id, name: u.name, initials: u.initials, email: u.email }))}
           statusColors={statusColors}
           statusLabels={statusLabels}

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Plus, FileText } from "lucide-react";
 import Link from "next/link";
-import { getMeetings, getMeetingNoteByMeetingId, getUserById, getProjectById } from "@/lib/data";
+import { getMeetings, getMeetingNoteByMeetingId, getUserById, getProjectById } from "@/lib/data-supabase";
 import { createServerTranslationFunction, getLocaleFromCookies } from "@/lib/i18n";
 import { cookies } from "next/headers";
 
@@ -15,22 +15,27 @@ export default async function MeetingsPage() {
   const locale = getLocaleFromCookies(localeFromCookie);
   const t = createServerTranslationFunction(locale);
 
-  const meetings = getMeetings();
+  const meetings = await getMeetings();
 
   // Enrich meetings with details
-  const meetingsWithDetails = meetings.map((meeting) => {
-    const notes = getMeetingNoteByMeetingId(meeting.id);
-    const attendees = meeting.attendeeIds.map((id) => getUserById(id)).filter(Boolean);
-    const projectId = meeting.projectId || meeting.eventId;
-    const project = projectId ? getProjectById(projectId) : undefined;
+  const meetingsWithDetails = await Promise.all(
+    meetings.map(async (meeting) => {
+      const [notes, project] = await Promise.all([
+        getMeetingNoteByMeetingId(meeting.id),
+        meeting.projectId ? getProjectById(meeting.projectId) : Promise.resolve(undefined),
+      ]);
+      const attendees = await Promise.all(
+        meeting.attendeeIds.map((id) => getUserById(id))
+      );
 
-    return {
-      ...meeting,
-      hasNotes: !!notes,
-      attendees,
-      project,
-    };
-  });
+      return {
+        ...meeting,
+        hasNotes: !!notes,
+        attendees: attendees.filter(Boolean),
+        project,
+      };
+    })
+  );
 
   return (
     <MainLayout>

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createArea, reorderAreas } from "@/lib/data";
+import { createArea, reorderAreas } from "@/lib/data-supabase";
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,11 +25,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Create area
-    const area = createArea({
+    const area = await createArea({
       projectId: finalProjectId,
       name: name.trim(),
       description: description?.trim() || undefined,
-      leadId: leadId || "",
+      leadId: leadId || undefined,
       participantIds: [], // Participants will be added automatically as tasks are assigned
     });
 
@@ -83,7 +83,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Reorder areas
-    const success = reorderAreas(finalProjectId, areaOrders);
+    const success = await reorderAreas(finalProjectId, areaOrders);
     if (!success) {
       return NextResponse.json(
         { error: "Failed to reorder areas" },

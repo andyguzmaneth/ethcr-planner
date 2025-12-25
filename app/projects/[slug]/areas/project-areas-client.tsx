@@ -45,7 +45,7 @@ interface AreaWithStats {
   id: string;
   name: string;
   description?: string;
-  leadId: string;
+  leadId?: string;
   taskCount: number;
   completed: number;
   progress: number;

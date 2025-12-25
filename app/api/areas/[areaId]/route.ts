@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { deleteArea, getAreaById, updateArea } from "@/lib/data";
+import { deleteArea, getAreaById, updateArea } from "@/lib/data-supabase";
 
 interface RouteParams {
   params: Promise<{ areaId: string }>;
@@ -12,7 +12,7 @@ export async function GET(
   try {
     const { areaId } = await params;
 
-    const area = getAreaById(areaId);
+    const area = await getAreaById(areaId);
     if (!area) {
       return NextResponse.json(
         { error: "Area not found" },
@@ -40,7 +40,7 @@ export async function PUT(
     const { name, description, leadId } = body;
 
     // Check if area exists
-    const existingArea = getAreaById(areaId);
+    const existingArea = await getAreaById(areaId);
     if (!existingArea) {
       return NextResponse.json(
         { error: "Area not found" },
@@ -57,10 +57,10 @@ export async function PUT(
     }
 
     // Update area
-    const updatedArea = updateArea(areaId, {
+    const updatedArea = await updateArea(areaId, {
       name: name.trim(),
       description: description?.trim() || undefined,
-      leadId: leadId || "",
+      leadId: leadId || undefined,
     });
 
     if (!updatedArea) {
@@ -88,7 +88,7 @@ export async function DELETE(
     const { areaId } = await params;
 
     // Check if area exists
-    const existingArea = getAreaById(areaId);
+    const existingArea = await getAreaById(areaId);
     if (!existingArea) {
       return NextResponse.json(
         { error: "Area not found" },
@@ -97,7 +97,7 @@ export async function DELETE(
     }
 
     // Delete area (this will also delete all associated tasks)
-    const deleted = deleteArea(areaId);
+    const deleted = await deleteArea(areaId);
     if (!deleted) {
       return NextResponse.json(
         { error: "Failed to delete area" },

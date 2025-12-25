@@ -1,30 +1,34 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { getProjects, getAreas, getTasks, isUserJoinedProject } from "@/lib/data";
+import { getProjects, getAreas, getTasks, isUserJoinedProject } from "@/lib/data-supabase";
 import { ProjectsClient } from "./projects-client";
 
 // TODO: For now, we'll use a hardcoded user ID. In a real app, get from auth session
-const CURRENT_USER_ID = "user-alfredo";
+const CURRENT_USER_ID = "00000000-0000-0000-0000-000000000001"; // Example UUID
 
-export default function ProjectsPage() {
-  const projects = getProjects();
-  const allAreas = getAreas();
-  const allTasks = getTasks();
+export default async function ProjectsPage() {
+  const [projects, allAreas, allTasks] = await Promise.all([
+    getProjects(),
+    getAreas(),
+    getTasks(),
+  ]);
 
   // Calculate stats for each project
-  const projectsWithStats = projects.map((project) => {
-    const projectAreas = allAreas.filter((a) => a.projectId === project.id || (a.eventId && a.eventId === project.id));
-    const projectTasks = allTasks.filter((t) => t.projectId === project.id || (t.eventId && t.eventId === project.id));
-    const completedTasks = projectTasks.filter((t) => t.status === "completed").length;
-    const isJoined = isUserJoinedProject(project.id, CURRENT_USER_ID);
+  const projectsWithStats = await Promise.all(
+    projects.map(async (project) => {
+      const projectAreas = allAreas.filter((a) => a.projectId === project.id);
+      const projectTasks = allTasks.filter((t) => t.projectId === project.id);
+      const completedTasks = projectTasks.filter((t) => t.status === "completed").length;
+      const isJoined = await isUserJoinedProject(project.id, CURRENT_USER_ID);
 
-    return {
-      ...project,
-      areaCount: projectAreas.length,
-      taskCount: projectTasks.length,
-      completedTasks,
-      isJoined,
-    };
-  });
+      return {
+        ...project,
+        areaCount: projectAreas.length,
+        taskCount: projectTasks.length,
+        completedTasks,
+        isJoined,
+      };
+    })
+  );
 
   return (
     <MainLayout>
