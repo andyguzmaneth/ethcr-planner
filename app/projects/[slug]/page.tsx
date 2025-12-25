@@ -1,7 +1,8 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { getProjectBySlug, getAreasByProjectId, getTasksByProjectId, getUserById, getUsers } from "@/lib/data-supabase";
+import { getProjectBySlug, getAreasByProjectId, getTasksByProjectId, getUsers } from "@/lib/data-supabase";
 import { ProjectDetailClient } from "./project-detail-client";
 import { createServerTranslationFunction } from "@/lib/i18n";
+import { mapUsersForClient, getUserIfProvided, calculateTaskStats } from "@/lib/utils/server-helpers";
 
 interface ProjectDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -32,30 +33,21 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
   const areasWithStats = await Promise.all(
     areas.map(async (area) => {
       const areaTasks = allTasks.filter((t) => t.areaId === area.id);
-      const completed = areaTasks.filter((t) => t.status === "completed").length;
-      const lead = area.leadId ? await getUserById(area.leadId) : undefined;
+      const { total, completed } = calculateTaskStats(areaTasks);
+      const lead = await getUserIfProvided(area.leadId);
       return {
         id: area.id,
         name: area.name,
         leadId: area.leadId,
         leadName: lead?.name || null,
-        taskCount: areaTasks.length,
+        taskCount: total,
         completed,
       };
     })
   );
 
-  const totalTasks = allTasks.length;
-  const totalCompleted = allTasks.filter((t) => t.status === "completed").length;
-  const completionPercentage =
-    totalTasks > 0 ? Math.round((totalCompleted / totalTasks) * 100) : 0;
-
-  const users = usersList.map((user) => ({
-    id: user.id,
-    name: user.name,
-    initials: user.initials,
-    email: user.email,
-  }));
+  const { total: totalTasks, completed: totalCompleted, progress: completionPercentage } = calculateTaskStats(allTasks);
+  const users = mapUsersForClient(usersList);
 
   return (
     <MainLayout>

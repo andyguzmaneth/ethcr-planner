@@ -4,10 +4,10 @@ import {
   getProjectBySlug, 
   getAreaById, 
   getTasksByAreaId, 
-  getUserById,
   getAreasByProjectId,
   getUsers
 } from "@/lib/data-supabase";
+import { mapUsersForClient, getUserIfProvided } from "@/lib/utils/server-helpers";
 
 interface AreaDetailPageProps {
   params: Promise<{ slug: string; areaId: string }>;
@@ -40,7 +40,7 @@ export default async function AreaDetailPage({ params }: AreaDetailPageProps) {
 
   const [tasks, lead, areas, usersList] = await Promise.all([
     getTasksByAreaId(areaId),
-    area.leadId ? getUserById(area.leadId) : Promise.resolve(undefined),
+    getUserIfProvided(area.leadId),
     getAreasByProjectId(project.id),
     getUsers(),
   ]);
@@ -48,7 +48,7 @@ export default async function AreaDetailPage({ params }: AreaDetailPageProps) {
   // Enrich tasks with details
   const tasksWithDetails = await Promise.all(
     tasks.map(async (task) => {
-      const user = task.assigneeId ? await getUserById(task.assigneeId) : undefined;
+      const user = await getUserIfProvided(task.assigneeId);
       const assignee = user ? { id: user.id, name: user.name, initials: user.initials } : null;
 
       return {
@@ -58,7 +58,7 @@ export default async function AreaDetailPage({ params }: AreaDetailPageProps) {
     })
   );
 
-  const users = usersList.map((u) => ({ id: u.id, name: u.name, initials: u.initials, email: u.email }));
+  const users = mapUsersForClient(usersList);
 
   return (
     <MainLayout>

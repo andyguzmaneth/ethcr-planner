@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { joinProject, leaveProject } from "@/lib/data-supabase";
-
-// TODO For now, we'll use a hardcoded user ID. In a real app, get from auth session
-const CURRENT_USER_ID = "00000000-0000-0000-0000-000000000001"; // Example UUID
+import { getCurrentUserId } from "@/lib/utils/server-helpers";
 
 export async function POST(
   request: NextRequest,
@@ -10,7 +8,8 @@ export async function POST(
 ) {
   try {
     const { projectId } = await params;
-    const project = await joinProject(projectId, CURRENT_USER_ID);
+    const currentUserId = getCurrentUserId();
+    const project = await joinProject(projectId, currentUserId);
 
     if (!project) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
@@ -32,7 +31,8 @@ export async function DELETE(
 ) {
   try {
     const { projectId } = await params;
-    const project = await leaveProject(projectId, CURRENT_USER_ID);
+    const currentUserId = getCurrentUserId();
+    const project = await leaveProject(projectId, currentUserId);
 
     if (!project) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });

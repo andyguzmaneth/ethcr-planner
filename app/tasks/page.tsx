@@ -1,7 +1,8 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { getTasks, getUserById, getProjectById, getAreaById, getProjects, getUsers, getAreas } from "@/lib/data-supabase";
+import { getTasks, getProjectById, getAreaById, getProjects, getUsers, getAreas } from "@/lib/data-supabase";
 import { createServerTranslationFunction, getLocaleFromCookies } from "@/lib/i18n";
 import { cookies } from "next/headers";
+import { mapUsersForClient, getUserIfProvided } from "@/lib/utils/server-helpers";
 import { TasksPageClient } from "./tasks-page-client";
 import { TasksViewClient } from "./tasks-view-client";
 
@@ -35,9 +36,8 @@ export default async function TasksPage() {
   // Enrich tasks with details
   const tasksWithDetails = await Promise.all(
     tasks.map(async (task) => {
-      const assignee = task.assigneeId ? await getUserById(task.assigneeId) : null;
-      const projectId = task.projectId;
-      const project = projectId ? await getProjectById(projectId) : undefined;
+      const assignee = await getUserIfProvided(task.assigneeId) ?? null;
+      const project = task.projectId ? await getProjectById(task.projectId) : undefined;
       const area = task.areaId ? await getAreaById(task.areaId) : null;
 
       return {
@@ -48,6 +48,8 @@ export default async function TasksPage() {
       };
     })
   );
+
+  const mappedUsers = mapUsersForClient(users);
 
   return (
     <MainLayout>
@@ -63,7 +65,7 @@ export default async function TasksPage() {
           <TasksPageClient
             projects={projects.map(p => ({ id: p.id, name: p.name }))}
             areas={allAreas.map(a => ({ id: a.id, name: a.name, projectId: a.projectId || "" }))}
-            users={users.map(u => ({ id: u.id, name: u.name, initials: u.initials, email: u.email }))}
+            users={mappedUsers}
           />
         </div>
 
@@ -72,7 +74,7 @@ export default async function TasksPage() {
           tasks={tasksWithDetails}
           projects={projects.map(p => ({ id: p.id, name: p.name }))}
           areas={allAreas.map(a => ({ id: a.id, name: a.name, projectId: a.projectId || "" }))}
-          users={users.map(u => ({ id: u.id, name: u.name, initials: u.initials, email: u.email }))}
+          users={mappedUsers}
           statusColors={statusColors}
           statusLabels={statusLabels}
         />

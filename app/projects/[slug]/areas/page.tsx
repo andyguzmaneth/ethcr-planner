@@ -1,6 +1,7 @@
 import { MainLayout } from "@/components/layout/main-layout";
 import { ProjectAreasClient } from "./project-areas-client";
-import { getProjectBySlug, getAreasByProjectId, getTasksByProjectId, getUserById, getUsers } from "@/lib/data-supabase";
+import { getProjectBySlug, getAreasByProjectId, getTasksByProjectId, getUsers } from "@/lib/data-supabase";
+import { mapUsersForClient, getUserIfProvided, calculateTaskStats } from "@/lib/utils/server-helpers";
 
 interface ProjectAreasPageProps {
   params: Promise<{ slug: string }>;
@@ -30,13 +31,12 @@ export default async function ProjectAreasPage({ params }: ProjectAreasPageProps
   const areasWithStats = await Promise.all(
     areas.map(async (area) => {
       const areaTasks = allTasks.filter((t) => t.areaId === area.id);
-      const completed = areaTasks.filter((t) => t.status === "completed").length;
-      const progress = areaTasks.length > 0 ? Math.round((completed / areaTasks.length) * 100) : 0;
-      const leadUser = area.leadId ? await getUserById(area.leadId) : undefined;
+      const { total, completed, progress } = calculateTaskStats(areaTasks);
+      const leadUser = await getUserIfProvided(area.leadId);
 
       return {
         ...area,
-        taskCount: areaTasks.length,
+        taskCount: total,
         completed,
         progress,
         lead: leadUser
@@ -50,12 +50,7 @@ export default async function ProjectAreasPage({ params }: ProjectAreasPageProps
     })
   );
 
-  const users = usersList.map((user) => ({
-    id: user.id,
-    name: user.name,
-    initials: user.initials,
-    email: user.email,
-  }));
+  const users = mapUsersForClient(usersList);
 
   return (
     <MainLayout>

@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { getAreas, getTasksByAreaId, getUserById, getProjectById } from "@/lib/data-supabase";
+import { getUserIfProvided, calculateTaskStats } from "@/lib/utils/server-helpers";
 
 export default async function AreasPage() {
   const areas = await getAreas();
@@ -11,11 +12,11 @@ export default async function AreasPage() {
   const areasWithDetails = await Promise.all(
     areas.map(async (area) => {
       const [lead, project, areaTasks] = await Promise.all([
-        area.leadId ? getUserById(area.leadId) : Promise.resolve(undefined),
+        getUserIfProvided(area.leadId),
         area.projectId ? getProjectById(area.projectId) : Promise.resolve(undefined),
         getTasksByAreaId(area.id),
       ]);
-      const completed = areaTasks.filter((t) => t.status === "completed").length;
+      const { total, completed } = calculateTaskStats(areaTasks);
       const participants = await Promise.all(
         area.participantIds.map((id) => getUserById(id))
       );
@@ -24,7 +25,7 @@ export default async function AreasPage() {
         ...area,
         lead,
         project,
-        tasks: areaTasks.length,
+        tasks: total,
         completed,
         participants: participants.filter(Boolean),
       };
@@ -52,9 +53,7 @@ export default async function AreasPage() {
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {areasWithDetails.map((area) => {
-              const progress = area.tasks > 0
-                ? Math.round((area.completed / area.tasks) * 100)
-                : 0;
+              const progress = area.tasks > 0 ? Math.round((area.completed / area.tasks) * 100) : 0;
 
               return (
                 <Link key={area.id} href={`/areas/${area.id}`}>

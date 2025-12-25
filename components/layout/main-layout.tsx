@@ -1,17 +1,16 @@
 import { Header } from "./header";
 import { Sidebar } from "./sidebar";
 import { getProjects, getUserJoinedProjects, getAreasByProjectId } from "@/lib/data-supabase";
+import { getCurrentUserId } from "@/lib/utils/server-helpers";
 
 interface MainLayoutProps {
   children: React.ReactNode;
 }
 
-// For now, we'll use a hardcoded user ID. In a real app, get from auth session
-const CURRENT_USER_ID = "00000000-0000-0000-0000-000000000001"; // Example UUID
-
 export async function MainLayout({ children }: MainLayoutProps) {
+  const currentUserId = getCurrentUserId();
   // Only show projects that the user has joined in the sidebar
-  const joinedProjects = await getUserJoinedProjects(CURRENT_USER_ID);
+  const joinedProjects = await getUserJoinedProjects(currentUserId);
   const sidebarProjects = await Promise.all(
     joinedProjects.map(async (p) => {
       const areas = await getAreasByProjectId(p.id);
