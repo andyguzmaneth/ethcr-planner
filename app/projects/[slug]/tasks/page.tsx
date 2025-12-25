@@ -1,9 +1,10 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { getProjectBySlug, getTasksByProjectId, getUserById, getAreaById, getAreasByProjectId, getUsers } from "@/lib/data-supabase";
+import { getProjectBySlug, getTasksByProjectId, getAreasByProjectId, getUsers } from "@/lib/data-supabase";
 import { createServerTranslationFunction, getLocaleFromCookies } from "@/lib/i18n";
 import { cookies } from "next/headers";
 import { ProjectTasksClient } from "./project-tasks-client";
 import { ProjectTasksViewClient } from "./project-tasks-view-client";
+import { getTaskStatusColors, getTaskStatusLabels, enrichTasksWithDetails } from "@/lib/utils/server-helpers";
 
 interface ProjectTasksPageProps {
   params: Promise<{ slug: string }>;
@@ -32,33 +33,9 @@ export default async function ProjectTasksPage({ params }: ProjectTasksPageProps
   const areas = await getAreasByProjectId(project.id);
   const users = await getUsers();
 
-  const statusColors = {
-    pending: "bg-gray-500",
-    in_progress: "bg-blue-500",
-    blocked: "bg-red-500",
-    completed: "bg-green-500",
-  };
-
-  const statusLabels = {
-    pending: "Pendiente",
-    in_progress: "En Progreso",
-    blocked: "Bloqueada",
-    completed: "Completada",
-  };
-
-  // Enrich tasks with user and area info
-  const tasksWithDetails = await Promise.all(
-    tasks.map(async (task) => {
-      const assignee = task.assigneeId ? await getUserById(task.assigneeId) : null;
-      const area = task.areaId ? await getAreaById(task.areaId) : null;
-
-      return {
-        ...task,
-        assignee: assignee ? { id: assignee.id, name: assignee.name, initials: assignee.initials } : null,
-        area: area ? { id: area.id, name: area.name } : null,
-      };
-    })
-  );
+  const statusColors = getTaskStatusColors();
+  const statusLabels = getTaskStatusLabels();
+  const tasksWithDetails = await enrichTasksWithDetails(tasks);
 
   return (
     <MainLayout>

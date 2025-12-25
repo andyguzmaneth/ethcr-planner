@@ -18,7 +18,8 @@ import { NewAreaModal } from "@/components/projects/new-area-modal";
 import { NewTaskModal } from "@/components/projects/new-task-modal";
 import { DeleteAreaDialog } from "@/components/projects/delete-area-dialog";
 import { useRouter } from "next/navigation";
-import { Area } from "@/lib/types";
+import { Area, Task } from "@/lib/types";
+import { ProjectTasksListClient } from "./tasks/project-tasks-list-client";
 
 interface AreaWithStats {
   id: string;
@@ -36,6 +37,18 @@ interface User {
   email?: string;
 }
 
+interface TaskWithDetails extends Task {
+  assignee?: {
+    id: string;
+    name: string;
+    initials?: string;
+  } | null;
+  area?: {
+    id: string;
+    name: string;
+  } | null;
+}
+
 interface ProjectDetailClientProps {
   project: {
     id: string;
@@ -49,6 +62,9 @@ interface ProjectDetailClientProps {
   completionPercentage: number;
   users: User[];
   areas: Array<{ id: string; name: string }>;
+  tasks: TaskWithDetails[];
+  statusColors: Record<string, string>;
+  statusLabels: Record<string, string>;
 }
 
 export function ProjectDetailClient({
@@ -59,6 +75,9 @@ export function ProjectDetailClient({
   completionPercentage,
   users,
   areas,
+  tasks,
+  statusColors,
+  statusLabels,
 }: ProjectDetailClientProps) {
   const { t } = useTranslation();
   const router = useRouter();
@@ -261,21 +280,23 @@ export function ProjectDetailClient({
           </div>
         </TabsContent>
 
-        <TabsContent value="tasks">
-          <div className="flex items-center justify-between mb-4">
+        <TabsContent value="tasks" className="space-y-4">
+          <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold">{t("nav.tasks")}</h2>
             <Button onClick={() => setIsTaskModalOpen(true)}>
               <Plus className="mr-2 h-4 w-4" />
               {t("projectDetail.addTask")}
             </Button>
           </div>
-          <Card>
-            <CardContent className="pt-6">
-              <p className="text-muted-foreground text-center py-8">
-                {t("projectDetail.tasksListDescription")}
-              </p>
-            </CardContent>
-          </Card>
+          <ProjectTasksListClient
+            tasks={tasks}
+            projectId={project.id}
+            projectName={project.name}
+            areas={areas}
+            users={users}
+            statusColors={statusColors}
+            statusLabels={statusLabels}
+          />
         </TabsContent>
 
         <TabsContent value="meetings">

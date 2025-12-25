@@ -1,6 +1,6 @@
 import "server-only";
-import type { User } from "@/lib/types";
-import { getUserById, getUsers, createUser } from "@/lib/data-supabase";
+import type { User, Task } from "@/lib/types";
+import { getUserById, getUsers, createUser, getAreaById } from "@/lib/data-supabase";
 
 /**
  * Get or create a default user for testing purposes
@@ -56,5 +56,52 @@ export function calculateTaskStats(tasks: Array<{ status: string }>) {
   const completed = tasks.filter((t) => t.status === "completed").length;
   const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
   return { total, completed, progress };
+}
+
+/**
+ * Get status colors for task status badges
+ */
+export function getTaskStatusColors(): Record<string, string> {
+  return {
+    pending: "bg-gray-500",
+    in_progress: "bg-blue-500",
+    blocked: "bg-red-500",
+    completed: "bg-green-500",
+  };
+}
+
+/**
+ * Get status labels for task status badges
+ */
+export function getTaskStatusLabels(): Record<string, string> {
+  return {
+    pending: "Pendiente",
+    in_progress: "En Progreso",
+    blocked: "Bloqueada",
+    completed: "Completada",
+  };
+}
+
+/**
+ * Enrich tasks with assignee and area details
+ */
+export async function enrichTasksWithDetails(
+  tasks: Task[]
+): Promise<Array<Task & {
+  assignee: { id: string; name: string; initials?: string } | null;
+  area: { id: string; name: string } | null;
+}>> {
+  return Promise.all(
+    tasks.map(async (task) => {
+      const assignee = task.assigneeId ? await getUserById(task.assigneeId) : null;
+      const area = task.areaId ? await getAreaById(task.areaId) : null;
+
+      return {
+        ...task,
+        assignee: assignee ? { id: assignee.id, name: assignee.name, initials: assignee.initials } : null,
+        area: area ? { id: area.id, name: area.name } : null,
+      };
+    })
+  );
 }
 

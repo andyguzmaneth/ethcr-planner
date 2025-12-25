@@ -2,7 +2,7 @@ import { MainLayout } from "@/components/layout/main-layout";
 import { getProjectBySlug, getAreasByProjectId, getTasksByProjectId, getUsers } from "@/lib/data-supabase";
 import { ProjectDetailClient } from "./project-detail-client";
 import { createServerTranslationFunction } from "@/lib/i18n";
-import { mapUsersForClient, getUserIfProvided, calculateTaskStats } from "@/lib/utils/server-helpers";
+import { mapUsersForClient, getUserIfProvided, calculateTaskStats, getTaskStatusColors, getTaskStatusLabels, enrichTasksWithDetails } from "@/lib/utils/server-helpers";
 
 interface ProjectDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -46,8 +46,12 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     })
   );
 
-  const { total: totalTasks, completed: totalCompleted, progress: completionPercentage } = calculateTaskStats(allTasks);
+  const { total: totalTasks, progress: completionPercentage } = calculateTaskStats(allTasks);
   const users = mapUsersForClient(usersList);
+
+  const statusColors = getTaskStatusColors();
+  const statusLabels = getTaskStatusLabels();
+  const tasksWithDetails = await enrichTasksWithDetails(allTasks);
 
   return (
     <MainLayout>
@@ -64,6 +68,9 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
         completionPercentage={completionPercentage}
         users={users}
         areas={areas.map(a => ({ id: a.id, name: a.name }))}
+        tasks={tasksWithDetails}
+        statusColors={statusColors}
+        statusLabels={statusLabels}
       />
     </MainLayout>
   );
