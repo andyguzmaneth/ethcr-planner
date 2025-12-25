@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { updateMeetingNote } from "@/lib/data-supabase";
+import { buildMeetingNotePayload } from "../utils";
 
 interface RouteParams {
   params: Promise<{ noteId: string }>;
@@ -18,21 +19,9 @@ export async function PUT(
       return NextResponse.json({ error: "Meeting note content is required" }, { status: 400 });
     }
 
-    const updatePayload: Partial<{
-      content: string;
-      agenda?: string;
-      decisions?: string;
-      actionItems?: string[];
-    }> = {
-      content: content.trim(),
-      ...(agenda !== undefined && { agenda: agenda.trim() || undefined }),
-      ...(decisions !== undefined && { decisions: decisions.trim() || undefined }),
-      ...(actionItems !== undefined && {
-        actionItems: Array.isArray(actionItems) && actionItems.length > 0 ? actionItems : undefined,
-      }),
-    };
-
+    const updatePayload = buildMeetingNotePayload(content, agenda, decisions, actionItems);
     const updatedNote = await updateMeetingNote(noteId, updatePayload);
+    
     if (!updatedNote) {
       return NextResponse.json({ error: "Meeting note not found" }, { status: 404 });
     }

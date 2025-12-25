@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createMeetingNote } from "@/lib/data-supabase";
 import { getCurrentUserId } from "@/lib/utils/server-helpers";
 import { validateUUID } from "../tasks/utils";
+import { buildMeetingNotePayload } from "./utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,13 +23,11 @@ export async function POST(request: NextRequest) {
     }
 
     const currentUserId = await getCurrentUserId();
+    const payload = buildMeetingNotePayload(content, agenda, decisions, actionItems);
 
     const note = await createMeetingNote({
       meetingId: validMeetingId,
-      content: content.trim(),
-      agenda: agenda?.trim() || undefined,
-      decisions: decisions?.trim() || undefined,
-      actionItems: Array.isArray(actionItems) && actionItems.length > 0 ? actionItems : undefined,
+      ...payload,
       createdBy: currentUserId,
     });
 

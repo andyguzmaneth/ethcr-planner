@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createMeeting } from "@/lib/data-supabase";
 import { validateUUID } from "../tasks/utils";
+import { validateMeetingInput } from "./utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,29 +17,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid projectId: must be a valid UUID" }, { status: 400 });
     }
 
-    if (!title?.trim()) {
-      return NextResponse.json({ error: "Meeting title is required" }, { status: 400 });
+    const validation = validateMeetingInput(title, date, time, attendeeIds);
+    if (!validation.valid) {
+      return validation.error!;
     }
-
-    if (!date) {
-      return NextResponse.json({ error: "Meeting date is required" }, { status: 400 });
-    }
-
-    if (!time) {
-      return NextResponse.json({ error: "Meeting time is required" }, { status: 400 });
-    }
-
-    // Validate attendee IDs if provided
-    const validAttendeeIds = attendeeIds && Array.isArray(attendeeIds) 
-      ? attendeeIds.map((id: string) => validateUUID(id, "attendeeId")).filter(Boolean) as string[]
-      : [];
 
     const meeting = await createMeeting({
       projectId: validProjectId,
-      title: title.trim(),
-      date: date,
-      time: time,
-      attendeeIds: validAttendeeIds,
+      ...validation.data!,
     });
 
     return NextResponse.json(meeting, { status: 201 });

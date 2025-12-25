@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { updateMeeting, getMeetingById, deleteMeeting } from "@/lib/data-supabase";
-import { validateUUID } from "../../tasks/utils";
+import { validateMeetingInput } from "../utils";
 
 interface RouteParams {
   params: Promise<{ meetingId: string }>;
@@ -20,36 +20,12 @@ export async function PUT(
       return NextResponse.json({ error: "Meeting not found" }, { status: 404 });
     }
 
-    if (!title?.trim()) {
-      return NextResponse.json({ error: "Meeting title is required" }, { status: 400 });
+    const validation = validateMeetingInput(title, date, time, attendeeIds);
+    if (!validation.valid) {
+      return validation.error!;
     }
 
-    if (!date) {
-      return NextResponse.json({ error: "Meeting date is required" }, { status: 400 });
-    }
-
-    if (!time) {
-      return NextResponse.json({ error: "Meeting time is required" }, { status: 400 });
-    }
-
-    // Validate attendee IDs if provided
-    const validAttendeeIds = attendeeIds && Array.isArray(attendeeIds)
-      ? attendeeIds.map((id: string) => validateUUID(id, "attendeeId")).filter(Boolean) as string[]
-      : [];
-
-    const updatePayload: Partial<{
-      title: string;
-      date: string;
-      time: string;
-      attendeeIds: string[];
-    }> = {
-      title: title.trim(),
-      date: date,
-      time: time,
-      attendeeIds: validAttendeeIds,
-    };
-
-    const updatedMeeting = await updateMeeting(meetingId, updatePayload);
+    const updatedMeeting = await updateMeeting(meetingId, validation.data!);
     if (!updatedMeeting) {
       return NextResponse.json({ error: "Failed to update meeting" }, { status: 500 });
     }
