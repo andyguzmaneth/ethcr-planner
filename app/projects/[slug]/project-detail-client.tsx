@@ -2,21 +2,15 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Plus, Settings, MoreVertical, Edit, Trash2 } from "lucide-react";
+import { Plus, Settings } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import { NewAreaModal } from "@/components/projects/new-area-modal";
 import { NewTaskModal } from "@/components/projects/new-task-modal";
 import { DeleteAreaDialog } from "@/components/projects/delete-area-dialog";
+import { AreaCard } from "@/components/projects/area-card";
 import { useRouter } from "next/navigation";
 import { Area, Task } from "@/lib/types";
 import { ProjectTasksListClient } from "./tasks/project-tasks-list-client";
@@ -56,6 +50,7 @@ interface ProjectDetailClientProps {
     type: string;
     status: string;
   };
+  projectSlug: string;
   areasWithStats: AreaWithStats[];
   totalAreas: number;
   totalTasks: number;
@@ -69,6 +64,7 @@ interface ProjectDetailClientProps {
 
 export function ProjectDetailClient({
   project,
+  projectSlug,
   areasWithStats,
   totalAreas,
   totalTasks,
@@ -215,68 +211,21 @@ export function ProjectDetailClient({
             </Button>
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {areasWithStats.map((area) => {
-              const progress = area.taskCount > 0
-                ? Math.round((area.completed / area.taskCount) * 100)
-                : 0;
-
-              return (
-                <Card key={area.id} className="group relative">
-                  <CardHeader>
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1">
-                        <CardTitle className="text-lg">{area.name}</CardTitle>
-                        <CardDescription>
-                          {t("projectDetail.leader")}: {area.leadName || t("projectDetail.unassigned")}
-                        </CardDescription>
-                      </div>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon-sm"
-                            className="opacity-0 group-hover:opacity-100 transition-opacity"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <MoreVertical className="h-4 w-4" />
-                            <span className="sr-only">{t("common.actions")}</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={(e) => handleEditClick(e, area)}>
-                            <Edit className="mr-2 h-4 w-4" />
-                            {t("common.edit")}
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            variant="destructive"
-                            onClick={(e) => handleDeleteClick(e, area)}
-                          >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            {t("common.delete")}
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">
-                          {area.completed}/{area.taskCount} {t("projects.tasks")}
-                        </span>
-                      </div>
-                      <div className="w-full bg-secondary rounded-full h-2">
-                        <div
-                          className="bg-primary h-2 rounded-full transition-all"
-                          style={{ width: `${progress}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+            {areasWithStats.map((area) => (
+              <AreaCard
+                key={area.id}
+                area={{
+                  id: area.id,
+                  name: area.name,
+                  taskCount: area.taskCount,
+                  completed: area.completed,
+                  leadName: area.leadName,
+                }}
+                projectSlug={projectSlug}
+                onEditClick={(e) => handleEditClick(e, area)}
+                onDeleteClick={(e) => handleDeleteClick(e, area)}
+              />
+            ))}
           </div>
         </TabsContent>
 

@@ -62,6 +62,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
           type: project.type,
           status: project.status,
         }}
+        projectSlug={slug}
         areasWithStats={areasWithStats}
         totalAreas={areas.length}
         totalTasks={totalTasks}

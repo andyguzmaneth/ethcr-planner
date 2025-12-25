@@ -19,17 +19,10 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Plus, MoreVertical, Edit, Trash2, GripVertical } from "lucide-react";
+import { Plus } from "lucide-react";
 import { NewAreaModal } from "@/components/projects/new-area-modal";
 import { DeleteAreaDialog } from "@/components/projects/delete-area-dialog";
+import { AreaCard } from "@/components/projects/area-card";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import { Area } from "@/lib/types";
@@ -69,7 +62,6 @@ interface SortableAreaCardProps {
   projectSlug: string;
   onEditClick: (e: React.MouseEvent, area: AreaWithStats) => void;
   onDeleteClick: (e: React.MouseEvent, area: AreaWithStats) => void;
-  t: (key: string) => string;
 }
 
 function SortableAreaCard({
@@ -77,7 +69,6 @@ function SortableAreaCard({
   projectSlug,
   onEditClick,
   onDeleteClick,
-  t,
 }: SortableAreaCardProps) {
   const {
     attributes,
@@ -94,88 +85,23 @@ function SortableAreaCard({
     opacity: isDragging ? 0.5 : 1,
   };
 
-  const handleCardClick = () => {
-    if (!isDragging) {
-      window.location.href = `/projects/${projectSlug}/areas/${area.id}`;
-    }
-  };
-
   return (
-    <Card
-      ref={setNodeRef}
-      style={style}
-      onClick={handleCardClick}
-      className="hover:shadow-lg transition-shadow cursor-pointer h-full group relative"
-    >
-      <CardHeader>
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex items-start gap-2 flex-1">
-            <button
-              {...attributes}
-              {...listeners}
-              className="mt-1 cursor-grab active:cursor-grabbing touch-none"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <GripVertical className="h-4 w-4 text-muted-foreground" />
-            </button>
-            <div className="flex-1">
-              <CardTitle className="text-lg">{area.name}</CardTitle>
-              <CardDescription>
-                Líder: {area.lead?.name || "Sin asignar"}
-              </CardDescription>
-            </div>
-          </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                className="opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <MoreVertical className="h-4 w-4" />
-                <span className="sr-only">{t("common.actions")}</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={(e) => onEditClick(e, area)}>
-                <Edit className="mr-2 h-4 w-4" />
-                {t("common.edit")}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                variant="destructive"
-                onClick={(e) => onDeleteClick(e, area)}
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                {t("common.delete")}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">
-              {area.completed}/{area.taskCount} Tareas
-            </span>
-          </div>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>Progreso</span>
-              <span>{area.progress}%</span>
-            </div>
-            <div className="w-full bg-secondary rounded-full h-2">
-              <div
-                className="bg-primary h-2 rounded-full transition-all"
-                style={{ width: `${area.progress}%` }}
-              ></div>
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+    <AreaCard
+      area={{
+        id: area.id,
+        name: area.name,
+        taskCount: area.taskCount,
+        completed: area.completed,
+        lead: area.lead,
+      }}
+      projectSlug={projectSlug}
+      onEditClick={(e) => onEditClick(e, area)}
+      onDeleteClick={(e) => onDeleteClick(e, area)}
+      isDragging={isDragging}
+      dragHandleProps={{ attributes, listeners }}
+      cardRef={setNodeRef}
+      cardStyle={style}
+    />
   );
 }
 
@@ -349,7 +275,6 @@ export function ProjectAreasClient({
                 projectSlug={projectSlug}
                 onEditClick={handleEditClick}
                 onDeleteClick={handleDeleteClick}
-                t={t}
               />
             ))}
           </div>
