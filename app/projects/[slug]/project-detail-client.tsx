@@ -14,6 +14,7 @@ import { AreaCard } from "@/components/projects/area-card";
 import { useRouter } from "next/navigation";
 import { Area, Task } from "@/lib/types";
 import { ProjectTasksListClient } from "./tasks/project-tasks-list-client";
+import { MeetingsClient } from "./meetings/meetings-client";
 
 interface AreaWithStats {
   id: string;
@@ -43,6 +44,10 @@ interface TaskWithDetails extends Task {
   } | null;
 }
 
+import type { EnrichedMeeting } from "@/lib/utils/meeting-helpers";
+
+type MeetingWithDetails = EnrichedMeeting;
+
 interface ProjectDetailClientProps {
   project: {
     id: string;
@@ -60,6 +65,7 @@ interface ProjectDetailClientProps {
   tasks: TaskWithDetails[];
   statusColors: Record<string, string>;
   statusLabels: Record<string, string>;
+  meetings: MeetingWithDetails[];
 }
 
 export function ProjectDetailClient({
@@ -74,6 +80,7 @@ export function ProjectDetailClient({
   tasks,
   statusColors,
   statusLabels,
+  meetings,
 }: ProjectDetailClientProps) {
   const { t } = useTranslation();
   const router = useRouter();
@@ -248,21 +255,15 @@ export function ProjectDetailClient({
           />
         </TabsContent>
 
-        <TabsContent value="meetings">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold">{t("nav.meetings")}</h2>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              {t("projectDetail.scheduleMeeting")}
-            </Button>
-          </div>
-          <Card>
-            <CardContent className="pt-6">
-              <p className="text-muted-foreground text-center py-8">
-                {t("projectDetail.meetingsListDescription")}
-              </p>
-            </CardContent>
-          </Card>
+        <TabsContent value="meetings" className="space-y-4">
+          <MeetingsClient
+            projectId={project.id}
+            projectSlug={projectSlug}
+            projectName={project.name}
+            initialMeetings={meetings}
+            users={users}
+            hideHeader={true}
+          />
         </TabsContent>
       </Tabs>
 

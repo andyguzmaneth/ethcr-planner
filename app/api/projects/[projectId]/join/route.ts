@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { joinProject, leaveProject } from "@/lib/data-supabase";
 import { getCurrentUserId } from "@/lib/utils/server-helpers";
+import type { Project } from "@/lib/types";
 
 interface RouteParams {
   params: Promise<{ projectId: string }>;
@@ -8,7 +9,7 @@ interface RouteParams {
 
 async function handleProjectAction(
   projectId: string,
-  action: (projectId: string, userId: string) => Promise<ReturnType<typeof joinProject>>
+  action: (projectId: string, userId: string) => Promise<Project | null>
 ) {
   const currentUserId = await getCurrentUserId();
   const project = await action(projectId, currentUserId);

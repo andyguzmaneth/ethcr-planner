@@ -1,13 +1,8 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Plus, FileText } from "lucide-react";
-import Link from "next/link";
-import { getProjectBySlug, getMeetingsByProjectId, getMeetingNoteByMeetingId, getUserById } from "@/lib/data-supabase";
-import { createServerTranslationFunction, getLocaleFromCookies } from "@/lib/i18n";
-import { cookies } from "next/headers";
+import { getProjectBySlug, getMeetingsByProjectId, getUsers } from "@/lib/data-supabase";
+import { mapUsersForClient } from "@/lib/utils/server-helpers";
+import { enrichMeetingsWithDetails } from "@/lib/utils/meeting-helpers";
+import { MeetingsClient } from "./meetings-client";
 
 interface ProjectMeetingsPageProps {
   params: Promise<{ slug: string }>;
@@ -15,11 +10,6 @@ interface ProjectMeetingsPageProps {
 
 export default async function ProjectMeetingsPage({ params }: ProjectMeetingsPageProps) {
   const { slug } = await params;
-
-  const cookieStore = await cookies();
-  const localeFromCookie = cookieStore.get("app_locale")?.value;
-  const locale = getLocaleFromCookies(localeFromCookie);
-  const t = createServerTranslationFunction(locale);
 
   const project = await getProjectBySlug(slug);
   if (!project) {
@@ -32,101 +22,24 @@ export default async function ProjectMeetingsPage({ params }: ProjectMeetingsPag
     );
   }
 
-  const meetings = await getMeetingsByProjectId(project.id);
+  const [meetings, usersList] = await Promise.all([
+    getMeetingsByProjectId(project.id),
+    getUsers(),
+  ]);
 
-  // Enrich meetings with notes and attendees
-  const meetingsWithDetails = await Promise.all(
-    meetings.map(async (meeting) => {
-      const notes = await getMeetingNoteByMeetingId(meeting.id);
-      const attendees = await Promise.all(
-        meeting.attendeeIds.map((id) => getUserById(id))
-      );
+  const meetingsWithDetails = await enrichMeetingsWithDetails(meetings);
 
-      return {
-        ...meeting,
-        hasNotes: !!notes,
-        attendees: attendees.filter(Boolean),
-      };
-    })
-  );
+  const users = mapUsersForClient(usersList);
 
   return (
     <MainLayout>
-      <div className="container mx-auto p-6 space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              Reuniones - {project.name}
-            </h1>
-            <p className="text-muted-foreground mt-2">
-              Ver y gestionar las notas de reuniones de este proyecto
-            </p>
-          </div>
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            {t("projectDetail.scheduleMeeting")}
-          </Button>
-        </div>
-
-        {/* Meetings List */}
-        {meetingsWithDetails.length === 0 ? (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <p className="text-muted-foreground mb-4">No hay reuniones programadas</p>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                {t("projectDetail.createFirstMeeting")}
-              </Button>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {meetingsWithDetails.map((meeting) => (
-              <Link key={meeting.id} href={`/projects/${project.slug}/meetings/${meeting.id}`}>
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-1">
-                        <CardTitle className="text-lg">{meeting.title}</CardTitle>
-                        <CardDescription>{project.name}</CardDescription>
-                      </div>
-                      {meeting.hasNotes && (
-                        <Badge variant="outline">
-                          <FileText className="mr-1 h-3 w-3" />
-                          Tiene Notas
-                        </Badge>
-                      )}
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2 text-sm">
-                        <span className="text-muted-foreground">
-                          {meeting.date} a las {meeting.time}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground">Asistentes:</span>
-                        <div className="flex -space-x-2">
-                          {meeting.attendees.map((attendee, idx) => (
-                            <Avatar key={idx} className="h-6 w-6 border-2 border-background">
-                              <AvatarImage src={attendee?.avatar || ""} alt={attendee?.name || ""} />
-                              <AvatarFallback className="text-xs">
-                                {attendee?.initials || "?"}
-                              </AvatarFallback>
-                            </Avatar>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
+      <MeetingsClient
+        projectId={project.id}
+        projectSlug={project.slug}
+        projectName={project.name}
+        initialMeetings={meetingsWithDetails}
+        users={users}
+      />
     </MainLayout>
   );
 }

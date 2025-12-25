@@ -1,8 +1,9 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { getProjectBySlug, getAreasByProjectId, getTasksByProjectId, getUsers } from "@/lib/data-supabase";
+import { getProjectBySlug, getAreasByProjectId, getTasksByProjectId, getUsers, getMeetingsByProjectId } from "@/lib/data-supabase";
 import { ProjectDetailClient } from "./project-detail-client";
 import { createServerTranslationFunction } from "@/lib/i18n";
 import { mapUsersForClient, getUserIfProvided, calculateTaskStats, getTaskStatusColors, getTaskStatusLabels, enrichTasksWithDetails } from "@/lib/utils/server-helpers";
+import { enrichMeetingsWithDetails } from "@/lib/utils/meeting-helpers";
 
 interface ProjectDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -23,10 +24,11 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     );
   }
 
-  const [areas, allTasks, usersList] = await Promise.all([
+  const [areas, allTasks, usersList, meetings] = await Promise.all([
     getAreasByProjectId(project.id),
     getTasksByProjectId(project.id),
     getUsers(),
+    getMeetingsByProjectId(project.id),
   ]);
 
   // Calculate stats for areas
@@ -52,6 +54,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
   const statusColors = getTaskStatusColors();
   const statusLabels = getTaskStatusLabels();
   const tasksWithDetails = await enrichTasksWithDetails(allTasks);
+  const meetingsWithDetails = await enrichMeetingsWithDetails(meetings);
 
   return (
     <MainLayout>
@@ -72,6 +75,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
         tasks={tasksWithDetails}
         statusColors={statusColors}
         statusLabels={statusLabels}
+        meetings={meetingsWithDetails}
       />
     </MainLayout>
   );

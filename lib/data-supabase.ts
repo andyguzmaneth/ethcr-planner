@@ -788,6 +788,45 @@ export async function createMeeting(meeting: Omit<Meeting, "id" | "createdAt" | 
   return created!;
 }
 
+export async function updateMeeting(
+  id: string,
+  updates: Partial<Omit<Meeting, "id" | "createdAt" | "updatedAt">>
+): Promise<Meeting | null> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const updateData: any = {};
+  if (updates.title) updateData.title = updates.title;
+  if (updates.date) updateData.date = updates.date;
+  if (updates.time) updateData.time = updates.time;
+
+  const { error } = await (supabaseAdmin.from("meetings").update(updateData as never).eq("id", id) as unknown as Promise<{ error: { message: string; code?: string } | null }>);
+  if (error) throw error;
+
+  // Update attendees if provided
+  if (updates.attendeeIds !== undefined) {
+    // Delete existing attendees
+    await (supabaseAdmin.from("meeting_attendees").delete().eq("meeting_id", id) as unknown as Promise<{ error: { message: string; code?: string } | null }>);
+    
+    // Insert new attendees
+    if (updates.attendeeIds.length > 0) {
+      await (supabaseAdmin.from("meeting_attendees").insert(
+        updates.attendeeIds.map((userId) => ({
+          meeting_id: id,
+          user_id: userId,
+        })) as never
+      ) as unknown as Promise<{ error: { message: string; code?: string } | null }>);
+    }
+  }
+
+  const updated = await getMeetingById(id);
+  return updated || null;
+}
+
+export async function deleteMeeting(id: string): Promise<boolean> {
+  const { error } = await (supabaseAdmin.from("meetings").delete().eq("id", id) as unknown as Promise<{ error: { message: string; code?: string } | null }>);
+  if (error) throw error;
+  return true;
+}
+
 // Meeting Notes operations
 export async function getMeetingNotes(): Promise<MeetingNote[]> {
   const { data, error } = await supabaseAdmin.from("meeting_notes").select("*").order("created_at");

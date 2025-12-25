@@ -98,7 +98,10 @@ function SortableAreaCard({
       onEditClick={(e) => onEditClick(e, area)}
       onDeleteClick={(e) => onDeleteClick(e, area)}
       isDragging={isDragging}
-      dragHandleProps={{ attributes, listeners }}
+      dragHandleProps={{ 
+        attributes: { ...attributes } as Record<string, unknown>, 
+        listeners: { ...(listeners || {}) } as Record<string, unknown> 
+      }}
       cardRef={setNodeRef}
       cardStyle={style}
     />
