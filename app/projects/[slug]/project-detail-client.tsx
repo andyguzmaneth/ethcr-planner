@@ -10,9 +10,11 @@ import { useTranslation } from "@/lib/i18n/useTranslation";
 import { NewAreaModal } from "@/components/projects/new-area-modal";
 import { NewTaskModal } from "@/components/projects/new-task-modal";
 import { DeleteAreaDialog } from "@/components/projects/delete-area-dialog";
+import { EditProjectModal } from "@/components/projects/edit-project-modal";
 import { AreaCard } from "@/components/projects/area-card";
 import { useRouter } from "next/navigation";
 import { Area, Task } from "@/lib/types";
+import type { Project } from "@/lib/types";
 import { ProjectTasksListClient } from "./tasks/project-tasks-list-client";
 import { MeetingsClient } from "./meetings/meetings-client";
 
@@ -90,6 +92,8 @@ export function ProjectDetailClient({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [areaToDelete, setAreaToDelete] = useState<AreaWithStats | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isEditProjectModalOpen, setIsEditProjectModalOpen] = useState(false);
+  const [fullProject, setFullProject] = useState<Project | null>(null);
 
   const handleAreaCreated = () => {
     router.refresh();
@@ -149,6 +153,21 @@ export function ProjectDetailClient({
     }
   };
 
+  const handleEditProjectClick = async () => {
+    try {
+      const response = await fetch(`/api/projects/${project.id}`);
+      if (response.ok) {
+        const fullProjectData = await response.json();
+        setFullProject(fullProjectData);
+        setIsEditProjectModalOpen(true);
+      } else {
+        console.error("Failed to fetch project data");
+      }
+    } catch (error) {
+      console.error("Error fetching project data:", error);
+    }
+  };
+
   return (
     <div className="container mx-auto p-6 space-y-6">
       {/* Project Header */}
@@ -164,7 +183,7 @@ export function ProjectDetailClient({
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleEditProjectClick}>
             <Settings className="mr-2 h-4 w-4" />
             {t("projectDetail.editProject")}
           </Button>
@@ -292,6 +311,14 @@ export function ProjectDetailClient({
           taskCount={areaToDelete.taskCount}
           onConfirm={handleConfirmDelete}
           isDeleting={isDeleting}
+        />
+      )}
+      {fullProject && (
+        <EditProjectModal
+          open={isEditProjectModalOpen}
+          onOpenChange={setIsEditProjectModalOpen}
+          project={fullProject}
+          onSuccess={() => router.refresh()}
         />
       )}
     </div>

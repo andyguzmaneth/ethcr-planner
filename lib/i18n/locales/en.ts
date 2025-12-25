@@ -123,6 +123,26 @@ export const en = {
     cancel: "Cancel",
     continue: "Continue",
   },
+  // Edit Project Modal
+  editProjectModal: {
+    title: "Edit Project",
+    description: "Update the project details.",
+    name: "Project Name",
+    namePlaceholder: "Enter project name",
+    type: "Project Type",
+    status: "Project Status",
+    descriptionLabel: "Description",
+    descriptionPlaceholder: "Optional project description",
+    startDate: "Start Date",
+    endDate: "End Date",
+    cancel: "Cancel",
+    update: "Update Project",
+    updating: "Updating...",
+    errors: {
+      nameRequired: "Project name is required",
+      updateFailed: "Failed to update project",
+    },
+  },
   // Legacy alias for backward compatibility
   newEventModal: {
     title: "Create New Project",
