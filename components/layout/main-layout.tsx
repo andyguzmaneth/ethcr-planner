@@ -8,7 +8,7 @@ interface MainLayoutProps {
 }
 
 export async function MainLayout({ children }: MainLayoutProps) {
-  const currentUserId = getCurrentUserId();
+  const currentUserId = await getCurrentUserId();
   // Only show projects that the user has joined in the sidebar
   const joinedProjects = await getUserJoinedProjects(currentUserId);
   const sidebarProjects = await Promise.all(

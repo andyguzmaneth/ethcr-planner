@@ -4,13 +4,12 @@ import { getCurrentUserId } from "@/lib/utils/server-helpers";
 import { ProjectsClient } from "./projects-client";
 
 export default async function ProjectsPage() {
-  const [projects, allAreas, allTasks] = await Promise.all([
+  const [projects, allAreas, allTasks, currentUserId] = await Promise.all([
     getProjects(),
     getAreas(),
     getTasks(),
+    getCurrentUserId(),
   ]);
-
-  const currentUserId = getCurrentUserId();
 
   // Calculate stats for each project
   const projectsWithStats = await Promise.all(

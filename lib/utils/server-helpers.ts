@@ -1,13 +1,26 @@
 import "server-only";
 import type { User } from "@/lib/types";
-import { getUserById } from "@/lib/data-supabase";
+import { getUserById, getUsers, createUser } from "@/lib/data-supabase";
 
 /**
- * Get current user ID (placeholder - should be replaced with actual auth)
+ * Get or create a default user for testing purposes
  * TODO: Replace with actual authentication session
  */
-export function getCurrentUserId(): string {
-  return "00000000-0000-0000-0000-000000000001";
+export async function getCurrentUserId(): Promise<string> {
+  // Try to get the first user from the database
+  const users = await getUsers();
+  if (users.length > 0) {
+    return users[0].id;
+  }
+
+  // If no users exist, create a default user
+  const defaultUser = await createUser({
+    name: "Default User",
+    email: "default@example.com",
+    initials: "DU",
+  });
+
+  return defaultUser.id;
 }
 
 /**

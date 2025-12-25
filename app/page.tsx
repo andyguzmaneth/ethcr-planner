@@ -4,9 +4,11 @@ import { getCurrentUserId, calculateTaskStats, getUserIfProvided } from "@/lib/u
 import { DashboardClient } from "./dashboard-client";
 
 export default async function DashboardPage() {
-  const [allTasks, allAreas] = await Promise.all([getTasks(), getAreas()]);
-
-  const currentUserId = getCurrentUserId();
+  const [allTasks, allAreas, currentUserId] = await Promise.all([
+    getTasks(),
+    getAreas(),
+    getCurrentUserId(),
+  ]);
   const myTasks = allTasks.filter((t) => t.assigneeId === currentUserId);
   const activeTasks = myTasks.filter((t) => t.status !== "completed");
   const overdueTasks = myTasks.filter(
