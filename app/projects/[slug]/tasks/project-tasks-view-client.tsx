@@ -12,12 +12,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Plus, List, LayoutGrid, Calendar as CalendarIcon, MoreVertical, Edit, Trash2, Table as TableIcon } from "lucide-react";
+import { Plus, List, LayoutGrid, Calendar as CalendarIcon, MoreVertical, Edit, Trash2, Table as TableIcon, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import { NewTaskModal } from "@/components/projects/new-task-modal";
 import { DeleteTaskDialog } from "@/components/projects/delete-task-dialog";
 import { useRouter } from "next/navigation";
 import { Task } from "@/lib/types";
+import { useTaskSort } from "@/lib/hooks/use-task-sort";
 import {
   Table,
   TableBody,
@@ -65,6 +66,11 @@ export function ProjectTasksViewClient({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<TaskWithDetails | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  
+  const { sortedTasks, sortColumn, sortDirection, handleSort } = useTaskSort({
+    tasks,
+    statusLabels,
+  });
 
   const handleTaskCreated = () => {
     router.refresh();
@@ -512,16 +518,116 @@ export function ProjectTasksViewClient({
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead className="min-w-[100px]">Estado</TableHead>
-                          <TableHead className="min-w-[200px]">Tarea</TableHead>
-                          <TableHead className="min-w-[120px]">Área</TableHead>
-                          <TableHead className="min-w-[120px]">Asignado a</TableHead>
-                          <TableHead className="min-w-[120px]">Fecha límite</TableHead>
+                          <TableHead className="min-w-[100px]">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSort("status");
+                              }}
+                              className="flex items-center gap-1 hover:text-foreground transition-colors font-medium"
+                              type="button"
+                            >
+                              Estado
+                              {sortColumn === "status" ? (
+                                sortDirection === "asc" ? (
+                                  <ArrowUp className="h-3 w-3" />
+                                ) : (
+                                  <ArrowDown className="h-3 w-3" />
+                                )
+                              ) : (
+                                <ArrowUpDown className="h-3 w-3 opacity-50" />
+                              )}
+                            </button>
+                          </TableHead>
+                          <TableHead className="min-w-[200px]">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSort("title");
+                              }}
+                              className="flex items-center gap-1 hover:text-foreground transition-colors font-medium"
+                              type="button"
+                            >
+                              Tarea
+                              {sortColumn === "title" ? (
+                                sortDirection === "asc" ? (
+                                  <ArrowUp className="h-3 w-3" />
+                                ) : (
+                                  <ArrowDown className="h-3 w-3" />
+                                )
+                              ) : (
+                                <ArrowUpDown className="h-3 w-3 opacity-50" />
+                              )}
+                            </button>
+                          </TableHead>
+                          <TableHead className="min-w-[120px]">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSort("area");
+                              }}
+                              className="flex items-center gap-1 hover:text-foreground transition-colors font-medium"
+                              type="button"
+                            >
+                              Área
+                              {sortColumn === "area" ? (
+                                sortDirection === "asc" ? (
+                                  <ArrowUp className="h-3 w-3" />
+                                ) : (
+                                  <ArrowDown className="h-3 w-3" />
+                                )
+                              ) : (
+                                <ArrowUpDown className="h-3 w-3 opacity-50" />
+                              )}
+                            </button>
+                          </TableHead>
+                          <TableHead className="min-w-[120px]">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSort("assignee");
+                              }}
+                              className="flex items-center gap-1 hover:text-foreground transition-colors font-medium"
+                              type="button"
+                            >
+                              Asignado a
+                              {sortColumn === "assignee" ? (
+                                sortDirection === "asc" ? (
+                                  <ArrowUp className="h-3 w-3" />
+                                ) : (
+                                  <ArrowDown className="h-3 w-3" />
+                                )
+                              ) : (
+                                <ArrowUpDown className="h-3 w-3 opacity-50" />
+                              )}
+                            </button>
+                          </TableHead>
+                          <TableHead className="min-w-[120px]">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSort("deadline");
+                              }}
+                              className="flex items-center gap-1 hover:text-foreground transition-colors font-medium"
+                              type="button"
+                            >
+                              Fecha límite
+                              {sortColumn === "deadline" ? (
+                                sortDirection === "asc" ? (
+                                  <ArrowUp className="h-3 w-3" />
+                                ) : (
+                                  <ArrowDown className="h-3 w-3" />
+                                )
+                              ) : (
+                                <ArrowUpDown className="h-3 w-3 opacity-50" />
+                              )}
+                            </button>
+                          </TableHead>
                           <TableHead className="min-w-[80px]">Acciones</TableHead>
                         </TableRow>
                       </TableHeader>
                   <TableBody>
-                    {tasks.map((task) => (
+                    {sortedTasks.map((task) => (
                       <TableRow
                         key={task.id}
                         onClick={() => handleTaskClick(task)}

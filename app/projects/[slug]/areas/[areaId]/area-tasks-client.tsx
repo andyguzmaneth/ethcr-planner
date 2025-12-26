@@ -12,12 +12,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Plus, List, LayoutGrid, Calendar as CalendarIcon, MoreVertical, Edit, Trash2, Table as TableIcon } from "lucide-react";
+import { Plus, List, LayoutGrid, Calendar as CalendarIcon, MoreVertical, Edit, Trash2, Table as TableIcon, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import { NewTaskModal } from "@/components/projects/new-task-modal";
 import { DeleteTaskDialog } from "@/components/projects/delete-task-dialog";
 import { useRouter } from "next/navigation";
 import { Task } from "@/lib/types";
+import { useTaskSort } from "@/lib/hooks/use-task-sort";
 import {
   Table,
   TableBody,
@@ -61,6 +62,25 @@ export function AreaTasksClient({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<TaskWithDetails | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const statusColors = {
+    pending: "bg-gray-500",
+    in_progress: "bg-blue-500",
+    blocked: "bg-red-500",
+    completed: "bg-green-500",
+  };
+
+  const statusLabels = {
+    pending: "Pendiente",
+    in_progress: "En Progreso",
+    blocked: "Bloqueada",
+    completed: "Completada",
+  };
+
+  const { sortedTasks, sortColumn, sortDirection, handleSort } = useTaskSort({
+    tasks,
+    statusLabels,
+  });
 
   const handleTaskCreated = () => {
     router.refresh();
@@ -111,19 +131,6 @@ export function AreaTasksClient({
     e.stopPropagation();
     setEditingTask(task);
     setIsModalOpen(true);
-  };
-  const statusColors = {
-    pending: "bg-gray-500",
-    in_progress: "bg-blue-500",
-    blocked: "bg-red-500",
-    completed: "bg-green-500",
-  };
-
-  const statusLabels = {
-    pending: "Pendiente",
-    in_progress: "En Progreso",
-    blocked: "Bloqueada",
-    completed: "Completada",
   };
 
   // Group tasks by status for Kanban view
@@ -521,15 +528,95 @@ export function AreaTasksClient({
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Estado</TableHead>
-                      <TableHead>Tarea</TableHead>
-                      <TableHead>Asignado a</TableHead>
-                      <TableHead>Fecha límite</TableHead>
+                      <TableHead>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSort("status");
+                          }}
+                          className="flex items-center gap-1 hover:text-foreground transition-colors font-medium"
+                          type="button"
+                        >
+                          Estado
+                          {sortColumn === "status" ? (
+                            sortDirection === "asc" ? (
+                              <ArrowUp className="h-3 w-3" />
+                            ) : (
+                              <ArrowDown className="h-3 w-3" />
+                            )
+                          ) : (
+                            <ArrowUpDown className="h-3 w-3 opacity-50" />
+                          )}
+                        </button>
+                      </TableHead>
+                      <TableHead>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSort("title");
+                          }}
+                          className="flex items-center gap-1 hover:text-foreground transition-colors font-medium"
+                          type="button"
+                        >
+                          Tarea
+                          {sortColumn === "title" ? (
+                            sortDirection === "asc" ? (
+                              <ArrowUp className="h-3 w-3" />
+                            ) : (
+                              <ArrowDown className="h-3 w-3" />
+                            )
+                          ) : (
+                            <ArrowUpDown className="h-3 w-3 opacity-50" />
+                          )}
+                        </button>
+                      </TableHead>
+                      <TableHead>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSort("assignee");
+                          }}
+                          className="flex items-center gap-1 hover:text-foreground transition-colors font-medium"
+                          type="button"
+                        >
+                          Asignado a
+                          {sortColumn === "assignee" ? (
+                            sortDirection === "asc" ? (
+                              <ArrowUp className="h-3 w-3" />
+                            ) : (
+                              <ArrowDown className="h-3 w-3" />
+                            )
+                          ) : (
+                            <ArrowUpDown className="h-3 w-3 opacity-50" />
+                          )}
+                        </button>
+                      </TableHead>
+                      <TableHead>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSort("deadline");
+                          }}
+                          className="flex items-center gap-1 hover:text-foreground transition-colors font-medium"
+                          type="button"
+                        >
+                          Fecha límite
+                          {sortColumn === "deadline" ? (
+                            sortDirection === "asc" ? (
+                              <ArrowUp className="h-3 w-3" />
+                            ) : (
+                              <ArrowDown className="h-3 w-3" />
+                            )
+                          ) : (
+                            <ArrowUpDown className="h-3 w-3 opacity-50" />
+                          )}
+                        </button>
+                      </TableHead>
                       <TableHead>Acciones</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {tasks.map((task) => (
+                    {sortedTasks.map((task) => (
                       <TableRow
                         key={task.id}
                         onClick={() => handleTaskClick(task)}
