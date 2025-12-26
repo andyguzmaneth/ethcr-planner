@@ -113,6 +113,31 @@ function transformMeetingNote(db: any): MeetingNote {
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function transformResponsibility(db: any): Responsibility {
+  return {
+    id: db.id,
+    areaId: db.area_id,
+    name: db.name,
+    description: db.description,
+    createdAt: db.created_at,
+    updatedAt: db.updated_at,
+  };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function transformTemplate(db: any): ProjectTemplate {
+  return {
+    id: db.id,
+    name: db.name,
+    projectType: db.project_type,
+    description: db.description,
+    areas: db.template_data.areas,
+    createdAt: db.created_at,
+    updatedAt: db.updated_at,
+  };
+}
+
 // Helper: Fetch users by IDs and group by relation
 async function fetchUsersByRelation(
   junctionTable: string,
@@ -137,18 +162,28 @@ async function fetchUsersByRelation(
     .in("id", userIds);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const usersMap = new Map((usersData || []).map((u: any) => [u.id, transformUser(u)]));
+  const usersMap = new Map<string, User>();
+  (usersData || []).forEach((u: any) => {
+    if (u?.id) {
+      usersMap.set(u.id, transformUser(u));
+    }
+  });
+
   const grouped = new Map<string, User[]>();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (rows || []).forEach((row: any) => {
+    if (!row || !row[userIdField] || !row[relationIdField]) return;
     const user = usersMap.get(row[userIdField]);
     if (!user) return;
-    const relationId = row[relationIdField];
+    const relationId = String(row[relationIdField]);
     if (!grouped.has(relationId)) {
       grouped.set(relationId, []);
     }
-    grouped.get(relationId)!.push(user);
+    const users = grouped.get(relationId);
+    if (users) {
+      users.push(user);
+    }
   });
 
   return grouped;
@@ -186,14 +221,40 @@ async function fetchTaskDependencies(taskIds: string[]): Promise<Map<string, str
   const grouped = new Map<string, string[]>();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dependencies || []).forEach((td: any) => {
-    const taskId = td.task_id;
+    if (!td || !td.task_id || !td.depends_on_task_id) return;
+    const taskId = String(td.task_id);
     if (!grouped.has(taskId)) {
       grouped.set(taskId, []);
     }
-    grouped.get(taskId)!.push(td.depends_on_task_id);
+    const deps = grouped.get(taskId);
+    if (deps) {
+      deps.push(String(td.depends_on_task_id));
+    }
   });
 
   return grouped;
+}
+
+// Helper: Update junction table (participants, attendees, dependencies)
+async function updateJunctionTable(
+  tableName: string,
+  relationIdField: string,
+  relationId: string,
+  relatedIdField: string,
+  relatedIds: string[]
+): Promise<void> {
+  const { error: deleteError } = await supabaseAdmin.from(tableName).delete().eq(relationIdField, relationId);
+  if (deleteError) throw deleteError;
+
+  if (relatedIds.length > 0) {
+    const { error: insertError } = await (supabaseAdmin.from(tableName).insert(
+      relatedIds.map((relatedId) => ({
+        [relationIdField]: relationId,
+        [relatedIdField]: relatedId,
+      })) as never
+    ) as unknown as Promise<{ error: { message: string; code?: string } | null }>);
+    if (insertError) throw insertError;
+  }
 }
 
 // User operations
@@ -333,15 +394,7 @@ export async function updateProject(id: string, updates: Partial<Project>): Prom
   if (error) throw error;
 
   if (updates.participantIds) {
-    await supabaseAdmin.from("project_participants").delete().eq("project_id", id);
-    if (updates.participantIds.length > 0) {
-      await (supabaseAdmin.from("project_participants").insert(
-        updates.participantIds.map((userId) => ({
-          project_id: id,
-          user_id: userId,
-        })) as never
-      ) as unknown as Promise<{ error: { message: string; code?: string } | null }>);
-    }
+    await updateJunctionTable("project_participants", "project_id", id, "user_id", updates.participantIds);
   }
 
   const updated = await getProjectById(id);
@@ -487,15 +540,7 @@ export async function updateArea(id: string, updates: Partial<Area>): Promise<Ar
   if (error) throw error;
 
   if (updates.participantIds) {
-    await supabaseAdmin.from("area_participants").delete().eq("area_id", id);
-    if (updates.participantIds.length > 0) {
-      await (supabaseAdmin.from("area_participants").insert(
-        updates.participantIds.map((userId) => ({
-          area_id: id,
-          user_id: userId,
-        })) as never
-      ) as unknown as Promise<{ error: { message: string; code?: string } | null }>);
-    }
+    await updateJunctionTable("area_participants", "area_id", id, "user_id", updates.participantIds);
   }
 
   const updated = await getAreaById(id);
@@ -525,14 +570,7 @@ export async function getResponsibilities(): Promise<Responsibility[]> {
   const { data, error } = await supabaseAdmin.from("responsibilities").select("*").order("created_at");
   if (error) throw error;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return ((data || []) as any[]).map((r: any) => ({
-    id: r.id,
-    areaId: r.area_id,
-    name: r.name,
-    description: r.description,
-    createdAt: r.created_at,
-    updatedAt: r.updated_at,
-  }));
+  return ((data || []) as any[]).map(transformResponsibility);
 }
 
 export async function getResponsibilitiesByAreaId(areaId: string): Promise<Responsibility[]> {
@@ -544,14 +582,7 @@ export async function getResponsibilitiesByAreaId(areaId: string): Promise<Respo
 
   if (error) throw error;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return ((data || []) as any[]).map((r: any) => ({
-    id: r.id,
-    areaId: r.area_id,
-    name: r.name,
-    description: r.description,
-    createdAt: r.created_at,
-    updatedAt: r.updated_at,
-  }));
+  return ((data || []) as any[]).map(transformResponsibility);
 }
 
 export async function createResponsibility(
@@ -569,14 +600,8 @@ export async function createResponsibility(
 
   if (result.error) throw result.error;
   if (!result.data) throw new Error("Failed to create responsibility");
-  return {
-    id: result.data.id,
-    areaId: result.data.area_id,
-    name: result.data.name,
-    description: result.data.description,
-    createdAt: result.data.created_at,
-    updatedAt: result.data.updated_at,
-  };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return transformResponsibility(result.data as any);
 }
 
 // Task operations
@@ -692,15 +717,7 @@ export async function updateTask(id: string, updates: Partial<Task>): Promise<Ta
   if (error) throw error;
 
   if (updates.dependsOn !== undefined) {
-    await supabaseAdmin.from("task_dependencies").delete().eq("task_id", id);
-    if (updates.dependsOn.length > 0) {
-      await (supabaseAdmin.from("task_dependencies").insert(
-        updates.dependsOn.map((depId) => ({
-          task_id: id,
-          depends_on_task_id: depId,
-        })) as never
-      ) as unknown as Promise<{ error: { message: string; code?: string } | null }>);
-    }
+    await updateJunctionTable("task_dependencies", "task_id", id, "depends_on_task_id", updates.dependsOn);
   }
 
   const updated = await getTaskById(id);
@@ -801,20 +818,8 @@ export async function updateMeeting(
   const { error } = await (supabaseAdmin.from("meetings").update(updateData as never).eq("id", id) as unknown as Promise<{ error: { message: string; code?: string } | null }>);
   if (error) throw error;
 
-  // Update attendees if provided
   if (updates.attendeeIds !== undefined) {
-    // Delete existing attendees
-    await (supabaseAdmin.from("meeting_attendees").delete().eq("meeting_id", id) as unknown as Promise<{ error: { message: string; code?: string } | null }>);
-    
-    // Insert new attendees
-    if (updates.attendeeIds.length > 0) {
-      await (supabaseAdmin.from("meeting_attendees").insert(
-        updates.attendeeIds.map((userId) => ({
-          meeting_id: id,
-          user_id: userId,
-        })) as never
-      ) as unknown as Promise<{ error: { message: string; code?: string } | null }>);
-    }
+    await updateJunctionTable("meeting_attendees", "meeting_id", id, "user_id", updates.attendeeIds);
   }
 
   const updated = await getMeetingById(id);
@@ -892,47 +897,21 @@ export async function getTemplates(): Promise<ProjectTemplate[]> {
   const { data, error } = await supabaseAdmin.from("project_templates").select("*").order("created_at");
   if (error) throw error;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return ((data || []) as any[]).map((t: any) => ({
-    id: t.id,
-    name: t.name,
-    projectType: t.project_type,
-    description: t.description,
-    areas: t.template_data.areas,
-    createdAt: t.created_at,
-    updatedAt: t.updated_at,
-  }));
+  return ((data || []) as any[]).map(transformTemplate);
 }
 
 export async function getTemplateById(id: string): Promise<ProjectTemplate | undefined> {
   const { data, error } = await supabaseAdmin.from("project_templates").select("*").eq("id", id).single();
   if (error || !data) return undefined;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const d = data as any;
-  return {
-    id: d.id,
-    name: d.name,
-    projectType: d.project_type,
-    description: d.description,
-    areas: d.template_data.areas,
-    createdAt: d.created_at,
-    updatedAt: d.updated_at,
-  };
+  return transformTemplate(data as any);
 }
 
 export async function getTemplateByName(name: string): Promise<ProjectTemplate | undefined> {
   const { data, error } = await supabaseAdmin.from("project_templates").select("*").eq("name", name).single();
   if (error || !data) return undefined;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const d = data as any;
-  return {
-    id: d.id,
-    name: d.name,
-    projectType: d.project_type,
-    description: d.description,
-    areas: d.template_data.areas,
-    createdAt: d.created_at,
-    updatedAt: d.updated_at,
-  };
+  return transformTemplate(data as any);
 }
 
 export async function createTemplate(
@@ -951,16 +930,8 @@ export async function createTemplate(
 
   if (result.error) throw result.error;
   if (!result.data) throw new Error("Failed to create template");
-  return {
-    id: result.data.id,
-    name: result.data.name,
-    projectType: result.data.project_type as ProjectType,
-    description: result.data.description ?? undefined,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    areas: (result.data.template_data as any).areas,
-    createdAt: result.data.created_at,
-    updatedAt: result.data.updated_at,
-  };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return transformTemplate(result.data as any);
 }
 
 export async function updateTemplate(

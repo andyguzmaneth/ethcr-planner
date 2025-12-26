@@ -146,25 +146,25 @@ export function TasksViewClient({
     .sort();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* View Toggle */}
       <Tabs defaultValue="list" className="w-full">
-        <TabsList>
-          <TabsTrigger value="list">
-            <List className="mr-2 h-4 w-4" />
-            Lista
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="list" className="text-xs sm:text-sm">
+            <List className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Lista</span>
           </TabsTrigger>
-          <TabsTrigger value="kanban">
-            <LayoutGrid className="mr-2 h-4 w-4" />
-            Kanban
+          <TabsTrigger value="kanban" className="text-xs sm:text-sm">
+            <LayoutGrid className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Kanban</span>
           </TabsTrigger>
-          <TabsTrigger value="calendar">
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            Calendario
+          <TabsTrigger value="calendar" className="text-xs sm:text-sm">
+            <CalendarIcon className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Calendario</span>
           </TabsTrigger>
-          <TabsTrigger value="table">
-            <TableIcon className="mr-2 h-4 w-4" />
-            Tabla
+          <TabsTrigger value="table" className="text-xs sm:text-sm">
+            <TableIcon className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Tabla</span>
           </TabsTrigger>
         </TabsList>
 
@@ -189,27 +189,27 @@ export function TasksViewClient({
                         onClick={() => handleTaskClick(task)}
                         className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer group"
                       >
-                        <div className="flex items-center gap-4 flex-1">
+                        <div className="flex items-start sm:items-center gap-2 sm:gap-4 flex-1 min-w-0">
                           <div
-                            className={`w-3 h-3 rounded-full ${statusColors[task.status as keyof typeof statusColors]}`}
+                            className={`w-3 h-3 rounded-full flex-shrink-0 mt-1 sm:mt-0 ${statusColors[task.status as keyof typeof statusColors]}`}
                           />
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <h3 className="font-medium">{task.title}</h3>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <h3 className="font-medium break-words">{task.title}</h3>
                               {task.area && (
-                                <Badge variant="outline" className="text-xs">
+                                <Badge variant="outline" className="text-xs flex-shrink-0">
                                   {task.area.name}
                                 </Badge>
                               )}
                             </div>
-                            <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
-                              <span>{task.assignee?.name || "Sin asignar"}</span>
-                              <span>•</span>
-                              <span>{task.project?.name || "Proyecto desconocido"}</span>
+                            <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-1 text-xs sm:text-sm text-muted-foreground">
+                              <span className="break-words">{task.assignee?.name || "Sin asignar"}</span>
+                              <span className="hidden sm:inline">•</span>
+                              <span className="break-words">{task.project?.name || "Proyecto desconocido"}</span>
                               {task.deadline && (
                                 <>
-                                  <span>•</span>
-                                  <span>Vence: {new Date(task.deadline).toLocaleDateString()}</span>
+                                  <span className="hidden sm:inline">•</span>
+                                  <span className="break-words">Vence: {new Date(task.deadline).toLocaleDateString()}</span>
                                 </>
                               )}
                             </div>
@@ -514,18 +514,20 @@ export function TasksViewClient({
                   </Button>
                 </div>
               ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Estado</TableHead>
-                      <TableHead>Tarea</TableHead>
-                      <TableHead>Área</TableHead>
-                      <TableHead>Proyecto</TableHead>
-                      <TableHead>Asignado a</TableHead>
-                      <TableHead>Fecha límite</TableHead>
-                      <TableHead>Acciones</TableHead>
-                    </TableRow>
-                  </TableHeader>
+                <div className="overflow-x-auto -mx-4 sm:mx-0">
+                  <div className="inline-block min-w-full align-middle px-4 sm:px-0">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="min-w-[100px]">Estado</TableHead>
+                          <TableHead className="min-w-[200px]">Tarea</TableHead>
+                          <TableHead className="min-w-[120px]">Área</TableHead>
+                          <TableHead className="min-w-[150px]">Proyecto</TableHead>
+                          <TableHead className="min-w-[120px]">Asignado a</TableHead>
+                          <TableHead className="min-w-[120px]">Fecha límite</TableHead>
+                          <TableHead className="min-w-[80px]">Acciones</TableHead>
+                        </TableRow>
+                      </TableHeader>
                   <TableBody>
                     {tasks.map((task) => (
                       <TableRow
@@ -602,8 +604,10 @@ export function TasksViewClient({
                         </TableCell>
                       </TableRow>
                     ))}
-                  </TableBody>
-                </Table>
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
               )}
             </CardContent>
           </Card>

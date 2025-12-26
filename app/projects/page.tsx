@@ -31,7 +31,7 @@ export default async function ProjectsPage() {
 
   return (
     <MainLayout>
-      <div className="container mx-auto p-6 space-y-6">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-6">
         <ProjectsClient projects={projectsWithStats} />
       </div>
     </MainLayout>

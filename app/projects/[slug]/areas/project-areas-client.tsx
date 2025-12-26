@@ -243,18 +243,18 @@ export function ProjectAreasClient({
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
             Areas - {projectName}
           </h1>
-          <p className="text-muted-foreground mt-2">
+          <p className="text-muted-foreground mt-2 text-sm sm:text-base">
             Gestiona todas las áreas de este proyecto
           </p>
         </div>
-        <Button onClick={() => setIsAreaModalOpen(true)}>
+        <Button onClick={() => setIsAreaModalOpen(true)} className="w-full sm:w-auto">
           <Plus className="mr-2 h-4 w-4" />
           {t("projectDetail.addArea")}
         </Button>
@@ -270,7 +270,7 @@ export function ProjectAreasClient({
           items={areas.map((area) => area.id)}
           strategy={rectSortingStrategy}
         >
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {areas.map((area) => (
               <SortableAreaCard
                 key={area.id}

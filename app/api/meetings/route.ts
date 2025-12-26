@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createMeeting } from "@/lib/data-supabase";
 import { validateUUID } from "../tasks/utils";
 import { validateMeetingInput } from "./utils";
+import { handleApiError } from "../utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,10 +30,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(meeting, { status: 201 });
   } catch (error) {
-    console.error("Error creating meeting:", error);
-    const errorMessage = error instanceof Error ? error.message : "Failed to create meeting";
-    const statusCode = errorMessage.includes("Invalid") ? 400 : 500;
-    return NextResponse.json({ error: errorMessage }, { status: statusCode });
+    return handleApiError(error, "creating meeting", "Failed to create meeting");
   }
 }
 

@@ -54,17 +54,17 @@ export function DashboardClient({
 
   return (
     <div className="space-y-6">
-      <div className="container mx-auto px-6 space-y-6">
+      <div className="container mx-auto px-4 sm:px-6 space-y-6 pb-6">
         {/* Welcome Header */}
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">{t("dashboard.title")}</h1>
-          <p className="text-muted-foreground mt-2">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t("dashboard.title")}</h1>
+          <p className="text-muted-foreground mt-2 text-sm sm:text-base">
             {t("dashboard.welcome")}
           </p>
         </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">{t("dashboard.myTasks")}</CardTitle>
@@ -111,11 +111,11 @@ export function DashboardClient({
       </div>
 
       {/* Recent Activity */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-7">
+        <Card className="lg:col-span-4">
           <CardHeader>
-            <CardTitle>{t("dashboard.recentActivity")}</CardTitle>
-            <CardDescription>{t("dashboard.recentActivityDesc")}</CardDescription>
+            <CardTitle className="text-lg sm:text-xl">{t("dashboard.recentActivity")}</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">{t("dashboard.recentActivityDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -125,10 +125,10 @@ export function DashboardClient({
                   : "";
 
                 return (
-                  <div key={task.id} className="flex items-center">
-                    <div className="ml-4 space-y-1">
+                  <div key={task.id} className="flex items-start">
+                    <div className="space-y-1 flex-1">
                       <p className="text-sm font-medium">{t("dashboard.taskCompleted")}</p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs sm:text-sm text-muted-foreground break-words">
                         &ldquo;{task.title}&rdquo; {t("dashboard.taskCompletedBy")}{" "}
                         {task.assigneeName || t("dashboard.unknownUser")}
                       </p>
@@ -141,17 +141,17 @@ export function DashboardClient({
           </CardContent>
         </Card>
 
-        <Card className="col-span-3">
+        <Card className="lg:col-span-3">
           <CardHeader>
-            <CardTitle>{t("dashboard.myAreas")}</CardTitle>
-            <CardDescription>{t("dashboard.myAreasDesc")}</CardDescription>
+            <CardTitle className="text-lg sm:text-xl">{t("dashboard.myAreas")}</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">{t("dashboard.myAreasDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {areasWithProgress.slice(0, 5).map((area, idx) => (
                 <div key={idx} className="space-y-1">
-                  <p className="text-sm font-medium">{area.name}</p>
-                  <p className="text-xs text-muted-foreground">{area.projectName}</p>
+                  <p className="text-sm font-medium break-words">{area.name}</p>
+                  <p className="text-xs text-muted-foreground break-words">{area.projectName}</p>
                   <div className="w-full bg-secondary rounded-full h-2 mt-2">
                     <div
                       className="bg-primary h-2 rounded-full"

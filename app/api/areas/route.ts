@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createArea, reorderAreas } from "@/lib/data-supabase";
+import { handleApiError, validateRequiredString } from "../utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,17 +18,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!name || typeof name !== "string" || name.trim().length === 0) {
-      return NextResponse.json(
-        { error: "Area name is required" },
-        { status: 400 }
-      );
+    const validName = validateRequiredString(name, "name");
+    if (!validName) {
+      return NextResponse.json({ error: "Area name is required" }, { status: 400 });
     }
 
-    // Create area
     const area = await createArea({
       projectId: finalProjectId,
-      name: name.trim(),
+      name: validName,
       description: description?.trim() || undefined,
       leadId: leadId || undefined,
       participantIds: [], // Participants will be added automatically as tasks are assigned
@@ -35,11 +33,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(area, { status: 201 });
   } catch (error) {
-    console.error("Error creating area:", error);
-    return NextResponse.json(
-      { error: "Failed to create area" },
-      { status: 500 }
-    );
+    return handleApiError(error, "creating area", "Failed to create area");
   }
 }
 
@@ -93,11 +87,7 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
-    console.error("Error reordering areas:", error);
-    return NextResponse.json(
-      { error: "Failed to reorder areas" },
-      { status: 500 }
-    );
+    return handleApiError(error, "reordering areas", "Failed to reorder areas");
   }
 }
 

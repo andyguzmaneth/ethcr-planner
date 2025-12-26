@@ -39,7 +39,7 @@ export async function MainLayout({ children }: MainLayoutProps) {
       <Header projects={allProjects} />
       <div className="flex">
         <Sidebar projects={sidebarProjects} />
-        <main className="flex-1 md:ml-64 mt-16 min-h-[calc(100vh-4rem)]">
+        <main className="flex-1 md:ml-64 mt-16 min-h-[calc(100vh-4rem)] w-full">
           {children}
         </main>
       </div>

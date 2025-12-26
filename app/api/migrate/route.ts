@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
-import { migrateMockDataToSupabase } from "@/lib/scripts/migrate-mock-data-to-supabase";
 
+// Migration route - migration has been completed
+// This route is kept for reference but is no longer functional
 export async function POST() {
-  try {
-    await migrateMockDataToSupabase();
-    return NextResponse.json({ success: true, message: "Migration completed successfully" });
-  } catch (error) {
-    console.error("Migration error:", error);
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
-  }
+  return NextResponse.json(
+    { 
+      success: false, 
+      message: "Migration has been completed. This route is no longer available." 
+    },
+    { status: 410 } // 410 Gone - resource is no longer available
+  );
 }
 

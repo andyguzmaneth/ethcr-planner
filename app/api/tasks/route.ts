@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createTask } from "@/lib/data-supabase";
 import { parseSupportResources, validateUUID } from "./utils";
+import { handleApiError, validateRequiredString } from "../utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,14 +23,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid projectId: must be a valid UUID" }, { status: 400 });
     }
 
-    if (!title?.trim()) {
+    const validTitle = validateRequiredString(title, "title");
+    if (!validTitle) {
       return NextResponse.json({ error: "Task title is required" }, { status: 400 });
     }
 
     const task = await createTask({
       projectId: validProjectId,
       areaId: validAreaId,
-      title: title.trim(),
+      title: validTitle,
       description: description?.trim() || undefined,
       assigneeId: validAssigneeId,
       deadline: deadline || undefined,
@@ -42,10 +44,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(task, { status: 201 });
   } catch (error) {
-    console.error("Error creating task:", error);
-    const errorMessage = error instanceof Error ? error.message : "Failed to create task";
-    const statusCode = errorMessage.includes("Invalid") ? 400 : 500;
-    return NextResponse.json({ error: errorMessage }, { status: statusCode });
+    return handleApiError(error, "creating task", "Failed to create task");
   }
 }
 

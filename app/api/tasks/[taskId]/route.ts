@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { updateTask, getTaskById, deleteTask } from "@/lib/data-supabase";
 import type { Task } from "@/lib/types";
 import { parseSupportResources, validateUUID } from "../utils";
+import { handleApiError, notFoundResponse, validateRequiredString } from "../../utils";
 
 interface RouteParams {
   params: Promise<{ taskId: string }>;
@@ -18,18 +19,18 @@ export async function PUT(
 
     const existingTask = await getTaskById(taskId);
     if (!existingTask) {
-      return NextResponse.json({ error: "Task not found" }, { status: 404 });
+      return notFoundResponse("Task");
     }
 
-    if (!title?.trim()) {
+    const validTitle = validateRequiredString(title, "title");
+    if (!validTitle) {
       return NextResponse.json({ error: "Task title is required" }, { status: 400 });
     }
 
-    // Validate UUIDs if provided
     const validAssigneeId = assigneeId !== undefined ? validateUUID(assigneeId, "assigneeId") : undefined;
 
     const updatePayload: Partial<Task> = {
-      title: title.trim(),
+      title: validTitle,
       ...(description !== undefined && { description: description.trim() || undefined }),
       ...(validAssigneeId !== undefined && { assigneeId: validAssigneeId }),
       ...(deadline !== undefined && { deadline: deadline || undefined }),
@@ -49,9 +50,7 @@ export async function PUT(
 
     return NextResponse.json(updatedTask, { status: 200 });
   } catch (error) {
-    console.error("Error updating task:", error);
-    const errorMessage = error instanceof Error ? error.message : "Failed to update task";
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    return handleApiError(error, "updating task", "Failed to update task");
   }
 }
 
@@ -61,10 +60,9 @@ export async function DELETE(
 ) {
   try {
     const { taskId } = await params;
-
     const existingTask = await getTaskById(taskId);
     if (!existingTask) {
-      return NextResponse.json({ error: "Task not found" }, { status: 404 });
+      return notFoundResponse("Task");
     }
 
     const deleted = await deleteTask(taskId);
@@ -74,9 +72,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
-    console.error("Error deleting task:", error);
-    const errorMessage = error instanceof Error ? error.message : "Failed to delete task";
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    return handleApiError(error, "deleting task", "Failed to delete task");
   }
 }
 

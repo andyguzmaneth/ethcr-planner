@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { updateMeeting, getMeetingById, deleteMeeting } from "@/lib/data-supabase";
 import { validateMeetingInput } from "../utils";
+import { handleApiError, notFoundResponse } from "../../utils";
 
 interface RouteParams {
   params: Promise<{ meetingId: string }>;
@@ -17,7 +18,7 @@ export async function PUT(
 
     const existingMeeting = await getMeetingById(meetingId);
     if (!existingMeeting) {
-      return NextResponse.json({ error: "Meeting not found" }, { status: 404 });
+      return notFoundResponse("Meeting");
     }
 
     const validation = validateMeetingInput(title, date, time, attendeeIds);
@@ -32,9 +33,7 @@ export async function PUT(
 
     return NextResponse.json(updatedMeeting, { status: 200 });
   } catch (error) {
-    console.error("Error updating meeting:", error);
-    const errorMessage = error instanceof Error ? error.message : "Failed to update meeting";
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    return handleApiError(error, "updating meeting", "Failed to update meeting");
   }
 }
 
@@ -44,10 +43,9 @@ export async function DELETE(
 ) {
   try {
     const { meetingId } = await params;
-
     const existingMeeting = await getMeetingById(meetingId);
     if (!existingMeeting) {
-      return NextResponse.json({ error: "Meeting not found" }, { status: 404 });
+      return notFoundResponse("Meeting");
     }
 
     const deleted = await deleteMeeting(meetingId);
@@ -57,9 +55,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
-    console.error("Error deleting meeting:", error);
-    const errorMessage = error instanceof Error ? error.message : "Failed to delete meeting";
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    return handleApiError(error, "deleting meeting", "Failed to delete meeting");
   }
 }
 

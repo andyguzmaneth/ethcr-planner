@@ -144,25 +144,25 @@ export function ProjectTasksViewClient({
     .sort();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* View Toggle */}
       <Tabs defaultValue="list" className="w-full">
-        <TabsList>
-          <TabsTrigger value="list">
-            <List className="mr-2 h-4 w-4" />
-            Lista
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="list" className="text-xs sm:text-sm">
+            <List className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Lista</span>
           </TabsTrigger>
-          <TabsTrigger value="kanban">
-            <LayoutGrid className="mr-2 h-4 w-4" />
-            Kanban
+          <TabsTrigger value="kanban" className="text-xs sm:text-sm">
+            <LayoutGrid className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Kanban</span>
           </TabsTrigger>
-          <TabsTrigger value="calendar">
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            Calendario
+          <TabsTrigger value="calendar" className="text-xs sm:text-sm">
+            <CalendarIcon className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Calendario</span>
           </TabsTrigger>
-          <TabsTrigger value="table">
-            <TableIcon className="mr-2 h-4 w-4" />
-            Tabla
+          <TabsTrigger value="table" className="text-xs sm:text-sm">
+            <TableIcon className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Tabla</span>
           </TabsTrigger>
         </TabsList>
 
@@ -200,14 +200,14 @@ export function ProjectTasksViewClient({
                                 </Badge>
                               )}
                             </div>
-                            <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
-                              <span>{task.assignee?.name || "Sin asignar"}</span>
-                              <span>•</span>
-                              <span>{projectName}</span>
+                            <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-1 text-xs sm:text-sm text-muted-foreground">
+                              <span className="break-words">{task.assignee?.name || "Sin asignar"}</span>
+                              <span className="hidden sm:inline">•</span>
+                              <span className="break-words">{projectName}</span>
                               {task.deadline && (
                                 <>
-                                  <span>•</span>
-                                  <span>Vence: {new Date(task.deadline).toLocaleDateString()}</span>
+                                  <span className="hidden sm:inline">•</span>
+                                  <span className="break-words">Vence: {new Date(task.deadline).toLocaleDateString()}</span>
                                 </>
                               )}
                             </div>
@@ -256,7 +256,7 @@ export function ProjectTasksViewClient({
 
         {/* Kanban View */}
         <TabsContent value="kanban" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {Object.entries(statusLabels).map(([status, label]) => {
               const statusTasks = tasksByStatus[status as keyof typeof tasksByStatus];
               return (
@@ -507,17 +507,19 @@ export function ProjectTasksViewClient({
                   </Button>
                 </div>
               ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Estado</TableHead>
-                      <TableHead>Tarea</TableHead>
-                      <TableHead>Área</TableHead>
-                      <TableHead>Asignado a</TableHead>
-                      <TableHead>Fecha límite</TableHead>
-                      <TableHead>Acciones</TableHead>
-                    </TableRow>
-                  </TableHeader>
+                <div className="overflow-x-auto -mx-4 sm:mx-0">
+                  <div className="inline-block min-w-full align-middle px-4 sm:px-0">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="min-w-[100px]">Estado</TableHead>
+                          <TableHead className="min-w-[200px]">Tarea</TableHead>
+                          <TableHead className="min-w-[120px]">Área</TableHead>
+                          <TableHead className="min-w-[120px]">Asignado a</TableHead>
+                          <TableHead className="min-w-[120px]">Fecha límite</TableHead>
+                          <TableHead className="min-w-[80px]">Acciones</TableHead>
+                        </TableRow>
+                      </TableHeader>
                   <TableBody>
                     {tasks.map((task) => (
                       <TableRow
@@ -589,8 +591,10 @@ export function ProjectTasksViewClient({
                         </TableCell>
                       </TableRow>
                     ))}
-                  </TableBody>
-                </Table>
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
               )}
             </CardContent>
           </Card>

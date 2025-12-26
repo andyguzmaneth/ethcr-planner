@@ -28,7 +28,7 @@ export function TasksPageClient({
 
   return (
     <>
-      <Button onClick={() => setIsModalOpen(true)}>
+      <Button onClick={() => setIsModalOpen(true)} className="w-full sm:w-auto">
         <Plus className="mr-2 h-4 w-4" />
         {t("projectDetail.newTask")}
       </Button>

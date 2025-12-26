@@ -39,16 +39,16 @@ export default async function MeetingsPage() {
 
   return (
     <MainLayout>
-      <div className="container mx-auto p-6 space-y-6">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Reuniones</h1>
-            <p className="text-muted-foreground mt-2">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Reuniones</h1>
+            <p className="text-muted-foreground mt-2 text-sm sm:text-base">
               Ver y gestionar notas de reuniones
             </p>
           </div>
-          <Button>
+          <Button className="w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" />
             {t("projectDetail.scheduleMeeting")}
           </Button>
@@ -59,14 +59,14 @@ export default async function MeetingsPage() {
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
               <p className="text-muted-foreground mb-4">No hay reuniones programadas</p>
-              <Button>
+              <Button className="w-full sm:w-auto">
                 <Plus className="mr-2 h-4 w-4" />
                 {t("projectDetail.createFirstMeeting")}
               </Button>
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {meetingsWithDetails.map((meeting) => (
               <Link key={meeting.id} href={`/meetings/${meeting.id}`}>
                 <Card className="hover:shadow-lg transition-shadow cursor-pointer">

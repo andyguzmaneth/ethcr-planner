@@ -169,21 +169,21 @@ export function ProjectDetailClient({
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-6">
       {/* Project Header */}
-      <div className="flex items-start justify-between">
-        <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-bold tracking-tight">{project.name}</h1>
-            <Badge variant="secondary">{project.type}</Badge>
-            <Badge>{project.status}</Badge>
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div className="space-y-2 flex-1">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{project.name}</h1>
+            <Badge variant="secondary" className="text-xs">{project.type}</Badge>
+            <Badge className="text-xs">{project.status}</Badge>
           </div>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-sm sm:text-base">
             {t("projectDetail.projectPlanningPanel")}
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={handleEditProjectClick}>
+          <Button variant="outline" onClick={handleEditProjectClick} className="w-full sm:w-auto">
             <Settings className="mr-2 h-4 w-4" />
             {t("projectDetail.editProject")}
           </Button>
@@ -192,15 +192,15 @@ export function ProjectDetailClient({
 
       {/* Tabs */}
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">{t("projectDetail.overview")}</TabsTrigger>
-          <TabsTrigger value="areas">{t("nav.areas")}</TabsTrigger>
-          <TabsTrigger value="tasks">{t("nav.tasks")}</TabsTrigger>
-          <TabsTrigger value="meetings">{t("nav.meetings")}</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="overview" className="text-xs sm:text-sm">{t("projectDetail.overview")}</TabsTrigger>
+          <TabsTrigger value="areas" className="text-xs sm:text-sm">{t("nav.areas")}</TabsTrigger>
+          <TabsTrigger value="tasks" className="text-xs sm:text-sm">{t("nav.tasks")}</TabsTrigger>
+          <TabsTrigger value="meetings" className="text-xs sm:text-sm">{t("nav.meetings")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
             <Card>
               <CardHeader>
                 <CardTitle className="text-sm font-medium">{t("projectDetail.totalAreas")}</CardTitle>
@@ -229,14 +229,14 @@ export function ProjectDetailClient({
         </TabsContent>
 
         <TabsContent value="areas" className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold">{t("nav.areas")}</h2>
-            <Button onClick={() => setIsAreaModalOpen(true)}>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <h2 className="text-xl sm:text-2xl font-bold">{t("nav.areas")}</h2>
+            <Button onClick={() => setIsAreaModalOpen(true)} className="w-full sm:w-auto">
               <Plus className="mr-2 h-4 w-4" />
               {t("projectDetail.addArea")}
             </Button>
           </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {areasWithStats.map((area) => (
               <AreaCard
                 key={area.id}
@@ -256,9 +256,9 @@ export function ProjectDetailClient({
         </TabsContent>
 
         <TabsContent value="tasks" className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold">{t("nav.tasks")}</h2>
-            <Button onClick={() => setIsTaskModalOpen(true)}>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <h2 className="text-xl sm:text-2xl font-bold">{t("nav.tasks")}</h2>
+            <Button onClick={() => setIsTaskModalOpen(true)} className="w-full sm:w-auto">
               <Plus className="mr-2 h-4 w-4" />
               {t("projectDetail.addTask")}
             </Button>
